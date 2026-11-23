@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CONECTA - Segurança e Climatização</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            conecta: {
+              dark: '#0A0F0D',
+              card: '#111916',
+              green: '#00A859',
+              lime: '#7AC143',
+              emerald: '#006837'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f3f6f4; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    #signature-pad { touch-action: none; cursor: crosshair; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #print-area, #print-area * { visibility: visible; }
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+        padding: 20px;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+  <!-- HEADER SUPERIOR -->
+  <header class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img
+          id="header-logo"
+          src="logo.jpg"
+          alt="CONECTA"
+          class="h-12 w-12 object-contain rounded-lg bg-black p-1 border border-conecta-green/40"
+          onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');"
+        />
+        <div id="logo-fallback" class="hidden h-12 w-12 rounded-lg bg-conecta-emerald/20 border border-conecta-green flex items-center justify-center font-bold text-conecta-lime">
+          C
+        </div>
+        <div>
+          <h1 class="text-lg font-extrabold tracking-wide text-conecta-green leading-tight">CONECTA</h1>
+          <p class="text-xs text-slate-300 tracking-wider uppercase">Segurança e Climatização</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <select id="perfil-acesso" onchange="alterarPerfil()" class="bg-[#15201c] text-xs text-conecta-lime border border-conecta-green/40 rounded-lg px-2.5 py-1.5 font-semibold">
+          <option value="admin">Perfil: Administrador</option>
+          <option value="tecnico">Perfil: Técnico em Campo</option>
+        </select>
+        <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium">
+          Modo Local
+        </span>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO EM ABAS -->
+    <nav class="bg-[#0f1714] border-t border-white/10 overflow-x-auto">
+      <div class="max-w-7xl mx-auto px-4 flex gap-1 min-w-max">
+        <button onclick="switchTab('painel')" data-tab="painel" class="nav-btn px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime">Painel</button>
+        <button onclick="switchTab('os')" data-tab="os" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Agenda & OS</button>
+        <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Orçamentos</button>
+        <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Clientes</button>
+        <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Produtos & Kits</button>
+        <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Financeiro</button>
+        <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Configurações</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 no-print">
+
+    <!-- ==================== ABA: PAINEL ==================== -->
+    <section id="tab-painel" class="tab-content active space-y-6">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-conecta-green">
+          <p class="text-xs text-slate-500 uppercase font-semibold">Clientes Ativos</p>
+          <p id="kpi-clientes" class="text-2xl font-bold text-slate-800 mt-1">0</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500">
+          <p class="text-xs text-slate-500 uppercase font-semibold">OS Abertas / Agendadas</p>
+          <p id="kpi-os-abertas" class="text-2xl font-bold text-slate-800 mt-1">0</p>
+        </div>
+        <div data-admin-only="true" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
+          <p class="text-xs text-slate-500 uppercase font-semibold">Orçamentos Pendentes</p>
+          <p id="kpi-orcamentos" class="text-2xl font-bold text-slate-800 mt-1">0</p>
+        </div>
+        <div data-admin-only="true" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-conecta-emerald">
+          <p class="text-xs text-slate-500 uppercase font-semibold">Saldo Realizado</p>
+          <p id="kpi-saldo" class="text-2xl font-bold text-conecta-emerald mt-1">R$ 0,00</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Próximas OS -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-slate-800 text-base">Próximas Ordens de Serviço</h2>
+            <button onclick="switchTab('os')" class="text-xs font-semibold text-conecta-green hover:underline">Ver todas →</button>
+          </div>
+          <div id="painel-os-lista" class="space-y-2 text-sm text-slate-500"></div>
+        </div>
+
+        <!-- Alertas de Preventiva e Estoque -->
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
+          <h2 class="font-bold text-slate-800 text-base">Alertas de Manutenção Preventiva (Climatização/CFTV)</h2>
+          <div id="painel-preventivas" class="space-y-2 text-sm text-slate-500"></div>
+          <div data-admin-only="true" class="pt-3 border-t">
+            <h3 class="font-bold text-slate-700 text-sm mb-2">Alertas de Estoque Baixo</h3>
+            <div id="painel-estoque" class="space-y-1.5 text-xs text-slate-500"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ABA: AGENDA & OS ==================== -->
+    <section id="tab-os" class="tab-content space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-xl font-bold text-slate-800">Agenda e Ordens de Serviço</h2>
+        <button onclick="abrirModalOS()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+          + Nova OS
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <select id="filtro-os-status" onchange="renderOS()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="todos">Todos os status</option>
+          <option value="agendada">Agendada</option>
+          <option value="em_andamento">Em Andamento</option>
+          <option value="concluida">Concluída</option>
+        </select>
+        <select id="filtro-os-categoria" onchange="renderOS()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="todos">Todas as áreas</option>
+          <option value="seguranca">Segurança / CFTV</option>
+          <option value="climatizacao">Climatização</option>
+        </select>
+      </div>
+
+      <div id="lista-os" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- ==================== ABA: ORÇAMENTOS ==================== -->
+    <section id="tab-orcamentos" class="tab-content space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-xl font-bold text-slate-800">Gestão de Orçamentos</h2>
+        <button onclick="abrirModalOrcamento()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+          + Novo Orçamento
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <select id="filtro-orc-status" onchange="renderOrcamentos()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="todos">Todos os status</option>
+          <option value="rascunho">Rascunho</option>
+          <option value="enviado">Enviado</option>
+          <option value="aprovado">Aprovado</option>
+          <option value="recusado">Recusado</option>
+        </select>
+      </div>
+
+      <div id="lista-orcamentos" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- ==================== ABA: CLIENTES ==================== -->
+    <section id="tab-clientes" class="tab-content space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-xl font-bold text-slate-800">Clientes e Base Instalada</h2>
+        <button data-admin-only="true" onclick="abrirModalCliente()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+          + Novo Cliente
+        </button>
+      </div>
+
+      <input id="busca-cliente" oninput="renderClientes()" type="text" placeholder="Buscar por nome, CPF/CNPJ, telefone ou equipamento..." class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm" />
+
+      <div id="lista-clientes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== ABA: PRODUTOS & KITS ==================== -->
+    <section id="tab-produtos" class="tab-content space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-xl font-bold text-slate-800">Produtos, Serviços e Kits</h2>
+        <button onclick="abrirModalProduto()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+          + Novo Item / Kit
+        </button>
+      </div>
+      <div id="lista-produtos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== ABA: FINANCEIRO ==================== -->
+    <section id="tab-financeiro" class="tab-content space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-xl font-bold text-slate-800">Fluxo de Caixa (Pagar / Receber)</h2>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="gerarMensalidadesLote()" class="bg-conecta-dark text-conecta-lime px-4 py-2 rounded-lg text-sm font-semibold hover:bg-black">
+            Gerar Mensalidades do Mês
+          </button>
+          <button onclick="abrirModalFinanceiro()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold">
+            + Novo Lançamento
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <select id="filtro-fin-tipo" onchange="renderFinanceiro()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="todos">Receitas e Despesas</option>
+          <option value="receita">Apenas Receitas (A Receber)</option>
+          <option value="despesa">Apenas Despesas (A Pagar)</option>
+        </select>
+        <select id="filtro-fin-status" onchange="renderFinanceiro()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="todos">Todos os status</option>
+          <option value="pendente">Pendente</option>
+          <option value="pago">Pago / Recebido</option>
+        </select>
+      </div>
+
+      <div id="lista-financeiro" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"></div>
+    </section>
+
+    <!-- ==================== ABA: CONFIGURAÇÕES ==================== -->
+    <section id="tab-config" class="tab-content space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <h2 class="text-lg font-bold text-slate-800">Dados da Empresa (Cabeçalho de PDF/OS)</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">Nome Fantasia</label>
+              <input id="cfg-nome" type="text" value="CONECTA - Segurança e Climatização" class="w-full border rounded-lg px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">CNPJ</label>
+              <input id="cfg-cnpj" type="text" placeholder="00.000.000/0001-00" class="w-full border rounded-lg px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">WhatsApp / Telefone</label>
+              <input id="cfg-tel" type="text" placeholder="(22) 99999-9999" class="w-full border rounded-lg px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">Cidade / UF</label>
+              <input id="cfg-cidade" type="text" value="Itaperuna - RJ" class="w-full border rounded-lg px-3 py-2" />
+            </div>
+          </div>
+          <button onclick="salvarConfig()" class="bg-conecta-dark text-conecta-lime px-4 py-2 rounded-lg text-sm font-semibold hover:bg-black">
+            Salvar Configurações
+          </button>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <h2 class="text-lg font-bold text-slate-800">Backup e Restauração (JSON)</h2>
+          <p class="text-sm text-slate-500">Exporte uma cópia de segurança de todos os clientes, produtos, orçamentos, OS e lançamentos financeiros.</p>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="exportarBackup()" class="bg-conecta-green text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-conecta-emerald">
+              Baixar Backup JSON
+            </button>
+            <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer">
+              Restaurar Backup
+              <input type="file" accept=".json" onchange="restaurarBackup(event)" class="hidden" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== MODAL CLIENTE ==================== -->
+  <div id="modal-cliente" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-lg text-slate-800">Cadastro de Cliente e Base Instalada</h3>
+        <button onclick="fecharModal('modal-cliente')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-cliente" onsubmit="salvarCliente(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="cli-id" />
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Tipo</label>
+            <select id="cli-tipo" class="w-full border rounded-lg px-3 py-2">
+              <option value="PF">Pessoa Física</option>
+              <option value="PJ">Pessoa Jurídica</option>
+            </select>
+          </div>
+          <div class="col-span-2">
+            <label class="block font-medium mb-1">Nome / Razão Social *</label>
+            <input id="cli-nome" required class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">CPF / CNPJ</label>
+            <input id="cli-doc" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">WhatsApp *</label>
+            <input id="cli-tel" required placeholder="22999999999" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Endereço Completo</label>
+          <input id="cli-endereco" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+        </div>
+
+        <!-- Contrato de Monitoramento -->
+        <div class="border rounded-xl p-3 bg-emerald-50/60 space-y-2">
+          <label class="flex items-center gap-2 font-semibold text-conecta-emerald">
+            <input type="checkbox" id="cli-monit-ativo" class="rounded" />
+            Possui Contrato de Monitoramento Mensal
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600">Valor Mensal (R$)</label>
+              <input id="cli-monit-valor" type="number" step="0.01" value="0" class="w-full border bg-white rounded-lg px-3 py-1.5" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600">Dia de Vencimento</label>
+              <input id="cli-monit-dia" type="number" min="1" max="28" value="10" class="w-full border bg-white rounded-lg px-3 py-1.5" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Base Instalada / Equipamentos -->
+        <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
+          <label class="font-semibold text-slate-700 block">Base Instalada (Ar-condicionado / CFTV / Cloud)</label>
+          <textarea id="cli-equipamentos" rows="2" placeholder="Ex: 2x Split 12.000 BTUs LG (Sala/Quarto); DVR 8 Canais Intelbras (Cloud ID: 998877)" class="w-full border bg-white rounded-lg px-3 py-2"></textarea>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600">Última Manutenção / Higienização</label>
+              <input id="cli-ultima-prev" type="date" class="w-full border bg-white rounded-lg px-3 py-1.5" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600">Próxima Preventiva (Alerta)</label>
+              <input id="cli-proxima-prev" type="date" class="w-full border bg-white rounded-lg px-3 py-1.5" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-cliente')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL PRODUTO / KIT ==================== -->
+  <div id="modal-produto" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-lg text-slate-800">Cadastro de Produto, Serviço ou Kit</h3>
+        <button onclick="fecharModal('modal-produto')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-produto" onsubmit="salvarProduto(event)" class="space-y-3 text-sm">
+        <input type="hidden" id="prod-id" />
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Tipo</label>
+            <select id="prod-tipo" class="w-full border rounded-lg px-3 py-2">
+              <option value="produto">Produto / Equipamento</option>
+              <option value="servico">Serviço / Mão de Obra</option>
+              <option value="kit">Kit Pronto</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Área</label>
+            <select id="prod-cat" class="w-full border rounded-lg px-3 py-2">
+              <option value="seguranca">Segurança / CFTV</option>
+              <option value="climatizacao">Climatização</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Nome / Descrição *</label>
+          <input id="prod-nome" required placeholder="Ex: Kit Instalação Split 12k BTUs ou Câmera Bullet 2MP" class="w-full border rounded-lg px-3 py-2" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Preço de Custo (R$)</label>
+            <input id="prod-custo" type="number" step="0.01" value="0" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Preço de Venda (R$) *</label>
+            <input id="prod-venda" type="number" step="0.01" required value="0" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Estoque Atual</label>
+            <input id="prod-estoque" type="number" value="0" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Estoque Mínimo (Alerta)</label>
+            <input id="prod-minimo" type="number" value="2" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-produto')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL ORÇAMENTO ==================== -->
+  <div id="modal-orcamento" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="modal-orc-titulo" class="font-bold text-lg text-slate-800">Novo Orçamento</h3>
+        <button onclick="fecharModal('modal-orcamento')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-orcamento" onsubmit="salvarOrcamento(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="orc-id" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Cliente *</label>
+            <select id="orc-cliente" required class="w-full border rounded-lg px-3 py-2"></select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Área / Categoria</label>
+            <select id="orc-categoria" class="w-full border rounded-lg px-3 py-2">
+              <option value="seguranca">Segurança Eletrônica (CFTV / Alarme)</option>
+              <option value="climatizacao">Climatização (Ar-condicionado)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Validade da Proposta</label>
+            <input id="orc-validade" type="date" required class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Status</label>
+            <select id="orc-status" class="w-full border rounded-lg px-3 py-2">
+              <option value="rascunho">Rascunho</option>
+              <option value="enviado">Enviado ao Cliente</option>
+              <option value="aprovado">Aprovado</option>
+              <option value="recusado">Recusado</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Puxar do Catálogo + Itens -->
+        <div class="border rounded-xl p-3 bg-slate-50 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label class="font-semibold text-slate-700">Equipamentos, Serviços e Kits</label>
+            <div class="flex gap-2">
+              <select id="orc-catalogo-select" class="border bg-white rounded-lg px-2 py-1 text-xs max-w-[200px]"></select>
+              <button type="button" onclick="puxarDoCatalogo()" class="text-xs bg-conecta-green text-white px-2.5 py-1.5 rounded-lg font-semibold">Puxar</button>
+              <button type="button" onclick="adicionarItemOrcamento()" class="text-xs bg-conecta-dark text-conecta-lime px-2.5 py-1.5 rounded-lg font-semibold">+ Avulso</button>
+            </div>
+          </div>
+          <div id="orc-itens-lista" class="space-y-2"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t items-center">
+            <div>
+              <label class="block text-xs text-slate-500">Desconto (R$)</label>
+              <input id="orc-desconto" type="number" step="0.01" min="0" value="0" oninput="recalcularTotalOrcamento()" class="w-full border bg-white rounded-lg px-3 py-1.5" />
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-500">Lucro Estimado</p>
+              <p id="orc-lucro-display" class="text-sm font-bold text-conecta-green">R$ 0,00</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-500">Valor Total da Proposta</p>
+              <p id="orc-total-display" class="text-xl font-extrabold text-conecta-emerald">R$ 0,00</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium mb-1">Observações / Condições de Pagamento</label>
+          <textarea id="orc-obs" rows="2" placeholder="Ex: 50% entrada + 50% na entrega. Garantia de 12 meses nos equipamentos." class="w-full border rounded-lg px-3 py-2"></textarea>
+        </div>
+
+        <!-- FOTOS DO LOCAL -->
+        <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="font-semibold text-slate-700">Fotos do Local</label>
+            <input type="file" id="orc-foto-input" accept="image/*" multiple onchange="processarFotosOrcamento(event)" class="text-xs" />
+          </div>
+          <div id="orc-fotos-preview" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-orcamento')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Orçamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL ORDEM DE SERVIÇO ==================== -->
+  <div id="modal-os" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="modal-os-titulo" class="font-bold text-lg text-slate-800">Ordem de Serviço</h3>
+        <button onclick="fecharModal('modal-os')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-os" onsubmit="salvarOS(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="os-id" />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="md:col-span-2">
+            <label class="block font-medium mb-1">Cliente *</label>
+            <select id="os-cliente" required class="w-full border rounded-lg px-3 py-2"></select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Área / Categoria</label>
+            <select id="os-categoria" class="w-full border rounded-lg px-3 py-2">
+              <option value="seguranca">Segurança / CFTV</option>
+              <option value="climatizacao">Climatização</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Data Agendada</label>
+            <input id="os-data" type="date" required class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Status</label>
+            <select id="os-status" class="w-full border rounded-lg px-3 py-2">
+              <option value="agendada">Agendada</option>
+              <option value="em_andamento">Em Andamento</option>
+              <option value="concluida">Concluída</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Garantia (dias)</label>
+            <input id="os-garantia-dias" type="number" value="90" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block font-medium mb-1">Técnico Responsável</label>
+            <input id="os-tecnico" placeholder="Nome do técnico" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Valor Total (R$)</label>
+            <input id="os-valor" type="number" step="0.01" value="0" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium mb-1">Relato / Serviço Solicitado</label>
+          <textarea id="os-relato" rows="2" class="w-full border rounded-lg px-3 py-2"></textarea>
+        </div>
+
+        <!-- Checklist Técnico -->
+        <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
+          <label class="font-semibold text-slate-700 block">Checklist de Execução</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Teste de funcionamento / tensão" /> Teste de funcionamento / tensão</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Teste de vácuo / dreno (Climatização)" /> Teste de vácuo / dreno (Climatização)</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Acesso remoto / app configurado (CFTV)" /> Acesso remoto / app configurado (CFTV)</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Limpeza do local e acabamento final" /> Limpeza do local e acabamento final</label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium mb-1">Laudo Técnico / Serviço Executado</label>
+          <textarea id="os-laudo" rows="2" class="w-full border rounded-lg px-3 py-2"></textarea>
+        </div>
+
+        <!-- FOTOS ANTES E DEPOIS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
+            <label class="font-semibold text-slate-700 block text-xs">Fotos ANTES</label>
+            <input type="file" accept="image/*" multiple onchange="processarFotosOS(event, 'antes')" class="text-xs w-full" />
+            <div id="os-fotos-antes" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
+            <label class="font-semibold text-slate-700 block text-xs">Fotos DEPOIS</label>
+            <input type="file" accept="image/*" multiple onchange="processarFotosOS(event, 'depois')" class="text-xs w-full" />
+            <div id="os-fotos-depois" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+
+        <!-- ASSINATURA DIGITAL -->
+        <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="font-semibold text-slate-700">Assinatura do Cliente</label>
+            <button type="button" onclick="limparAssinatura()" class="text-xs text-red-600 hover:underline">Limpar</button>
+          </div>
+          <canvas id="signature-pad" width="540" height="120" class="w-full bg-white border border-slate-300 rounded-lg"></canvas>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-os')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar OS</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL FINANCEIRO ==================== -->
+  <div id="modal-financeiro" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-lg text-slate-800">Lançamento Financeiro</h3>
+        <button onclick="fecharModal('modal-financeiro')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-financeiro" onsubmit="salvarFinanceiro(event)" class="space-y-3 text-sm">
+        <div>
+          <label class="block font-medium mb-1">Descrição *</label>
+          <input id="fin-desc" required class="w-full border rounded-lg px-3 py-2" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Tipo</label>
+            <select id="fin-tipo" class="w-full border rounded-lg px-3 py-2">
+              <option value="receita">Receita (A Receber)</option>
+              <option value="despesa">Despesa (A Pagar)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Valor (R$) *</label>
+            <input id="fin-valor" type="number" step="0.01" required class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Vencimento</label>
+            <input id="fin-vencimento" type="date" required class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Status</label>
+            <select id="fin-status" class="w-full border rounded-lg px-3 py-2">
+              <option value="pendente">Pendente</option>
+              <option value="pago">Pago / Recebido</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-financeiro')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ÁREA OCULTA DE IMPRESSÃO / PDF -->
+  <div id="print-area" class="hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // =========================================================================
+    // 1. CONFIGURAÇÃO FIREBASE
+    // =========================================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
+      authDomain: "conectaitaperuna.firebaseapp.com",
+      projectId: "conectaitaperuna",
+      storageBucket: "conectaitaperuna.firebasestorage.app",
+      messagingSenderId: "1028592894211",
+      appId: "1:1028592894211:web:d93f3651e676a4de8e6936"
+    };
+
+    let db = null;
+    if (firebaseConfig.apiKey !== "SUA_API_KEY") {
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        const badge = document.getElementById('db-status');
+        badge.textContent = "Firebase Online";
+        badge.className = "text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium";
+      } catch (e) {
+        console.error("Erro Firebase:", e);
+      }
+    }
+
+    const state = {
+      perfil: 'admin',
+      clientes: [],
+      produtos: [],
+      os: [],
+      orcamentos: [],
+      financeiro: [],
+      config: { nome: "CONECTA - Segurança e Climatização", cnpj: "", tel: "", cidade: "Itaperuna - RJ" },
+      fotosOSAntes: [],
+      fotosOSDepois: [],
+      fotosOrcTemp: [],
+      itensOrcTemp: []
+    };
+
+    const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    // =========================================================================
+    // 2. PERSISTÊNCIA (Firestore + Fallback LocalStorage)
+    // =========================================================================
+    async function carregarColecao(nome) {
+      if (db) {
+        const snap = await getDocs(collection(db, nome));
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
+      return JSON.parse(localStorage.getItem(`conecta_${nome}`) || "[]");
+    }
+
+    async function salvarDocumento(nome, id, dados) {
+      if (db) {
+        await setDoc(doc(db, nome, id), dados, { merge: true });
+      } else {
+        const lista = JSON.parse(localStorage.getItem(`conecta_${nome}`) || "[]");
+        const idx = lista.findIndex(x => x.id === id);
+        if (idx >= 0) lista[idx] = { id, ...dados };
+        else lista.push({ id, ...dados });
+        localStorage.setItem(`conecta_${nome}`, JSON.stringify(lista));
+      }
+    }
+
+    async function proximoNumero(chave, prefixo) {
+      const ano = new Date().getFullYear();
+      if (db) {
+        const ref = doc(db, "configuracoes", "contadores");
+        const novo = await runTransaction(db, async (tx) => {
+          const snap = await tx.get(ref);
+          const atual = snap.exists() ? (snap.data()[chave] || 0) : 0;
+          const prox = atual + 1;
+          tx.set(ref, { [chave]: prox }, { merge: true });
+          return prox;
+        });
+        return `${prefixo}-${ano}-${String(novo).padStart(4, '0')}`;
+      }
+      const atual = Number(localStorage.getItem(`conecta_seq_${chave}`) || "0") + 1;
+      localStorage.setItem(`conecta_seq_${chave}`, String(atual));
+      return `${prefixo}-${ano}-${String(atual).padStart(4, '0')}`;
+    }
+
+    function comprimirImagem(file, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 800;
+          const scale = Math.min(1, maxW / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          callback(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // =========================================================================
+    // 3. PERFIS DE ACESSO, NAVEGAÇÃO E PAINEL
+    // =========================================================================
+    window.alterarPerfil = () => {
+      state.perfil = document.getElementById('perfil-acesso').value;
+      document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
+        el.style.display = state.perfil === 'admin' ? '' : 'none';
+      });
+      switchTab('painel');
+    };
+
+    window.switchTab = (tabName) => {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const active = btn.dataset.tab === tabName;
+        btn.className = active
+          ? "nav-btn px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime"
+          : "nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white";
+      });
+    };
+
+    window.fecharModal = (id) => {
+      document.getElementById(id).classList.add('hidden');
+      document.getElementById(id).classList.remove('flex');
+    };
+    function abrirModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById(id).classList.add('flex');
+    }
+
+    function atualizarPainel() {
+      document.getElementById('kpi-clientes').textContent = state.clientes.length;
+      document.getElementById('kpi-os-abertas').textContent = state.os.filter(o => o.status !== 'concluida').length;
+      document.getElementById('kpi-orcamentos').textContent = state.orcamentos.filter(o => o.status === 'enviado' || o.status === 'rascunho').length;
+
+      const saldo = state.financeiro
+        .filter(f => f.status === 'pago')
+        .reduce((acc, f) => acc + (f.tipo === 'receita' ? Number(f.valor) : -Number(f.valor)), 0);
+      document.getElementById('kpi-saldo').textContent = formatBRL(saldo);
+
+      const proximas = state.os.filter(o => o.status !== 'concluida').slice(0, 5);
+      document.getElementById('painel-os-lista').innerHTML = proximas.length
+        ? proximas.map(o => `
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+              <div>
+                <span class="font-bold text-conecta-emerald">${o.numero}</span> • <span class="font-semibold text-slate-800">${o.clienteNome}</span>
+                <p class="text-xs text-slate-500">${o.categoria === 'seguranca' ? 'Segurança/CFTV' : 'Climatização'} • ${o.dataAgendamento}</p>
+              </div>
+              <button onclick="editarOS('${o.id}')" class="text-xs bg-white border px-3 py-1.5 rounded-lg font-semibold hover:bg-slate-100">Abrir</button>
+            </div>`).join('')
+        : "Nenhuma OS pendente.";
+
+      // Alertas de Preventiva (até 30 dias à frente ou vencidas)
+      const limite = new Date();
+      limite.setDate(limite.getDate() + 30);
+      const limiteStr = limite.toISOString().split('T')[0];
+      const preventivas = state.clientes.filter(c => c.proximaPreventiva && c.proximaPreventiva <= limiteStr);
+      document.getElementById('painel-preventivas').innerHTML = preventivas.length
+        ? preventivas.map(c => {
+            const msg = encodeURIComponent(`Olá ${c.nome}, aqui é da ${state.config.nome}! Está na época da manutenção preventiva/higienização dos seus equipamentos. Podemos agendar uma visita?`);
+            return `
+            <div class="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+              <div>
+                <p class="font-semibold text-slate-800 text-xs">${c.nome}</p>
+                <p class="text-xs text-amber-800">Preventiva prevista: ${c.proximaPreventiva}</p>
+              </div>
+              <a href="https://wa.me/55${c.telefone}?text=${msg}" target="_blank" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">WhatsApp</a>
+            </div>`;
+          }).join('')
+        : '<p class="text-xs text-slate-400">Nenhuma manutenção preventiva vencendo nos próximos 30 dias.</p>';
+
+      // Alertas de Estoque Baixo
+      const baixo = state.produtos.filter(p => p.tipo === 'produto' && Number(p.estoqueAtual) <= Number(p.estoqueMinimo));
+      document.getElementById('painel-estoque').innerHTML = baixo.length
+        ? baixo.map(p => `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-200"><strong>${p.nome}:</strong> ${p.estoqueAtual} un. (mínimo: ${p.estoqueMinimo})</div>`).join('')
+        : '<p class="text-slate-400">Estoque dentro dos níveis normais.</p>';
+    }
+
+    // =========================================================================
+    // 4. MÓDULO CLIENTES
+    // =========================================================================
+    window.abrirModalCliente = (id = null) => {
+      document.getElementById('form-cliente').reset();
+      document.getElementById('cli-id').value = id || '';
+      if (id) {
+        const c = state.clientes.find(x => x.id === id);
+        if (c) {
+          document.getElementById('cli-tipo').value = c.tipo;
+          document.getElementById('cli-nome').value = c.nome;
+          document.getElementById('cli-doc').value = c.documento || '';
+          document.getElementById('cli-tel').value = c.telefone || '';
+          document.getElementById('cli-endereco').value = c.endereco || '';
+          document.getElementById('cli-equipamentos').value = c.equipamentos || '';
+          document.getElementById('cli-ultima-prev').value = c.ultimaPreventiva || '';
+          document.getElementById('cli-proxima-prev').value = c.proximaPreventiva || '';
+          document.getElementById('cli-monit-ativo').checked = !!c.monitoramentoAtivo;
+          document.getElementById('cli-monit-valor').value = c.monitoramentoValor || 0;
+          document.getElementById('cli-monit-dia').value = c.monitoramentoDia || 10;
+        }
+      }
+      abrirModal('modal-cliente');
+    };
+
+    window.salvarCliente = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('cli-id').value || `cli_${Date.now()}`;
+      const dados = {
+        tipo: document.getElementById('cli-tipo').value,
+        nome: document.getElementById('cli-nome').value.trim(),
+        documento: document.getElementById('cli-doc').value.trim(),
+        telefone: document.getElementById('cli-tel').value.replace(/\D/g, ''),
+        endereco: document.getElementById('cli-endereco').value.trim(),
+        equipamentos: document.getElementById('cli-equipamentos').value.trim(),
+        ultimaPreventiva: document.getElementById('cli-ultima-prev').value,
+        proximaPreventiva: document.getElementById('cli-proxima-prev').value,
+        monitoramentoAtivo: document.getElementById('cli-monit-ativo').checked,
+        monitoramentoValor: Number(document.getElementById('cli-monit-valor').value || 0),
+        monitoramentoDia: Number(document.getElementById('cli-monit-dia').value || 10),
+        atualizadoEm: new Date().toISOString()
+      };
+      await salvarDocumento('clientes', id, dados);
+      state.clientes = await carregarColecao('clientes');
+      fecharModal('modal-cliente');
+      renderClientes();
+      atualizarPainel();
+    };
+
+    window.renderClientes = () => {
+      const q = (document.getElementById('busca-cliente').value || '').toLowerCase();
+      const filtrados = state.clientes.filter(c =>
+        c.nome.toLowerCase().includes(q) || (c.documento || '').includes(q) || (c.equipamentos || '').toLowerCase().includes(q)
+      );
+      document.getElementById('lista-clientes').innerHTML = filtrados.map(c => `
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between gap-3">
+          <div>
+            <div class="flex justify-between items-start">
+              <h3 class="font-bold text-slate-800">${c.nome}</h3>
+              <span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold">${c.tipo}</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">${c.endereco || 'Endereço não informado'}</p>
+            ${c.monitoramentoAtivo ? `<p class="text-xs text-conecta-green font-semibold mt-1">★ Monitoramento: ${formatBRL(c.monitoramentoValor)}/mês (dia ${c.monitoramentoDia})</p>` : ''}
+            ${c.equipamentos ? `<p class="text-xs bg-emerald-50 text-conecta-emerald p-2 rounded mt-2"><strong>Base Instalada:</strong> ${c.equipamentos}</p>` : ''}
+            ${c.proximaPreventiva ? `<p class="text-xs text-amber-700 mt-1">Próxima preventiva: <strong>${c.proximaPreventiva}</strong></p>` : ''}
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t text-xs">
+            <a href="https://wa.me/55${c.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
+            ${state.perfil === 'admin' ? `<button onclick="abrirModalCliente('${c.id}')" class="text-slate-600 font-semibold hover:text-black">Editar</button>` : ''}
+          </div>
+        </div>
+      `).join('') || '<p class="text-sm text-slate-500">Nenhum cliente cadastrado.</p>';
+    };
+
+    // =========================================================================
+    // 5. MÓDULO PRODUTOS & KITS
+    // =========================================================================
+    window.abrirModalProduto = (id = null) => {
+      document.getElementById('form-produto').reset();
+      document.getElementById('prod-id').value = id || '';
+      if (id) {
+        const p = state.produtos.find(x => x.id === id);
+        if (p) {
+          document.getElementById('prod-tipo').value = p.tipo;
+          document.getElementById('prod-cat').value = p.categoria;
+          document.getElementById('prod-nome').value = p.nome;
+          document.getElementById('prod-custo').value = p.precoCusto || 0;
+          document.getElementById('prod-venda').value = p.precoVenda || 0;
+          document.getElementById('prod-estoque').value = p.estoqueAtual || 0;
+          document.getElementById('prod-minimo').value = p.estoqueMinimo || 0;
+        }
+      }
+      abrirModal('modal-produto');
+    };
+
+    window.salvarProduto = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('prod-id').value || `prod_${Date.now()}`;
+      const dados = {
+        tipo: document.getElementById('prod-tipo').value,
+        categoria: document.getElementById('prod-cat').value,
+        nome: document.getElementById('prod-nome').value.trim(),
+        precoCusto: Number(document.getElementById('prod-custo').value || 0),
+        precoVenda: Number(document.getElementById('prod-venda').value || 0),
+        estoqueAtual: Number(document.getElementById('prod-estoque').value || 0),
+        estoqueMinimo: Number(document.getElementById('prod-minimo').value || 0)
+      };
+      await salvarDocumento('produtos_kits', id, dados);
+      state.produtos = await carregarColecao('produtos_kits');
+      fecharModal('modal-produto');
+      renderProdutos();
+      atualizarPainel();
+    };
+
+    function renderProdutos() {
+      document.getElementById('lista-produtos').innerHTML = state.produtos.map(p => {
+        const margem = p.precoVenda - p.precoCusto;
+        return `
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
+          <div class="flex justify-between items-start">
+            <h3 class="font-bold text-slate-800 text-sm">${p.nome}</h3>
+            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 uppercase font-semibold">${p.tipo}</span>
+          </div>
+          <p class="text-xs text-slate-500">Custo: ${formatBRL(p.precoCusto)} • Lucro unit.: <strong class="text-conecta-green">${formatBRL(margem)}</strong></p>
+          <div class="flex justify-between items-center pt-2 border-t text-xs">
+            <span class="font-extrabold text-base text-slate-800">${formatBRL(p.precoVenda)}</span>
+            <div class="flex items-center gap-3">
+              ${p.tipo === 'produto' ? `<span class="${p.estoqueAtual <= p.estoqueMinimo ? 'text-red-600 font-bold' : 'text-slate-500'}">Est: ${p.estoqueAtual}</span>` : ''}
+              <button onclick="abrirModalProduto('${p.id}')" class="text-conecta-green font-semibold">Editar</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('') || '<p class="text-sm text-slate-500">Nenhum produto ou kit cadastrado.</p>';
+    }
+
+    // =========================================================================
+    // 6. MÓDULO ORÇAMENTOS
+    // =========================================================================
+    window.abrirModalOrcamento = (id = null) => {
+      if (!state.clientes.length) {
+        alert("Cadastre pelo menos um cliente antes de criar um orçamento.");
+        switchTab('clientes');
+        return;
+      }
+      document.getElementById('orc-cliente').innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+      document.getElementById('orc-catalogo-select').innerHTML = state.produtos.length
+        ? state.produtos.map(p => `<option value="${p.id}">${p.nome} (${formatBRL(p.precoVenda)})</option>`).join('')
+        : '<option value="">Sem catálogo</option>';
+
+      document.getElementById('form-orcamento').reset();
+      document.getElementById('orc-id').value = id || '';
+      const validadePadrao = new Date();
+      validadePadrao.setDate(validadePadrao.getDate() + 15);
+      document.getElementById('orc-validade').value = validadePadrao.toISOString().split('T')[0];
+
+      state.fotosOrcTemp = [];
+      state.itensOrcTemp = [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }];
+
+      if (id) {
+        const o = state.orcamentos.find(x => x.id === id);
+        if (o) {
+          document.getElementById('modal-orc-titulo').textContent = `Editar ${o.numero}`;
+          document.getElementById('orc-cliente').value = o.clienteId;
+          document.getElementById('orc-categoria').value = o.categoria || 'seguranca';
+          document.getElementById('orc-validade').value = o.validade;
+          document.getElementById('orc-status').value = o.status || 'enviado';
+          document.getElementById('orc-desconto').value = o.desconto || 0;
+          document.getElementById('orc-obs').value = o.obs || '';
+          state.itensOrcTemp = (o.itens && o.itens.length) ? o.itens.map(i => ({ ...i })) : [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }];
+          state.fotosOrcTemp = [...(o.fotos || [])];
+        }
+      } else {
+        document.getElementById('modal-orc-titulo').textContent = "Novo Orçamento";
+      }
+      renderItensOrcamento();
+      renderFotosOrcPreview();
+      abrirModal('modal-orcamento');
+    };
+
+    window.puxarDoCatalogo = () => {
+      const prodId = document.getElementById('orc-catalogo-select').value;
+      const p = state.produtos.find(x => x.id === prodId);
+      if (!p) return;
+      if (state.itensOrcTemp.length === 1 && !state.itensOrcTemp[0].descricao) state.itensOrcTemp = [];
+      state.itensOrcTemp.push({ descricao: p.nome, qtd: 1, custoUnit: p.precoCusto || 0, valorUnit: p.precoVenda || 0 });
+      renderItensOrcamento();
+    };
+
+    window.adicionarItemOrcamento = () => {
+      state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 });
+      renderItensOrcamento();
+    };
+
+    window.removerItemOrcamento = (idx) => {
+      state.itensOrcTemp.splice(idx, 1);
+      if (!state.itensOrcTemp.length) state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 });
+      renderItensOrcamento();
+    };
+
+    window.atualizarItemOrcamento = (idx, campo, valor) => {
+      state.itensOrcTemp[idx][campo] = campo === 'descricao' ? valor : Number(valor || 0);
+      recalcularTotalOrcamento();
+    };
+
+    function renderItensOrcamento() {
+      document.getElementById('orc-itens-lista').innerHTML = state.itensOrcTemp.map((item, idx) => `
+        <div class="grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-lg border">
+          <input type="text" placeholder="Descrição" value="${item.descricao}" oninput="atualizarItemOrcamento(${idx}, 'descricao', this.value)" required class="col-span-6 border rounded px-2 py-1 text-xs" />
+          <input type="number" min="1" value="${item.qtd}" oninput="atualizarItemOrcamento(${idx}, 'qtd', this.value)" class="col-span-2 border rounded px-2 py-1 text-xs text-center" />
+          <input type="number" min="0" step="0.01" value="${item.valorUnit}" oninput="atualizarItemOrcamento(${idx}, 'valorUnit', this.value)" class="col-span-3 border rounded px-2 py-1 text-xs text-right" />
+          <button type="button" onclick="removerItemOrcamento(${idx})" class="col-span-1 text-red-500 font-bold text-center">&times;</button>
+        </div>
+      `).join('');
+      recalcularTotalOrcamento();
+    }
+
+    window.recalcularTotalOrcamento = () => {
+      const subtotal = state.itensOrcTemp.reduce((acc, i) => acc + (Number(i.qtd || 0) * Number(i.valorUnit || 0)), 0);
+      const custoTotal = state.itensOrcTemp.reduce((acc, i) => acc + (Number(i.qtd || 0) * Number(i.custoUnit || 0)), 0);
+      const desconto = Number(document.getElementById('orc-desconto').value || 0);
+      const total = Math.max(0, subtotal - desconto);
+      const lucro = total - custoTotal;
+      document.getElementById('orc-total-display').textContent = formatBRL(total);
+      document.getElementById('orc-lucro-display').textContent = formatBRL(lucro);
+      return { total, lucro };
+    };
+
+    window.processarFotosOrcamento = (event) => {
+      Array.from(event.target.files).forEach(file => {
+        comprimirImagem(file, (b64) => { state.fotosOrcTemp.push(b64); renderFotosOrcPreview(); });
+      });
+    };
+    function renderFotosOrcPreview() {
+      document.getElementById('orc-fotos-preview').innerHTML = state.fotosOrcTemp.map((src, i) => `
+        <div class="relative"><img src="${src}" class="h-14 w-14 object-cover rounded border" />
+        <button type="button" onclick="removerFotoOrcTemp(${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs">×</button></div>`).join('');
+    }
+    window.removerFotoOrcTemp = (i) => { state.fotosOrcTemp.splice(i, 1); renderFotosOrcPreview(); };
+
+    window.salvarOrcamento = async (e) => {
+      e.preventDefault();
+      const idExistente = document.getElementById('orc-id').value;
+      const id = idExistente || `orc_${Date.now()}`;
+      const antigo = state.orcamentos.find(x => x.id === idExistente);
+      const numero = antigo ? antigo.numero : await proximoNumero('ultimoOrcamento', 'ORC');
+      const clienteId = document.getElementById('orc-cliente').value;
+      const cliente = state.clientes.find(c => c.id === clienteId);
+      const { total, lucro } = recalcularTotalOrcamento();
+
+      const dados = {
+        numero, clienteId,
+        clienteNome: cliente ? cliente.nome : 'Cliente',
+        clienteTelefone: cliente ? (cliente.telefone || '') : '',
+        categoria: document.getElementById('orc-categoria').value,
+        validade: document.getElementById('orc-validade').value,
+        status: document.getElementById('orc-status').value,
+        itens: state.itensOrcTemp.filter(i => i.descricao.trim() !== ''),
+        desconto: Number(document.getElementById('orc-desconto').value || 0),
+        valorTotal: total,
+        lucroEstimado: lucro,
+        obs: document.getElementById('orc-obs').value.trim(),
+        fotos: state.fotosOrcTemp,
+        osGeradaId: antigo ? (antigo.osGeradaId || null) : null,
+        osGeradaNumero: antigo ? (antigo.osGeradaNumero || null) : null,
+        atualizadoEm: new Date().toISOString()
+      };
+      await salvarDocumento('orcamentos', id, dados);
+      state.orcamentos = await carregarColecao('orcamentos');
+      fecharModal('modal-orcamento');
+      renderOrcamentos();
+      atualizarPainel();
+    };
+
+    window.aprovarEGerarOS = async (orcId) => {
+      const orc = state.orcamentos.find(x => x.id === orcId);
+      if (!orc || orc.osGeradaId) return;
+      if (!confirm(`Aprovar ${orc.numero} (${formatBRL(orc.valorTotal)}) e gerar Ordem de Serviço?`)) return;
+
+      const osId = `os_${Date.now()}`;
+      const osNumero = await proximoNumero('ultimaOS', 'OS');
+      const resumoItens = (orc.itens || []).map(i => `• ${i.qtd}x ${i.descricao} (${formatBRL(i.valorUnit)})`).join('\n');
+
+      await salvarDocumento('ordens_servico', osId, {
+        numero: osNumero, orcamentoId: orc.id, clienteId: orc.clienteId, clienteNome: orc.clienteNome,
+        categoria: orc.categoria || 'seguranca', dataAgendamento: new Date().toISOString().split('T')[0],
+        status: 'agendada', garantiaDias: 90, tecnico: '', valorTotal: orc.valorTotal || 0,
+        relato: `Aprovado via ${orc.numero}:\n${resumoItens}${orc.obs ? '\nObs: ' + orc.obs : ''}`,
+        laudo: '', checklist: [], fotosAntes: [...(orc.fotos || [])], fotosDepois: [], assinatura: '', lancadoFinanceiro: false
+      });
+      await salvarDocumento('orcamentos', orc.id, { status: 'aprovado', osGeradaId: osId, osGeradaNumero: osNumero });
+
+      state.os = await carregarColecao('ordens_servico');
+      state.orcamentos = await carregarColecao('orcamentos');
+      renderOrcamentos(); renderOS(); atualizarPainel();
+      alert(`${osNumero} gerada com sucesso!`);
+      switchTab('os');
+    };
+
+    window.renderOrcamentos = () => {
+      const filtro = document.getElementById('filtro-orc-status').value;
+      const lista = state.orcamentos.filter(o => filtro === 'todos' || o.status === filtro);
+      document.getElementById('lista-orcamentos').innerHTML = lista.map(o => {
+        const msgWpp = encodeURIComponent(`Olá ${o.clienteNome}, segue a proposta ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal)}. Validade: ${o.validade}.`);
+        return `
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-conecta-emerald">${o.numero}</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 font-semibold">${(o.status || 'enviado').toUpperCase()}</span>
+          </div>
+          <h3 class="font-bold text-slate-800">${o.clienteNome}</h3>
+          <p class="text-xs text-slate-500">${(o.itens || []).length} item(ns) • Lucro est.: <strong class="text-conecta-green">${formatBRL(o.lucroEstimado)}</strong></p>
+          ${o.osGeradaNumero ? `<p class="text-xs text-conecta-green font-semibold">✓ Convertido em ${o.osGeradaNumero}</p>` : ''}
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
+            <span class="text-base font-extrabold">${formatBRL(o.valorTotal)}</span>
+            <div class="flex flex-wrap gap-1.5">
+              ${!o.osGeradaId ? `<button onclick="aprovarEGerarOS('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-dark text-conecta-lime font-semibold">Aprovar e Gerar OS</button>` : ''}
+              <a href="https://wa.me/55${o.clienteTelefone || ''}?text=${msgWpp}" target="_blank" class="px-2.5 py-1.5 rounded bg-emerald-50 text-conecta-emerald font-semibold">WhatsApp</a>
+              <button onclick="imprimirOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-slate-100 font-semibold">PDF</button>
+              <button onclick="abrirModalOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-green text-white font-semibold">Editar</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('') || '<p class="text-sm text-slate-500">Nenhum orçamento encontrado.</p>';
+    };
+
+    window.imprimirOrcamento = (id) => {
+      const o = state.orcamentos.find(x => x.id === id);
+      if (!o) return;
+      const area = document.getElementById('print-area');
+      const linhas = (o.itens || []).map(i => `<tr class="border-b"><td class="py-2">${i.descricao}</td><td class="py-2 text-center">${i.qtd}</td><td class="py-2 text-right">${formatBRL(i.valorUnit)}</td><td class="py-2 text-right font-semibold">${formatBRL(i.qtd * i.valorUnit)}</td></tr>`).join('');
+      area.innerHTML = `
+        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
+          <div class="flex items-center gap-3">
+            <img src="logo.jpg" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
+            <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
+          </div>
+          <div class="text-right"><p class="font-bold text-lg">ORÇAMENTO ${o.numero}</p><p class="text-xs">Validade: ${o.validade || '-'}</p></div>
+        </div>
+        <p class="mb-3"><strong>Cliente:</strong> ${o.clienteNome}</p>
+        <table class="w-full text-sm border-collapse mb-4">
+          <thead><tr class="border-b-2 border-black text-left"><th class="py-2">Descrição</th><th class="py-2 text-center">Qtd</th><th class="py-2 text-right">Unitário</th><th class="py-2 text-right">Subtotal</th></tr></thead>
+          <tbody>${linhas}</tbody>
+        </table>
+        <p class="text-right text-xl font-bold">Total: ${formatBRL(o.valorTotal)}</p>
+        ${o.obs ? `<div class="mt-4 p-3 border rounded text-sm"><strong>Observações:</strong><br/>${o.obs}</div>` : ''}
+        ${(o.fotos && o.fotos.length) ? `<div class="mt-4 grid grid-cols-3 gap-2">${o.fotos.map(f => `<img src="${f}" class="w-full h-32 object-cover border" />`).join('')}</div>` : ''}
+      `;
+      area.classList.remove('hidden'); window.print(); area.classList.add('hidden');
+    };
+
+    // =========================================================================
+    // 7. MÓDULO AGENDA & OS (ANTES/DEPOIS, GARANTIA, CHECKLIST, FINANCEIRO)
+    // =========================================================================
+    window.abrirModalOS = (id = null) => {
+      if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
+      document.getElementById('os-cliente').innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+      document.getElementById('form-os').reset();
+      document.getElementById('os-id').value = id || '';
+      document.getElementById('os-data').value = new Date().toISOString().split('T')[0];
+      document.getElementById('os-garantia-dias').value = 90;
+      document.querySelectorAll('.os-chk').forEach(c => c.checked = false);
+      state.fotosOSAntes = []; state.fotosOSDepois = [];
+      limparAssinatura();
+
+      if (id) {
+        const o = state.os.find(x => x.id === id);
+        if (o) {
+          document.getElementById('modal-os-titulo').textContent = `Editar ${o.numero}`;
+          document.getElementById('os-cliente').value = o.clienteId;
+          document.getElementById('os-categoria').value = o.categoria;
+          document.getElementById('os-data').value = o.dataAgendamento;
+          document.getElementById('os-status').value = o.status;
+          document.getElementById('os-garantia-dias').value = o.garantiaDias || 90;
+          document.getElementById('os-tecnico').value = o.tecnico || '';
+          document.getElementById('os-valor').value = o.valorTotal || 0;
+          document.getElementById('os-relato').value = o.relato || '';
+          document.getElementById('os-laudo').value = o.laudo || '';
+          (o.checklist || []).forEach(item => {
+            const el = Array.from(document.querySelectorAll('.os-chk')).find(c => c.value === item);
+            if (el) el.checked = true;
+          });
+          state.fotosOSAntes = [...(o.fotosAntes || [])];
+          state.fotosOSDepois = [...(o.fotosDepois || [])];
+        }
+      } else {
+        document.getElementById('modal-os-titulo').textContent = "Nova Ordem de Serviço";
+      }
+      renderFotosOSPreview();
+      abrirModal('modal-os');
+    };
+    window.editarOS = (id) => abrirModalOS(id);
+
+    window.processarFotosOS = (event, tipo) => {
+      Array.from(event.target.files).forEach(file => {
+        comprimirImagem(file, (b64) => {
+          if (tipo === 'antes') state.fotosOSAntes.push(b64);
+          else state.fotosOSDepois.push(b64);
+          renderFotosOSPreview();
+        });
+      });
+    };
+
+    function renderFotosOSPreview() {
+      document.getElementById('os-fotos-antes').innerHTML = state.fotosOSAntes.map((s, i) => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
+      document.getElementById('os-fotos-depois').innerHTML = state.fotosOSDepois.map((s, i) => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
+    }
+
+    // Assinatura
+    const sigCanvas = document.getElementById('signature-pad');
+    const sigCtx = sigCanvas.getContext('2d');
+    let desenhando = false; sigCtx.lineWidth = 2; sigCtx.lineCap = 'round';
+    function getPos(e) {
+      const r = sigCanvas.getBoundingClientRect();
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (cx - r.left) * (sigCanvas.width / r.width), y: (cy - r.top) * (sigCanvas.height / r.height) };
+    }
+    sigCanvas.addEventListener('mousedown', e => { desenhando = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); });
+    sigCanvas.addEventListener('mousemove', e => { if (!desenhando) return; const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); });
+    window.addEventListener('mouseup', () => desenhando = false);
+    sigCanvas.addEventListener('touchstart', e => { desenhando = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); }, { passive: false });
+    sigCanvas.addEventListener('touchmove', e => { if (!desenhando) return; e.preventDefault(); const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); }, { passive: false });
+    window.addEventListener('touchend', () => desenhando = false);
+    window.limparAssinatura = () => sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+
+    window.salvarOS = async (e) => {
+      e.preventDefault();
+      const idExistente = document.getElementById('os-id').value;
+      const id = idExistente || `os_${Date.now()}`;
+      const antiga = state.os.find(x => x.id === idExistente);
+      const numero = antiga ? antiga.numero : await proximoNumero('ultimaOS', 'OS');
+      const clienteId = document.getElementById('os-cliente').value;
+      const cliente = state.clientes.find(c => c.id === clienteId);
+      const dataAg = document.getElementById('os-data').value;
+      const garantiaDias = Number(document.getElementById('os-garantia-dias').value || 90);
+      const dGarantia = new Date(dataAg + 'T12:00:00');
+      dGarantia.setDate(dGarantia.getDate() + garantiaDias);
+
+      const checklist = Array.from(document.querySelectorAll('.os-chk:checked')).map(c => c.value);
+
+      const dados = {
+        numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente',
+        categoria: document.getElementById('os-categoria').value,
+        dataAgendamento: dataAg,
+        status: document.getElementById('os-status').value,
+        garantiaDias,
+        garantiaAte: dGarantia.toISOString().split('T')[0],
+        tecnico: document.getElementById('os-tecnico').value.trim(),
+        valorTotal: Number(document.getElementById('os-valor').value || 0),
+        relato: document.getElementById('os-relato').value.trim(),
+        laudo: document.getElementById('os-laudo').value.trim(),
+        checklist,
+        fotosAntes: state.fotosOSAntes,
+        fotosDepois: state.fotosOSDepois,
+        assinatura: sigCanvas.toDataURL('image/png'),
+        lancadoFinanceiro: antiga ? !!antiga.lancadoFinanceiro : false,
+        atualizadoEm: new Date().toISOString()
+      };
+
+      await salvarDocumento('ordens_servico', id, dados);
+      state.os = await carregarColecao('ordens_servico');
+      fecharModal('modal-os');
+      renderOS(); atualizarPainel();
+    };
+
+    window.lancarOSNoFinanceiro = async (osId) => {
+      const o = state.os.find(x => x.id === osId);
+      if (!o || o.lancadoFinanceiro) return;
+      const parcelas = Math.max(1, Number(prompt(`Lançar ${o.numero} (${formatBRL(o.valorTotal)}) no Contas a Receber.\nQuantas parcelas?`, "1") || 1));
+      const valorParcela = Number((o.valorTotal / parcelas).toFixed(2));
+      for (let i = 1; i <= parcelas; i++) {
+        const d = new Date();
+        d.setMonth(d.getMonth() + (i - 1));
+        await salvarDocumento('financeiro', `fin_${Date.now()}_${i}`, {
+          descricao: `${o.numero} - ${o.clienteNome} (${i}/${parcelas})`,
+          tipo: 'receita', valor: valorParcela,
+          vencimento: d.toISOString().split('T')[0], status: 'pendente', origemId: o.id
+        });
+      }
+      await salvarDocumento('ordens_servico', o.id, { lancadoFinanceiro: true });
+      state.os = await carregarColecao('ordens_servico');
+      state.financeiro = await carregarColecao('financeiro');
+      renderOS(); renderFinanceiro(); atualizarPainel();
+      alert(`${parcelas} parcela(s) lançada(s) no Financeiro!`);
+    };
+
+    window.renderOS = () => {
+      const fStatus = document.getElementById('filtro-os-status').value;
+      const fCat = document.getElementById('filtro-os-categoria').value;
+      const lista = state.os.filter(o => (fStatus === 'todos' || o.status === fStatus) && (fCat === 'todos' || o.categoria === fCat));
+      document.getElementById('lista-os').innerHTML = lista.map(o => `
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-conecta-emerald">${o.numero}</span>
+            <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${o.status === 'concluida' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${o.status.replace('_', ' ').toUpperCase()}
+            </span>
+          </div>
+          <h3 class="font-bold text-slate-800">${o.clienteNome}</h3>
+          <p class="text-xs text-slate-500">${o.categoria === 'seguranca' ? 'Segurança/CFTV' : 'Climatização'} • Data: ${o.dataAgendamento} • Garantia até: <strong>${o.garantiaAte || '-'}</strong></p>
+          <p class="text-xs text-slate-700 whitespace-pre-line">${o.relato || ''}</p>
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
+            <span class="font-extrabold text-slate-800">${formatBRL(o.valorTotal)}</span>
+            <div class="flex flex-wrap gap-1.5">
+              ${state.perfil === 'admin' && !o.lancadoFinanceiro && o.valorTotal > 0 ? `<button onclick="lancarOSNoFinanceiro('${o.id}')" class="px-2.5 py-1 rounded bg-conecta-dark text-conecta-lime font-semibold">Lançar Financeiro</button>` : ''}
+              <button onclick="imprimirOS('${o.id}')" class="px-2.5 py-1 rounded bg-slate-100 font-semibold">PDF</button>
+              <button onclick="editarOS('${o.id}')" class="px-2.5 py-1 rounded bg-conecta-green text-white font-semibold">Editar</button>
+            </div>
+          </div>
+        </div>
+      `).join('') || '<p class="text-sm text-slate-500">Nenhuma OS encontrada.</p>';
+    };
+
+    window.imprimirOS = (id) => {
+      const o = state.os.find(x => x.id === id);
+      if (!o) return;
+      const area = document.getElementById('print-area');
+      area.innerHTML = `
+        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
+          <div class="flex items-center gap-3">
+            <img src="logo.jpg" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
+            <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
+          </div>
+          <div class="text-right"><p class="font-bold text-lg">${o.numero}</p><p class="text-xs">Data: ${o.dataAgendamento} | Garantia até: ${o.garantiaAte || '-'}</p></div>
+        </div>
+        <p><strong>Cliente:</strong> ${o.clienteNome} | <strong>Técnico:</strong> ${o.tecnico || '-'}</p>
+        <div class="mt-3 p-3 border rounded whitespace-pre-line text-sm"><strong>Serviço / Itens:</strong><br/>${o.relato || '-'}</div>
+        ${(o.checklist && o.checklist.length) ? `<div class="mt-3 p-3 border rounded text-xs"><strong>Checklist:</strong> ${o.checklist.join(' • ')}</div>` : ''}
+        <div class="mt-3 p-3 border rounded whitespace-pre-line text-sm"><strong>Laudo Técnico:</strong><br/>${o.laudo || '-'}</div>
+        <p class="mt-4 text-right text-lg font-bold">Total: ${formatBRL(o.valorTotal)}</p>
+        ${(o.fotosAntes && o.fotosAntes.length) ? `<p class="font-bold text-xs mt-3">FOTOS ANTES:</p><div class="grid grid-cols-3 gap-2 mt-1">${o.fotosAntes.map(f => `<img src="${f}" class="w-full h-28 object-cover border" />`).join('')}</div>` : ''}
+        ${(o.fotosDepois && o.fotosDepois.length) ? `<p class="font-bold text-xs mt-3">FOTOS DEPOIS:</p><div class="grid grid-cols-3 gap-2 mt-1">${o.fotosDepois.map(f => `<img src="${f}" class="w-full h-28 object-cover border" />`).join('')}</div>` : ''}
+        <div class="mt-8 text-center">
+          ${o.assinatura ? `<img src="${o.assinatura}" class="h-16 mx-auto border-b border-black" />` : '<div class="h-14 border-b border-black w-64 mx-auto"></div>'}
+          <p class="text-xs mt-1">Assinatura do Cliente</p>
+        </div>
+      `;
+      area.classList.remove('hidden'); window.print(); area.classList.add('hidden');
+    };
+
+    // =========================================================================
+    // 8. MÓDULO FINANCEIRO (BAIXA, MENSALIDADES EM LOTE E WHATSAPP)
+    // =========================================================================
+    window.abrirModalFinanceiro = () => {
+      document.getElementById('form-financeiro').reset();
+      document.getElementById('fin-vencimento').value = new Date().toISOString().split('T')[0];
+      abrirModal('modal-financeiro');
+    };
+
+    window.salvarFinanceiro = async (e) => {
+      e.preventDefault();
+      await salvarDocumento('financeiro', `fin_${Date.now()}`, {
+        descricao: document.getElementById('fin-desc').value.trim(),
+        tipo: document.getElementById('fin-tipo').value,
+        valor: Number(document.getElementById('fin-valor').value || 0),
+        vencimento: document.getElementById('fin-vencimento').value,
+        status: document.getElementById('fin-status').value
+      });
+      state.financeiro = await carregarColecao('financeiro');
+      fecharModal('modal-financeiro');
+      renderFinanceiro(); atualizarPainel();
+    };
+
+    window.darBaixaFinanceiro = async (id) => {
+      await salvarDocumento('financeiro', id, { status: 'pago', dataPagamento: new Date().toISOString().split('T')[0] });
+      state.financeiro = await carregarColecao('financeiro');
+      renderFinanceiro(); atualizarPainel();
+    };
+
+    window.gerarMensalidadesLote = async () => {
+      const ativos = state.clientes.filter(c => c.monitoramentoAtivo && c.monitoramentoValor > 0);
+      if (!ativos.length) { alert("Nenhum cliente com contrato de monitoramento ativo."); return; }
+      const hoje = new Date();
+      const mesRef = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      if (!confirm(`Gerar mensalidades de monitoramento (${mesRef}) para ${ativos.length} cliente(s)?`)) return;
+      for (const c of ativos) {
+        const dia = String(c.monitoramentoDia || 10).padStart(2, '0');
+        await salvarDocumento('financeiro', `mens_${mesRef}_${c.id}`, {
+          descricao: `Monitoramento ${mesRef} - ${c.nome}`,
+          tipo: 'receita', valor: c.monitoramentoValor, vencimento: `${mesRef}-${dia}`,
+          status: 'pendente', clienteTelefone: c.telefone || ''
+        });
+      }
+      state.financeiro = await carregarColecao('financeiro');
+      renderFinanceiro(); atualizarPainel();
+      alert("Mensalidades geradas com sucesso!");
+    };
+
+    window.renderFinanceiro = () => {
+      const fTipo = document.getElementById('filtro-fin-tipo').value;
+      const fStatus = document.getElementById('filtro-fin-status').value;
+      const lista = state.financeiro.filter(f => (fTipo === 'todos' || f.tipo === fTipo) && (fStatus === 'todos' || f.status === fStatus));
+      document.getElementById('lista-financeiro').innerHTML = lista.length
+        ? lista.map(f => `
+            <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 border-b text-sm">
+              <div>
+                <span class="font-semibold text-slate-800">${f.descricao}</span>
+                <p class="text-xs text-slate-400">Vencimento: ${f.vencimento || '-'} • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-600'}">${(f.status || 'pendente').toUpperCase()}</strong></p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-bold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-600'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
+                ${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">Baixar</button>` : ''}
+              </div>
+            </div>`).join('')
+        : '<p class="p-4 text-sm text-slate-500">Nenhum lançamento encontrado.</p>';
+    };
+
+    // =========================================================================
+    // 9. CONFIGURAÇÕES E BACKUP JSON
+    // =========================================================================
+    window.salvarConfig = () => {
+      state.config = {
+        nome: document.getElementById('cfg-nome').value,
+        cnpj: document.getElementById('cfg-cnpj').value,
+        tel: document.getElementById('cfg-tel').value,
+        cidade: document.getElementById('cfg-cidade').value
+      };
+      localStorage.setItem('conecta_config', JSON.stringify(state.config));
+      alert("Configurações salvas!");
+    };
+
+    window.exportarBackup = () => {
+      const blob = new Blob([JSON.stringify({
+        clientes: state.clientes, produtos: state.produtos, orcamentos: state.orcamentos,
+        os: state.os, financeiro: state.financeiro, config: state.config
+      }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `backup_conecta_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+    };
+
+    window.restaurarBackup = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.clientes) for (const x of data.clientes) await salvarDocumento('clientes', x.id, x);
+          if (data.produtos) for (const x of data.produtos) await salvarDocumento('produtos_kits', x.id, x);
+          if (data.orcamentos) for (const x of data.orcamentos) await salvarDocumento('orcamentos', x.id, x);
+          if (data.os) for (const x of data.os) await salvarDocumento('ordens_servico', x.id, x);
+          if (data.financeiro) for (const x of data.financeiro) await salvarDocumento('financeiro', x.id, x);
+          alert("Backup restaurado com sucesso!");
+          init();
+        } catch (err) { alert("Arquivo JSON inválido."); }
+      };
+      reader.readAsText(file);
+    };
+
+    async function init() {
+      const cfg = localStorage.getItem('conecta_config');
+      if (cfg) {
+        state.config = JSON.parse(cfg);
+        document.getElementById('cfg-nome').value = state.config.nome || '';
+        document.getElementById('cfg-cnpj').value = state.config.cnpj || '';
+        document.getElementById('cfg-tel').value = state.config.tel || '';
+        document.getElementById('cfg-cidade').value = state.config.cidade || '';
+      }
+      state.clientes = await carregarColecao('clientes');
+      state.produtos = await carregarColecao('produtos_kits');
+      state.os = await carregarColecao('ordens_servico');
+      state.orcamentos = await carregarColecao('orcamentos');
+      state.financeiro = await carregarColecao('financeiro');
+      renderClientes(); renderProdutos(); renderOrcamentos(); renderOS(); renderFinanceiro(); atualizarPainel();
+    }
+    init();
+  </script>
+</body>
+</html>
