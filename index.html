@@ -46,6 +46,34 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
 
+  <!-- ==================== TELA DE LOGIN ==================== -->
+  <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 no-print">
+    <div class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <img src="logo.jpg" alt="CONECTA" class="h-24 mx-auto object-contain rounded-xl bg-black p-2 border border-conecta-green/30" onerror="this.style.display='none'" />
+        <h1 class="text-2xl font-extrabold text-conecta-green tracking-wide">CONECTA</h1>
+        <p class="text-xs text-slate-400 uppercase tracking-widest">Segurança e Climatização</p>
+      </div>
+
+      <form id="form-login" onsubmit="fazerLogin(event)" class="space-y-4 text-sm">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">E-mail</label>
+          <input id="login-email" type="email" required placeholder="seu@email.com"
+            class="w-full bg-[#0A0F0D] border border-slate-700 text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-conecta-green" />
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Senha</label>
+          <input id="login-senha" type="password" required placeholder="••••••••"
+            class="w-full bg-[#0A0F0D] border border-slate-700 text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-conecta-green" />
+        </div>
+        <p id="login-erro" class="text-xs text-red-400 hidden"></p>
+        <button id="btn-entrar" type="submit" class="w-full bg-conecta-green hover:bg-conecta-emerald text-white font-bold py-2.5 rounded-lg transition shadow-lg">
+          Entrar no Sistema
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- HEADER SUPERIOR -->
   <header class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 no-print">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
@@ -67,13 +95,13 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <select id="perfil-acesso" onchange="alterarPerfil()" class="bg-[#15201c] text-xs text-conecta-lime border border-conecta-green/40 rounded-lg px-2.5 py-1.5 font-semibold">
-          <option value="admin">Perfil: Administrador</option>
-          <option value="tecnico">Perfil: Técnico em Campo</option>
-        </select>
+        <span id="usuario-logado" class="text-xs text-conecta-lime font-semibold hidden sm:inline"></span>
         <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium">
-          Modo Local
+          Conectando...
         </span>
+        <button onclick="fazerLogout()" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 font-semibold">
+          Sair
+        </button>
       </div>
     </div>
 
@@ -116,7 +144,6 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Próximas OS -->
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
           <div class="flex items-center justify-between mb-4">
             <h2 class="font-bold text-slate-800 text-base">Próximas Ordens de Serviço</h2>
@@ -125,7 +152,6 @@
           <div id="painel-os-lista" class="space-y-2 text-sm text-slate-500"></div>
         </div>
 
-        <!-- Alertas de Preventiva e Estoque -->
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
           <h2 class="font-bold text-slate-800 text-base">Alertas de Manutenção Preventiva (Climatização/CFTV)</h2>
           <div id="painel-preventivas" class="space-y-2 text-sm text-slate-500"></div>
@@ -322,7 +348,6 @@
           <input id="cli-endereco" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
         </div>
 
-        <!-- Contrato de Monitoramento -->
         <div class="border rounded-xl p-3 bg-emerald-50/60 space-y-2">
           <label class="flex items-center gap-2 font-semibold text-conecta-emerald">
             <input type="checkbox" id="cli-monit-ativo" class="rounded" />
@@ -340,7 +365,6 @@
           </div>
         </div>
 
-        <!-- Base Instalada / Equipamentos -->
         <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
           <label class="font-semibold text-slate-700 block">Base Instalada (Ar-condicionado / CFTV / Cloud)</label>
           <textarea id="cli-equipamentos" rows="2" placeholder="Ex: 2x Split 12.000 BTUs LG (Sala/Quarto); DVR 8 Canais Intelbras (Cloud ID: 998877)" class="w-full border bg-white rounded-lg px-3 py-2"></textarea>
@@ -458,7 +482,6 @@
           </div>
         </div>
 
-        <!-- Puxar do Catálogo + Itens -->
         <div class="border rounded-xl p-3 bg-slate-50 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <label class="font-semibold text-slate-700">Equipamentos, Serviços e Kits</label>
@@ -490,7 +513,6 @@
           <textarea id="orc-obs" rows="2" placeholder="Ex: 50% entrada + 50% na entrega. Garantia de 12 meses nos equipamentos." class="w-full border rounded-lg px-3 py-2"></textarea>
         </div>
 
-        <!-- FOTOS DO LOCAL -->
         <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
           <div class="flex items-center justify-between">
             <label class="font-semibold text-slate-700">Fotos do Local</label>
@@ -559,7 +581,6 @@
           <textarea id="os-relato" rows="2" class="w-full border rounded-lg px-3 py-2"></textarea>
         </div>
 
-        <!-- Checklist Técnico -->
         <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
           <label class="font-semibold text-slate-700 block">Checklist de Execução</label>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -575,7 +596,6 @@
           <textarea id="os-laudo" rows="2" class="w-full border rounded-lg px-3 py-2"></textarea>
         </div>
 
-        <!-- FOTOS ANTES E DEPOIS -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
             <label class="font-semibold text-slate-700 block text-xs">Fotos ANTES</label>
@@ -589,7 +609,6 @@
           </div>
         </div>
 
-        <!-- ASSINATURA DIGITAL -->
         <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
           <div class="flex items-center justify-between">
             <label class="font-semibold text-slate-700">Assinatura do Cliente</label>
@@ -658,9 +677,10 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, doc, setDoc, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     // =========================================================================
-    // 1. CONFIGURAÇÃO FIREBASE
+    // 1. CONFIGURAÇÃO FIREBASE E ADMINISTRADORES (AJUSTE AQUI)
     // =========================================================================
     const firebaseConfig = {
       apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
@@ -671,21 +691,17 @@
       appId: "1:1028592894211:web:d93f3651e676a4de8e6936"
     };
 
-    let db = null;
-    if (firebaseConfig.apiKey !== "SUA_API_KEY") {
-      try {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        const badge = document.getElementById('db-status');
-        badge.textContent = "Firebase Online";
-        badge.className = "text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium";
-      } catch (e) {
-        console.error("Erro Firebase:", e);
-      }
-    }
+    // E-mails com acesso total (Administrador). Qualquer outro e-mail entra como Técnico.
+    const ADMIN_EMAILS = [
+      "admin@conecta.com"
+    ];
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
     const state = {
-      perfil: 'admin',
+      perfil: 'tecnico',
       clientes: [],
       produtos: [],
       os: [],
@@ -701,44 +717,83 @@
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     // =========================================================================
-    // 2. PERSISTÊNCIA (Firestore + Fallback LocalStorage)
+    // 2. AUTENTICAÇÃO (LOGIN / LOGOUT / CONTROLE DE PERFIL)
+    // =========================================================================
+    window.fazerLogin = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-senha').value;
+      const erroEl = document.getElementById('login-erro');
+      const btn = document.getElementById('btn-entrar');
+      erroEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.textContent = "Verificando...";
+
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+      } catch (err) {
+        erroEl.textContent = "E-mail ou senha inválidos.";
+        erroEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Entrar no Sistema";
+      }
+    };
+
+    window.fazerLogout = async () => {
+      if (confirm("Deseja sair do sistema?")) {
+        await signOut(auth);
+      }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      const loginScreen = document.getElementById('login-screen');
+      const badge = document.getElementById('db-status');
+
+      if (user) {
+        loginScreen.classList.add('hidden');
+        const isAdmin = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase());
+        state.perfil = isAdmin ? 'admin' : 'tecnico';
+
+        document.getElementById('usuario-logado').textContent = `${user.email} (${isAdmin ? 'Admin' : 'Técnico'})`;
+        badge.textContent = "Firebase Online";
+        badge.className = "text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium";
+
+        document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
+          el.style.display = isAdmin ? '' : 'none';
+        });
+
+        switchTab('painel');
+        init();
+      } else {
+        loginScreen.classList.remove('hidden');
+        document.getElementById('form-login').reset();
+      }
+    });
+
+    // =========================================================================
+    // 3. PERSISTÊNCIA NO FIRESTORE
     // =========================================================================
     async function carregarColecao(nome) {
-      if (db) {
-        const snap = await getDocs(collection(db, nome));
-        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      }
-      return JSON.parse(localStorage.getItem(`conecta_${nome}`) || "[]");
+      const snap = await getDocs(collection(db, nome));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
 
     async function salvarDocumento(nome, id, dados) {
-      if (db) {
-        await setDoc(doc(db, nome, id), dados, { merge: true });
-      } else {
-        const lista = JSON.parse(localStorage.getItem(`conecta_${nome}`) || "[]");
-        const idx = lista.findIndex(x => x.id === id);
-        if (idx >= 0) lista[idx] = { id, ...dados };
-        else lista.push({ id, ...dados });
-        localStorage.setItem(`conecta_${nome}`, JSON.stringify(lista));
-      }
+      await setDoc(doc(db, nome, id), dados, { merge: true });
     }
 
     async function proximoNumero(chave, prefixo) {
       const ano = new Date().getFullYear();
-      if (db) {
-        const ref = doc(db, "configuracoes", "contadores");
-        const novo = await runTransaction(db, async (tx) => {
-          const snap = await tx.get(ref);
-          const atual = snap.exists() ? (snap.data()[chave] || 0) : 0;
-          const prox = atual + 1;
-          tx.set(ref, { [chave]: prox }, { merge: true });
-          return prox;
-        });
-        return `${prefixo}-${ano}-${String(novo).padStart(4, '0')}`;
-      }
-      const atual = Number(localStorage.getItem(`conecta_seq_${chave}`) || "0") + 1;
-      localStorage.setItem(`conecta_seq_${chave}`, String(atual));
-      return `${prefixo}-${ano}-${String(atual).padStart(4, '0')}`;
+      const ref = doc(db, "configuracoes", "contadores");
+      const novo = await runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
+        const atual = snap.exists() ? (snap.data()[chave] || 0) : 0;
+        const prox = atual + 1;
+        tx.set(ref, { [chave]: prox }, { merge: true });
+        return prox;
+      });
+      return `${prefixo}-${ano}-${String(novo).padStart(4, '0')}`;
     }
 
     function comprimirImagem(file, callback) {
@@ -760,16 +815,8 @@
     }
 
     // =========================================================================
-    // 3. PERFIS DE ACESSO, NAVEGAÇÃO E PAINEL
+    // 4. NAVEGAÇÃO E PAINEL
     // =========================================================================
-    window.alterarPerfil = () => {
-      state.perfil = document.getElementById('perfil-acesso').value;
-      document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
-        el.style.display = state.perfil === 'admin' ? '' : 'none';
-      });
-      switchTab('painel');
-    };
-
     window.switchTab = (tabName) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabName}`).classList.add('active');
@@ -812,7 +859,6 @@
             </div>`).join('')
         : "Nenhuma OS pendente.";
 
-      // Alertas de Preventiva (até 30 dias à frente ou vencidas)
       const limite = new Date();
       limite.setDate(limite.getDate() + 30);
       const limiteStr = limite.toISOString().split('T')[0];
@@ -831,7 +877,6 @@
           }).join('')
         : '<p class="text-xs text-slate-400">Nenhuma manutenção preventiva vencendo nos próximos 30 dias.</p>';
 
-      // Alertas de Estoque Baixo
       const baixo = state.produtos.filter(p => p.tipo === 'produto' && Number(p.estoqueAtual) <= Number(p.estoqueMinimo));
       document.getElementById('painel-estoque').innerHTML = baixo.length
         ? baixo.map(p => `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-200"><strong>${p.nome}:</strong> ${p.estoqueAtual} un. (mínimo: ${p.estoqueMinimo})</div>`).join('')
@@ -839,7 +884,7 @@
     }
 
     // =========================================================================
-    // 4. MÓDULO CLIENTES
+    // 5. MÓDULO CLIENTES
     // =========================================================================
     window.abrirModalCliente = (id = null) => {
       document.getElementById('form-cliente').reset();
@@ -913,7 +958,7 @@
     };
 
     // =========================================================================
-    // 5. MÓDULO PRODUTOS & KITS
+    // 6. MÓDULO PRODUTOS & KITS
     // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
@@ -974,7 +1019,7 @@
     }
 
     // =========================================================================
-    // 6. MÓDULO ORÇAMENTOS
+    // 7. MÓDULO ORÇAMENTOS
     // =========================================================================
     window.abrirModalOrcamento = (id = null) => {
       if (!state.clientes.length) {
@@ -1189,7 +1234,7 @@
     };
 
     // =========================================================================
-    // 7. MÓDULO AGENDA & OS (ANTES/DEPOIS, GARANTIA, CHECKLIST, FINANCEIRO)
+    // 8. MÓDULO AGENDA & OS
     // =========================================================================
     window.abrirModalOS = (id = null) => {
       if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
@@ -1241,11 +1286,10 @@
     };
 
     function renderFotosOSPreview() {
-      document.getElementById('os-fotos-antes').innerHTML = state.fotosOSAntes.map((s, i) => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
-      document.getElementById('os-fotos-depois').innerHTML = state.fotosOSDepois.map((s, i) => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
+      document.getElementById('os-fotos-antes').innerHTML = state.fotosOSAntes.map(s => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
+      document.getElementById('os-fotos-depois').innerHTML = state.fotosOSDepois.map(s => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
     }
 
-    // Assinatura
     const sigCanvas = document.getElementById('signature-pad');
     const sigCtx = sigCanvas.getContext('2d');
     let desenhando = false; sigCtx.lineWidth = 2; sigCtx.lineCap = 'round';
@@ -1379,7 +1423,7 @@
     };
 
     // =========================================================================
-    // 8. MÓDULO FINANCEIRO (BAIXA, MENSALIDADES EM LOTE E WHATSAPP)
+    // 9. MÓDULO FINANCEIRO
     // =========================================================================
     window.abrirModalFinanceiro = () => {
       document.getElementById('form-financeiro').reset();
@@ -1446,7 +1490,7 @@
     };
 
     // =========================================================================
-    // 9. CONFIGURAÇÕES E BACKUP JSON
+    // 10. CONFIGURAÇÕES E BACKUP JSON
     // =========================================================================
     window.salvarConfig = () => {
       state.config = {
@@ -1505,7 +1549,6 @@
       state.financeiro = await carregarColecao('financeiro');
       renderClientes(); renderProdutos(); renderOrcamentos(); renderOS(); renderFinanceiro(); atualizarPainel();
     }
-    init();
   </script>
 </body>
 </html>
