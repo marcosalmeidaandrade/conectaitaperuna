@@ -6,7 +6,7 @@
   <title>CONECTA - Segurança e Climatização</title>
 
   <!-- Configurações de App para Smartphone (PWA - iOS e Android) -->
-  <meta name="theme-color" content="#0A0F0D" />
+  <meta id="meta-theme-color" name="theme-color" content="#0A0F0D" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CONECTA" />
@@ -40,6 +40,7 @@
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
       padding-bottom: env(safe-area-inset-bottom);
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
     .safe-top {
       padding-top: env(safe-area-inset-top);
@@ -47,6 +48,63 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     #signature-pad { touch-action: none; cursor: crosshair; }
+
+    /* ==================== TEMA CLARO ==================== */
+    body.theme-light {
+      background-color: #f8faf9;
+    }
+    body.theme-light #login-screen {
+      background-color: #eaf2ee;
+    }
+    body.theme-light #login-card {
+      background-color: #ffffff;
+      border-color: #b7dcc8;
+    }
+    body.theme-light #login-label {
+      color: #334155;
+    }
+    body.theme-light #login-senha {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    body.theme-light #app-header {
+      background-color: #ffffff;
+      color: #0f172a;
+      border-bottom-color: #d1e7dd;
+    }
+    body.theme-light #app-nav {
+      background-color: #f1f7f4;
+      border-top-color: #e2ece7;
+    }
+    body.theme-light #app-nav .nav-btn-inactive {
+      color: #475569;
+    }
+    body.theme-light #app-nav .nav-btn-inactive:hover {
+      color: #006837;
+    }
+    body.theme-light #app-nav .nav-btn-active {
+      color: #006837;
+      border-color: #00A859;
+    }
+    body.theme-light #usuario-logado {
+      color: #006837;
+    }
+    body.theme-light #db-status {
+      background-color: #e6f6ee;
+      color: #006837;
+      border-color: #a7dfc1;
+    }
+    body.theme-light .btn-tema {
+      background-color: #e2ece7;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+    body.theme-light #btn-sair {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
 
     @media print {
       body * { visibility: hidden; }
@@ -67,8 +125,16 @@
 <body class="text-slate-800 min-h-screen flex flex-col">
 
   <!-- ==================== TELA DE LOGIN ==================== -->
-  <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 safe-top no-print">
-    <div class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6">
+  <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 safe-top no-print transition-colors">
+    <!-- Botão de Tema no canto superior direito da tela de login -->
+    <div class="fixed top-4 right-4 safe-top z-50">
+      <button type="button" onclick="alternarTema()" class="btn-tema text-xs px-3 py-1.5 rounded-lg bg-white/10 text-slate-200 border border-white/20 hover:bg-white/20 font-semibold transition flex items-center gap-1.5">
+        <span class="tema-icone">☀️</span>
+        <span class="tema-texto">Claro</span>
+      </button>
+    </div>
+
+    <div id="login-card" class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6 transition-colors">
       <div class="text-center space-y-2">
         <img
           src="./logo.png"
@@ -82,7 +148,7 @@
 
       <form id="form-login" onsubmit="fazerLogin(event)" class="space-y-4 text-sm">
         <div>
-          <label class="block text-slate-300 font-medium mb-2 text-center">Digite sua senha de acesso</label>
+          <label id="login-label" class="block text-slate-300 font-medium mb-2 text-center">Digite sua senha de acesso</label>
           <input
             id="login-senha"
             type="password"
@@ -91,7 +157,7 @@
             required
             placeholder="••••••"
             oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)"
-            class="w-full bg-[#0A0F0D] border border-slate-700 text-white text-center text-2xl tracking-[0.5em] font-bold rounded-lg px-3 py-3 focus:outline-none focus:border-conecta-green"
+            class="w-full bg-[#0A0F0D] border border-slate-700 text-white text-center text-2xl tracking-[0.5em] font-bold rounded-lg px-3 py-3 focus:outline-none focus:border-conecta-green transition-colors"
           />
         </div>
         <p id="login-erro" class="text-xs text-red-400 text-center hidden"></p>
@@ -102,48 +168,48 @@
     </div>
   </div>
 
-  <!-- HEADER SUPERIOR (COM SAFE-AREA PARA SMARTPHONES) -->
-  <header class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5">
+  <!-- HEADER SUPERIOR (COM SAFE-AREA, SEM TEXTO DUPLICADO E COM BOAS-VINDAS + TEMA) -->
+  <header id="app-header" class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print transition-colors">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center">
         <img
           id="header-logo"
           src="./somentelogo.png"
           alt="CONECTA"
-          class="h-11 w-11 object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm shrink-0"
+          class="h-11 w-auto max-w-[140px] object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm shrink-0"
           onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');"
         />
         <div id="logo-fallback" class="hidden h-11 w-11 rounded-lg bg-conecta-emerald/20 border border-conecta-green flex items-center justify-center font-bold text-conecta-lime shrink-0">
           C
         </div>
-        <div>
-          <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-conecta-green leading-tight">CONECTA</h1>
-          <p class="text-[11px] sm:text-xs text-slate-300 tracking-wider uppercase leading-tight">Segurança e Climatização</p>
-        </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center flex-wrap justify-end gap-2">
         <span id="usuario-logado" class="text-xs text-conecta-lime font-semibold"></span>
         <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium hidden sm:inline">
-          Tempo Real
+          ● Tempo Real
         </span>
-        <button onclick="fazerLogout()" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 font-semibold">
+        <button type="button" onclick="alternarTema()" class="btn-tema text-xs px-2.5 py-1.5 rounded-lg bg-white/10 text-slate-200 border border-white/20 hover:bg-white/20 font-semibold transition flex items-center gap-1" title="Alterar tema de cores">
+          <span class="tema-icone">☀️</span>
+          <span class="tema-texto hidden sm:inline">Claro</span>
+        </button>
+        <button id="btn-sair" onclick="fazerLogout()" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 font-semibold transition">
           Sair
         </button>
       </div>
     </div>
 
     <!-- NAVEGAÇÃO EM ABAS -->
-    <nav class="bg-[#0f1714] border-t border-white/10 overflow-x-auto">
+    <nav id="app-nav" class="bg-[#0f1714] border-t border-white/10 overflow-x-auto transition-colors">
       <div class="max-w-7xl mx-auto px-4 flex gap-1 min-w-max">
-        <button onclick="switchTab('painel')" data-tab="painel" class="nav-btn px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime">Painel</button>
-        <button onclick="switchTab('os')" data-tab="os" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Agenda & OS</button>
-        <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Orçamentos</button>
-        <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Clientes</button>
-        <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Produtos & Kits</button>
-        <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Financeiro</button>
-        <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Usuários</button>
-        <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Configurações</button>
+        <button onclick="switchTab('painel')" data-tab="painel" class="nav-btn nav-btn-active px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime">Painel</button>
+        <button onclick="switchTab('os')" data-tab="os" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Agenda & OS</button>
+        <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Orçamentos</button>
+        <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Clientes</button>
+        <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Produtos & Kits</button>
+        <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Financeiro</button>
+        <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Usuários</button>
+        <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Configurações</button>
       </div>
     </nav>
   </header>
@@ -820,11 +886,13 @@
     const CLOUDINARY_CLOUD_NAME = "ortti51a";
     const CLOUDINARY_UPLOAD_PRESET = "conecta_fotos";
     const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+    const TEMPO_INATIVIDADE_MS = 3 * 60 * 1000; // 3 minutos
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     let activeUnsubscribe = null;
+    let timerInatividade = null;
 
     const state = {
       usuarioAtual: null,
@@ -845,7 +913,62 @@
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     // =========================================================================
-    // 2. UPLOAD ORIGINAL PARA CLOUDINARY
+    // 2. TEMA DE CORES (ESCURO PADRÃO / CLARO)
+    // =========================================================================
+    function aplicarTema(tema) {
+      const claro = tema === 'light';
+      document.body.classList.toggle('theme-light', claro);
+      localStorage.setItem('conecta_tema', claro ? 'light' : 'dark');
+
+      const metaTheme = document.getElementById('meta-theme-color');
+      if (metaTheme) metaTheme.setAttribute('content', claro ? '#ffffff' : '#0A0F0D');
+
+      document.querySelectorAll('.tema-icone').forEach(el => el.textContent = claro ? '🌙' : '☀️');
+      document.querySelectorAll('.tema-texto').forEach(el => el.textContent = claro ? 'Escuro' : 'Claro');
+    }
+
+    window.alternarTema = () => {
+      const atual = document.body.classList.contains('theme-light') ? 'light' : 'dark';
+      aplicarTema(atual === 'light' ? 'dark' : 'light');
+    };
+
+    aplicarTema(localStorage.getItem('conecta_tema') || 'dark');
+
+    // =========================================================================
+    // 3. ESCUTA DE INATIVIDADE (3 MINUTOS -> LOGOUT AUTOMÁTICO)
+    // =========================================================================
+    function reiniciarTimerInatividade() {
+      if (!state.usuarioAtual) return;
+      clearTimeout(timerInatividade);
+      timerInatividade = setTimeout(() => {
+        encerrarSessao(true);
+      }, TEMPO_INATIVIDADE_MS);
+    }
+
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'].forEach(evt => {
+      window.addEventListener(evt, reiniciarTimerInatividade, { passive: true });
+    });
+
+    function encerrarSessao(porInatividade = false) {
+      clearTimeout(timerInatividade);
+      timerInatividade = null;
+      desligarListenerAtivo();
+      sessionStorage.removeItem('conecta_user_id');
+      state.usuarioAtual = null;
+      document.getElementById('form-login').reset();
+      document.getElementById('login-screen').classList.remove('hidden');
+
+      const erroEl = document.getElementById('login-erro');
+      if (porInatividade) {
+        erroEl.textContent = "Sessão encerrada automaticamente após 3 minutos de inatividade.";
+        erroEl.classList.remove('hidden');
+      } else {
+        erroEl.classList.add('hidden');
+      }
+    }
+
+    // =========================================================================
+    // 4. UPLOAD ORIGINAL PARA CLOUDINARY
     // =========================================================================
     async function uploadFotoCloudinary(file) {
       const formData = new FormData();
@@ -866,7 +989,7 @@
     }
 
     // =========================================================================
-    // 3. MÁSCARAS GLOBAIS (SOMENTE NÚMEROS -> CPF / CNPJ / TELEFONE)
+    // 5. MÁSCARAS GLOBAIS (SOMENTE NÚMEROS -> CPF / CNPJ / TELEFONE)
     // =========================================================================
     function formatarCPF(valor) {
       const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
@@ -915,7 +1038,7 @@
     };
 
     // =========================================================================
-    // 4. PERSISTÊNCIA E SINCRONIZAÇÃO EM TEMPO REAL (onSnapshot POR ABA)
+    // 6. PERSISTÊNCIA E SINCRONIZAÇÃO EM TEMPO REAL (onSnapshot POR ABA)
     // =========================================================================
     async function carregarColecao(nome) {
       const snap = await getDocs(collection(db, nome));
@@ -997,7 +1120,7 @@
     }
 
     // =========================================================================
-    // 5. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
+    // 7. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
     // =========================================================================
     async function garantirAdminPadrao() {
       state.usuarios = await carregarColecao('usuarios');
@@ -1026,7 +1149,7 @@
       sessionStorage.setItem('conecta_user_id', usuario.id);
 
       document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('usuario-logado').textContent = `${usuario.nome} (${usuario.isAdmin ? 'Admin' : 'Técnico'})`;
+      document.getElementById('usuario-logado').textContent = `Bem-vindo, ${usuario.nome}! (${usuario.isAdmin ? 'Admin' : 'Técnico'})`;
 
       document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
         el.style.display = usuario.isAdmin ? '' : 'none';
@@ -1041,6 +1164,7 @@
         document.getElementById('cfg-cidade').value = state.config.cidade || '';
       }
 
+      reiniciarTimerInatividade();
       switchTab('painel');
     }
 
@@ -1080,11 +1204,7 @@
 
     window.fazerLogout = () => {
       if (confirm("Deseja sair do sistema?")) {
-        desligarListenerAtivo();
-        sessionStorage.removeItem('conecta_user_id');
-        state.usuarioAtual = null;
-        document.getElementById('form-login').reset();
-        document.getElementById('login-screen').classList.remove('hidden');
+        encerrarSessao(false);
       }
     };
 
@@ -1102,7 +1222,7 @@
     }
 
     // =========================================================================
-    // 6. MÓDULO USUÁRIOS
+    // 8. MÓDULO USUÁRIOS
     // =========================================================================
     window.abrirModalUsuario = (id = null) => {
       document.getElementById('form-usuario').reset();
@@ -1215,7 +1335,7 @@
     }
 
     // =========================================================================
-    // 7. NAVEGAÇÃO E PAINEL
+    // 9. NAVEGAÇÃO E PAINEL
     // =========================================================================
     window.switchTab = (tabName) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -1223,8 +1343,8 @@
       document.querySelectorAll('.nav-btn').forEach(btn => {
         const active = btn.dataset.tab === tabName;
         btn.className = active
-          ? "nav-btn px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime"
-          : "nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white";
+          ? "nav-btn nav-btn-active px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime"
+          : "nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white";
       });
       ativarSincronizacaoAba(tabName);
     };
@@ -1285,7 +1405,7 @@
     }
 
     // =========================================================================
-    // 8. MÓDULO CLIENTES
+    // 10. MÓDULO CLIENTES
     // =========================================================================
     window.abrirModalCliente = (id = null) => {
       document.getElementById('form-cliente').reset();
@@ -1360,7 +1480,7 @@
     };
 
     // =========================================================================
-    // 9. MÓDULO PRODUTOS & KITS
+    // 11. MÓDULO PRODUTOS & KITS
     // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
@@ -1418,7 +1538,7 @@
     }
 
     // =========================================================================
-    // 10. MÓDULO ORÇAMENTOS (COM UPLOAD ORIGINAL CLOUDINARY)
+    // 12. MÓDULO ORÇAMENTOS (COM UPLOAD ORIGINAL CLOUDINARY)
     // =========================================================================
     window.abrirModalOrcamento = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
@@ -1654,7 +1774,7 @@
     };
 
     // =========================================================================
-    // 11. MÓDULO AGENDA & OS (COM UPLOAD ORIGINAL CLOUDINARY)
+    // 13. MÓDULO AGENDA & OS (COM UPLOAD ORIGINAL CLOUDINARY)
     // =========================================================================
     window.abrirModalOS = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
@@ -1876,7 +1996,7 @@
     };
 
     // =========================================================================
-    // 12. MÓDULO FINANCEIRO
+    // 14. MÓDULO FINANCEIRO
     // =========================================================================
     window.abrirModalFinanceiro = () => {
       document.getElementById('form-financeiro').reset();
@@ -1938,7 +2058,7 @@
     };
 
     // =========================================================================
-    // 13. CONFIGURAÇÕES E BACKUP JSON
+    // 15. CONFIGURAÇÕES E BACKUP JSON
     // =========================================================================
     window.salvarConfig = () => {
       state.config = {
