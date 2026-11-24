@@ -121,7 +121,7 @@
       <div class="flex items-center gap-2">
         <span id="usuario-logado" class="text-xs text-conecta-lime font-semibold"></span>
         <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium hidden sm:inline">
-          Firebase Online
+          Tempo Real
         </span>
         <button onclick="fazerLogout()" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 font-semibold">
           Sair
@@ -799,7 +799,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // =========================================================================
     // 1. CONFIGURAÇÃO FIREBASE E CLOUDINARY
@@ -819,6 +819,8 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    let activeUnsubscribe = null;
 
     const state = {
       usuarioAtual: null,
@@ -909,7 +911,7 @@
     };
 
     // =========================================================================
-    // 4. PERSISTÊNCIA NO FIRESTORE
+    // 4. PERSISTÊNCIA E SINCRONIZAÇÃO EM TEMPO REAL (onSnapshot POR ABA)
     // =========================================================================
     async function carregarColecao(nome) {
       const snap = await getDocs(collection(db, nome));
@@ -931,6 +933,63 @@
         return prox;
       });
       return `${prefixo}-${ano}-${String(novo).padStart(4, '0')}`;
+    }
+
+    function desligarListenerAtivo() {
+      if (activeUnsubscribe) {
+        activeUnsubscribe();
+        activeUnsubscribe = null;
+      }
+    }
+
+    function ativarSincronizacaoAba(tabName) {
+      desligarListenerAtivo();
+      const badge = document.getElementById('db-status');
+
+      const mapa = {
+        os: { colecao: 'ordens_servico', chave: 'os', render: renderOS },
+        orcamentos: { colecao: 'orcamentos', chave: 'orcamentos', render: renderOrcamentos },
+        clientes: { colecao: 'clientes', chave: 'clientes', render: renderClientes },
+        produtos: { colecao: 'produtos_kits', chave: 'produtos', render: renderProdutos },
+        financeiro: { colecao: 'financeiro', chave: 'financeiro', render: renderFinanceiro },
+        usuarios: { colecao: 'usuarios', chave: 'usuarios', render: renderUsuarios }
+      };
+
+      if (tabName === 'painel') {
+        badge.textContent = "Painel Atualizado";
+        carregarPainelSobDemanda();
+        return;
+      }
+
+      const alvo = mapa[tabName];
+      if (!alvo) {
+        badge.textContent = "Firebase Online";
+        return;
+      }
+
+      badge.textContent = "● Tempo Real";
+      activeUnsubscribe = onSnapshot(collection(db, alvo.colecao), (snap) => {
+        state[alvo.chave] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        alvo.render();
+      }, (err) => {
+        console.error("Erro no onSnapshot:", err);
+      });
+    }
+
+    async function carregarPainelSobDemanda() {
+      const [clientes, produtos, os, orcamentos, financeiro] = await Promise.all([
+        carregarColecao('clientes'),
+        carregarColecao('produtos_kits'),
+        carregarColecao('ordens_servico'),
+        carregarColecao('orcamentos'),
+        carregarColecao('financeiro')
+      ]);
+      state.clientes = clientes;
+      state.produtos = produtos;
+      state.os = os;
+      state.orcamentos = orcamentos;
+      state.financeiro = financeiro;
+      atualizarPainel();
     }
 
     // =========================================================================
@@ -969,8 +1028,16 @@
         el.style.display = usuario.isAdmin ? '' : 'none';
       });
 
+      const cfg = localStorage.getItem('conecta_config');
+      if (cfg) {
+        state.config = JSON.parse(cfg);
+        document.getElementById('cfg-nome').value = state.config.nome || '';
+        document.getElementById('cfg-cnpj').value = state.config.cnpj || '';
+        document.getElementById('cfg-tel').value = state.config.tel || '';
+        document.getElementById('cfg-cidade').value = state.config.cidade || '';
+      }
+
       switchTab('painel');
-      initDados();
     }
 
     window.fazerLogin = async (e) => {
@@ -1009,6 +1076,7 @@
 
     window.fazerLogout = () => {
       if (confirm("Deseja sair do sistema?")) {
+        desligarListenerAtivo();
         sessionStorage.removeItem('conecta_user_id');
         state.usuarioAtual = null;
         document.getElementById('form-login').reset();
@@ -1095,9 +1163,7 @@
       };
 
       await salvarDocumento('usuarios', id, dados);
-      state.usuarios = await carregarColecao('usuarios');
       fecharModal('modal-usuario');
-      renderUsuarios();
     };
 
     window.alternarStatusUsuario = async (id) => {
@@ -1112,8 +1178,6 @@
       if (!confirm(`Deseja ${acao} o usuário ${u.nome}?`)) return;
 
       await salvarDocumento('usuarios', id, { ativo: novoStatus });
-      state.usuarios = await carregarColecao('usuarios');
-      renderUsuarios();
     };
 
     function renderUsuarios() {
@@ -1158,6 +1222,7 @@
           ? "nav-btn px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime"
           : "nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white";
       });
+      ativarSincronizacaoAba(tabName);
     };
 
     window.fecharModal = (id) => {
@@ -1260,10 +1325,7 @@
         atualizadoEm: new Date().toISOString()
       };
       await salvarDocumento('clientes', id, dados);
-      state.clientes = await carregarColecao('clientes');
       fecharModal('modal-cliente');
-      renderClientes();
-      atualizarPainel();
     };
 
     window.renderClientes = () => {
@@ -1327,10 +1389,7 @@
         estoqueMinimo: Number(document.getElementById('prod-minimo').value || 0)
       };
       await salvarDocumento('produtos_kits', id, dados);
-      state.produtos = await carregarColecao('produtos_kits');
       fecharModal('modal-produto');
-      renderProdutos();
-      atualizarPainel();
     };
 
     function renderProdutos() {
@@ -1357,7 +1416,9 @@
     // =========================================================================
     // 10. MÓDULO ORÇAMENTOS (COM UPLOAD ORIGINAL CLOUDINARY)
     // =========================================================================
-    window.abrirModalOrcamento = (id = null) => {
+    window.abrirModalOrcamento = async (id = null) => {
+      if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
+      if (!state.produtos.length) state.produtos = await carregarColecao('produtos_kits');
       if (!state.clientes.length) {
         alert("Cadastre pelo menos um cliente antes de criar um orçamento.");
         switchTab('clientes');
@@ -1511,10 +1572,7 @@
         atualizadoEm: new Date().toISOString()
       };
       await salvarDocumento('orcamentos', id, dados);
-      state.orcamentos = await carregarColecao('orcamentos');
       fecharModal('modal-orcamento');
-      renderOrcamentos();
-      atualizarPainel();
     };
 
     window.aprovarEGerarOS = async (orcId) => {
@@ -1535,9 +1593,6 @@
       });
       await salvarDocumento('orcamentos', orc.id, { status: 'aprovado', osGeradaId: osId, osGeradaNumero: osNumero });
 
-      state.os = await carregarColecao('ordens_servico');
-      state.orcamentos = await carregarColecao('orcamentos');
-      renderOrcamentos(); renderOS(); atualizarPainel();
       alert(`${osNumero} gerada com sucesso!`);
       switchTab('os');
     };
@@ -1597,7 +1652,8 @@
     // =========================================================================
     // 11. MÓDULO AGENDA & OS (COM UPLOAD ORIGINAL CLOUDINARY)
     // =========================================================================
-    window.abrirModalOS = (id = null) => {
+    window.abrirModalOS = async (id = null) => {
+      if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
       if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
       document.getElementById('os-cliente').innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
       document.getElementById('form-os').reset();
@@ -1739,9 +1795,8 @@
       };
 
       await salvarDocumento('ordens_servico', id, dados);
-      state.os = await carregarColecao('ordens_servico');
       fecharModal('modal-os');
-      renderOS(); atualizarPainel();
+      if (document.getElementById('tab-painel').classList.contains('active')) carregarPainelSobDemanda();
     };
 
     window.lancarOSNoFinanceiro = async (osId) => {
@@ -1759,9 +1814,6 @@
         });
       }
       await salvarDocumento('ordens_servico', o.id, { lancadoFinanceiro: true });
-      state.os = await carregarColecao('ordens_servico');
-      state.financeiro = await carregarColecao('financeiro');
-      renderOS(); renderFinanceiro(); atualizarPainel();
       alert(`${parcelas} parcela(s) lançada(s) no Financeiro!`);
     };
 
@@ -1837,18 +1889,15 @@
         vencimento: document.getElementById('fin-vencimento').value,
         status: document.getElementById('fin-status').value
       });
-      state.financeiro = await carregarColecao('financeiro');
       fecharModal('modal-financeiro');
-      renderFinanceiro(); atualizarPainel();
     };
 
     window.darBaixaFinanceiro = async (id) => {
       await salvarDocumento('financeiro', id, { status: 'pago', dataPagamento: new Date().toISOString().split('T')[0] });
-      state.financeiro = await carregarColecao('financeiro');
-      renderFinanceiro(); atualizarPainel();
     };
 
     window.gerarMensalidadesLote = async () => {
+      if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
       const ativos = state.clientes.filter(c => c.monitoramentoAtivo && c.monitoramentoValor > 0);
       if (!ativos.length) { alert("Nenhum cliente com contrato de monitoramento ativo."); return; }
       const hoje = new Date();
@@ -1862,8 +1911,6 @@
           status: 'pendente', clienteTelefone: c.telefone || ''
         });
       }
-      state.financeiro = await carregarColecao('financeiro');
-      renderFinanceiro(); atualizarPainel();
       alert("Mensalidades geradas com sucesso!");
     };
 
@@ -1900,10 +1947,17 @@
       alert("Configurações salvas!");
     };
 
-    window.exportarBackup = () => {
+    window.exportarBackup = async () => {
+      const [usuarios, clientes, produtos, orcamentos, os, financeiro] = await Promise.all([
+        carregarColecao('usuarios'),
+        carregarColecao('clientes'),
+        carregarColecao('produtos_kits'),
+        carregarColecao('orcamentos'),
+        carregarColecao('ordens_servico'),
+        carregarColecao('financeiro')
+      ]);
       const blob = new Blob([JSON.stringify({
-        usuarios: state.usuarios, clientes: state.clientes, produtos: state.produtos,
-        orcamentos: state.orcamentos, os: state.os, financeiro: state.financeiro, config: state.config
+        usuarios, clientes, produtos, orcamentos, os, financeiro, config: state.config
       }, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -1925,29 +1979,11 @@
           if (data.os) for (const x of data.os) await salvarDocumento('ordens_servico', x.id, x);
           if (data.financeiro) for (const x of data.financeiro) await salvarDocumento('financeiro', x.id, x);
           alert("Backup restaurado com sucesso!");
-          initDados();
+          switchTab('painel');
         } catch (err) { alert("Arquivo JSON inválido."); }
       };
       reader.readAsText(file);
     };
-
-    async function initDados() {
-      const cfg = localStorage.getItem('conecta_config');
-      if (cfg) {
-        state.config = JSON.parse(cfg);
-        document.getElementById('cfg-nome').value = state.config.nome || '';
-        document.getElementById('cfg-cnpj').value = state.config.cnpj || '';
-        document.getElementById('cfg-tel').value = state.config.tel || '';
-        document.getElementById('cfg-cidade').value = state.config.cidade || '';
-      }
-      state.usuarios = await carregarColecao('usuarios');
-      state.clientes = await carregarColecao('clientes');
-      state.produtos = await carregarColecao('produtos_kits');
-      state.os = await carregarColecao('ordens_servico');
-      state.orcamentos = await carregarColecao('orcamentos');
-      state.financeiro = await carregarColecao('financeiro');
-      renderUsuarios(); renderClientes(); renderProdutos(); renderOrcamentos(); renderOS(); renderFinanceiro(); atualizarPainel();
-    }
 
     verificarSessaoInicial();
   </script>
