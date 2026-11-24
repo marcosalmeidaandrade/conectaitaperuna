@@ -634,16 +634,17 @@
         </div>
 
         <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
-          <div class="flex items-center justify-between">
-            <label class="font-semibold text-slate-700">Fotos do Local</label>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label class="font-semibold text-slate-700">Fotos do Local (Qualidade Original - Cloudinary)</label>
             <input type="file" id="orc-foto-input" accept="image/*" multiple onchange="processarFotosOrcamento(event)" class="text-xs" />
           </div>
+          <p id="orc-upload-status" class="text-xs text-conecta-green font-semibold hidden"></p>
           <div id="orc-fotos-preview" class="flex flex-wrap gap-2"></div>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="fecharModal('modal-orcamento')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Orçamento</button>
+          <button id="btn-salvar-orc" type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Orçamento</button>
         </div>
       </form>
     </div>
@@ -718,13 +719,15 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
-            <label class="font-semibold text-slate-700 block text-xs">Fotos ANTES</label>
+            <label class="font-semibold text-slate-700 block text-xs">Fotos ANTES (Original - Cloudinary)</label>
             <input type="file" accept="image/*" multiple onchange="processarFotosOS(event, 'antes')" class="text-xs w-full" />
+            <p id="os-upload-antes" class="text-xs text-conecta-green font-semibold hidden"></p>
             <div id="os-fotos-antes" class="flex flex-wrap gap-2"></div>
           </div>
           <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
-            <label class="font-semibold text-slate-700 block text-xs">Fotos DEPOIS</label>
+            <label class="font-semibold text-slate-700 block text-xs">Fotos DEPOIS (Original - Cloudinary)</label>
             <input type="file" accept="image/*" multiple onchange="processarFotosOS(event, 'depois')" class="text-xs w-full" />
+            <p id="os-upload-depois" class="text-xs text-conecta-green font-semibold hidden"></p>
             <div id="os-fotos-depois" class="flex flex-wrap gap-2"></div>
           </div>
         </div>
@@ -739,7 +742,7 @@
 
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="fecharModal('modal-os')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar OS</button>
+          <button id="btn-salvar-os" type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar OS</button>
         </div>
       </form>
     </div>
@@ -799,7 +802,7 @@
     import { getFirestore, collection, doc, setDoc, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // =========================================================================
-    // 1. CONFIGURAÇÃO FIREBASE
+    // 1. CONFIGURAÇÃO FIREBASE E CLOUDINARY
     // =========================================================================
     const firebaseConfig = {
       apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
@@ -809,6 +812,10 @@
       messagingSenderId: "1028592894211",
       appId: "1:1028592894211:web:d93f3651e676a4de8e6936"
     };
+
+    const CLOUDINARY_CLOUD_NAME = "ortti51a";
+    const CLOUDINARY_UPLOAD_PRESET = "conecta_fotos";
+    const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -832,7 +839,28 @@
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     // =========================================================================
-    // 2. MÁSCARAS GLOBAIS (SOMENTE NÚMEROS -> CPF / CNPJ / TELEFONE)
+    // 2. UPLOAD ORIGINAL PARA CLOUDINARY
+    // =========================================================================
+    async function uploadFotoCloudinary(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+      const res = await fetch(CLOUDINARY_URL, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error?.message || 'Falha ao enviar imagem para o Cloudinary.');
+      }
+      const data = await res.json();
+      return data.secure_url;
+    }
+
+    // =========================================================================
+    // 3. MÁSCARAS GLOBAIS (SOMENTE NÚMEROS -> CPF / CNPJ / TELEFONE)
     // =========================================================================
     function formatarCPF(valor) {
       const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
@@ -881,7 +909,7 @@
     };
 
     // =========================================================================
-    // 3. PERSISTÊNCIA NO FIRESTORE
+    // 4. PERSISTÊNCIA NO FIRESTORE
     // =========================================================================
     async function carregarColecao(nome) {
       const snap = await getDocs(collection(db, nome));
@@ -905,26 +933,8 @@
       return `${prefixo}-${ano}-${String(novo).padStart(4, '0')}`;
     }
 
-    function comprimirImagem(file, callback) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxW = 800;
-          const scale = Math.min(1, maxW / img.width);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          callback(canvas.toDataURL('image/jpeg', 0.7));
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
     // =========================================================================
-    // 4. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
+    // 5. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
     // =========================================================================
     async function garantirAdminPadrao() {
       state.usuarios = await carregarColecao('usuarios');
@@ -1020,7 +1030,7 @@
     }
 
     // =========================================================================
-    // 5. MÓDULO USUÁRIOS
+    // 6. MÓDULO USUÁRIOS
     // =========================================================================
     window.abrirModalUsuario = (id = null) => {
       document.getElementById('form-usuario').reset();
@@ -1137,7 +1147,7 @@
     }
 
     // =========================================================================
-    // 6. NAVEGAÇÃO E PAINEL
+    // 7. NAVEGAÇÃO E PAINEL
     // =========================================================================
     window.switchTab = (tabName) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -1206,7 +1216,7 @@
     }
 
     // =========================================================================
-    // 7. MÓDULO CLIENTES
+    // 8. MÓDULO CLIENTES
     // =========================================================================
     window.abrirModalCliente = (id = null) => {
       document.getElementById('form-cliente').reset();
@@ -1284,7 +1294,7 @@
     };
 
     // =========================================================================
-    // 8. MÓDULO PRODUTOS & KITS
+    // 9. MÓDULO PRODUTOS & KITS
     // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
@@ -1345,7 +1355,7 @@
     }
 
     // =========================================================================
-    // 9. MÓDULO ORÇAMENTOS
+    // 10. MÓDULO ORÇAMENTOS (COM UPLOAD ORIGINAL CLOUDINARY)
     // =========================================================================
     window.abrirModalOrcamento = (id = null) => {
       if (!state.clientes.length) {
@@ -1436,15 +1446,40 @@
       return { total, lucro };
     };
 
-    window.processarFotosOrcamento = (event) => {
-      Array.from(event.target.files).forEach(file => {
-        comprimirImagem(file, (b64) => { state.fotosOrcTemp.push(b64); renderFotosOrcPreview(); });
-      });
+    window.processarFotosOrcamento = async (event) => {
+      const files = Array.from(event.target.files);
+      if (!files.length) return;
+      const statusEl = document.getElementById('orc-upload-status');
+      const btnSalvar = document.getElementById('btn-salvar-orc');
+      statusEl.textContent = `Enviando ${files.length} foto(s) em qualidade original...`;
+      statusEl.classList.remove('hidden');
+      btnSalvar.disabled = true;
+
+      try {
+        for (const file of files) {
+          const url = await uploadFotoCloudinary(file);
+          state.fotosOrcTemp.push(url);
+          renderFotosOrcPreview();
+        }
+        statusEl.textContent = "Upload concluído!";
+        setTimeout(() => statusEl.classList.add('hidden'), 2500);
+      } catch (err) {
+        alert("Erro ao enviar foto: " + err.message);
+        statusEl.classList.add('hidden');
+      } finally {
+        btnSalvar.disabled = false;
+        event.target.value = '';
+      }
     };
+
     function renderFotosOrcPreview() {
       document.getElementById('orc-fotos-preview').innerHTML = state.fotosOrcTemp.map((src, i) => `
-        <div class="relative"><img src="${src}" class="h-14 w-14 object-cover rounded border" />
-        <button type="button" onclick="removerFotoOrcTemp(${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs">×</button></div>`).join('');
+        <div class="relative">
+          <a href="${src}" target="_blank" title="Abrir foto original">
+            <img src="${src}" class="h-16 w-16 object-cover rounded border hover:opacity-80" />
+          </a>
+          <button type="button" onclick="removerFotoOrcTemp(${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button>
+        </div>`).join('');
     }
     window.removerFotoOrcTemp = (i) => { state.fotosOrcTemp.splice(i, 1); renderFotosOrcPreview(); };
 
@@ -1560,7 +1595,7 @@
     };
 
     // =========================================================================
-    // 10. MÓDULO AGENDA & OS
+    // 11. MÓDULO AGENDA & OS (COM UPLOAD ORIGINAL CLOUDINARY)
     // =========================================================================
     window.abrirModalOS = (id = null) => {
       if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
@@ -1602,19 +1637,54 @@
     };
     window.editarOS = (id) => abrirModalOS(id);
 
-    window.processarFotosOS = (event, tipo) => {
-      Array.from(event.target.files).forEach(file => {
-        comprimirImagem(file, (b64) => {
-          if (tipo === 'antes') state.fotosOSAntes.push(b64);
-          else state.fotosOSDepois.push(b64);
+    window.processarFotosOS = async (event, tipo) => {
+      const files = Array.from(event.target.files);
+      if (!files.length) return;
+      const statusEl = document.getElementById(tipo === 'antes' ? 'os-upload-antes' : 'os-upload-depois');
+      const btnSalvar = document.getElementById('btn-salvar-os');
+      statusEl.textContent = `Enviando ${files.length} foto(s) em qualidade original...`;
+      statusEl.classList.remove('hidden');
+      btnSalvar.disabled = true;
+
+      try {
+        for (const file of files) {
+          const url = await uploadFotoCloudinary(file);
+          if (tipo === 'antes') state.fotosOSAntes.push(url);
+          else state.fotosOSDepois.push(url);
           renderFotosOSPreview();
-        });
-      });
+        }
+        statusEl.textContent = "Upload concluído!";
+        setTimeout(() => statusEl.classList.add('hidden'), 2500);
+      } catch (err) {
+        alert("Erro ao enviar foto: " + err.message);
+        statusEl.classList.add('hidden');
+      } finally {
+        btnSalvar.disabled = false;
+        event.target.value = '';
+      }
+    };
+
+    window.removerFotoOS = (tipo, idx) => {
+      if (tipo === 'antes') state.fotosOSAntes.splice(idx, 1);
+      else state.fotosOSDepois.splice(idx, 1);
+      renderFotosOSPreview();
     };
 
     function renderFotosOSPreview() {
-      document.getElementById('os-fotos-antes').innerHTML = state.fotosOSAntes.map(s => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
-      document.getElementById('os-fotos-depois').innerHTML = state.fotosOSDepois.map(s => `<img src="${s}" class="h-14 w-14 object-cover rounded border" />`).join('');
+      document.getElementById('os-fotos-antes').innerHTML = state.fotosOSAntes.map((s, i) => `
+        <div class="relative">
+          <a href="${s}" target="_blank" title="Abrir foto original">
+            <img src="${s}" class="h-16 w-16 object-cover rounded border hover:opacity-80" />
+          </a>
+          <button type="button" onclick="removerFotoOS('antes', ${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button>
+        </div>`).join('');
+      document.getElementById('os-fotos-depois').innerHTML = state.fotosOSDepois.map((s, i) => `
+        <div class="relative">
+          <a href="${s}" target="_blank" title="Abrir foto original">
+            <img src="${s}" class="h-16 w-16 object-cover rounded border hover:opacity-80" />
+          </a>
+          <button type="button" onclick="removerFotoOS('depois', ${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button>
+        </div>`).join('');
     }
 
     const sigCanvas = document.getElementById('signature-pad');
@@ -1750,7 +1820,7 @@
     };
 
     // =========================================================================
-    // 11. MÓDULO FINANCEIRO
+    // 12. MÓDULO FINANCEIRO
     // =========================================================================
     window.abrirModalFinanceiro = () => {
       document.getElementById('form-financeiro').reset();
@@ -1817,7 +1887,7 @@
     };
 
     // =========================================================================
-    // 12. CONFIGURAÇÕES E BACKUP JSON
+    // 13. CONFIGURAÇÕES E BACKUP JSON
     // =========================================================================
     window.salvarConfig = () => {
       state.config = {
