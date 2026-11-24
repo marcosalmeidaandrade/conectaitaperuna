@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CONECTA - Segurança e Climatização</title>
+  <link rel="icon" type="image/png" href="./logo.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -50,7 +51,12 @@
   <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6">
       <div class="text-center space-y-2">
-        <img src="logo.jpg" alt="CONECTA" class="h-24 mx-auto object-contain rounded-xl bg-black p-2 border border-conecta-green/30" onerror="this.style.display='none'" />
+        <img
+          src="./logo.png"
+          alt="CONECTA"
+          class="h-32 w-32 mx-auto object-contain rounded-2xl bg-black p-2 border border-conecta-green/40 shadow-lg"
+          onerror="this.style.display='none'"
+        />
         <h1 class="text-2xl font-extrabold text-conecta-green tracking-wide">CONECTA</h1>
         <p class="text-xs text-slate-400 uppercase tracking-widest">Segurança e Climatização</p>
       </div>
@@ -80,9 +86,9 @@
       <div class="flex items-center gap-3">
         <img
           id="header-logo"
-          src="logo.jpg"
+          src="./logo.png"
           alt="CONECTA"
-          class="h-12 w-12 object-contain rounded-lg bg-black p-1 border border-conecta-green/40"
+          class="h-12 w-12 object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm"
           onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');"
         />
         <div id="logo-fallback" class="hidden h-12 w-12 rounded-lg bg-conecta-emerald/20 border border-conecta-green flex items-center justify-center font-bold text-conecta-lime">
@@ -683,12 +689,12 @@
     // 1. CONFIGURAÇÃO FIREBASE E ADMINISTRADORES (AJUSTE AQUI)
     // =========================================================================
     const firebaseConfig = {
-      apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
+      apiKey: "SUA_API_KEY",
       authDomain: "conectaitaperuna.firebaseapp.com",
       projectId: "conectaitaperuna",
       storageBucket: "conectaitaperuna.firebasestorage.app",
-      messagingSenderId: "1028592894211",
-      appId: "1:1028592894211:web:d93f3651e676a4de8e6936"
+      messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+      appId: "SEU_APP_ID"
     };
 
     // E-mails com acesso total (Administrador). Qualquer outro e-mail entra como Técnico.
@@ -1216,7 +1222,7 @@
       area.innerHTML = `
         <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
           <div class="flex items-center gap-3">
-            <img src="logo.jpg" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
+            <img src="./logo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
             <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
           </div>
           <div class="text-right"><p class="font-bold text-lg">ORÇAMENTO ${o.numero}</p><p class="text-xs">Validade: ${o.validade || '-'}</p></div>
@@ -1402,7 +1408,7 @@
       area.innerHTML = `
         <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
           <div class="flex items-center gap-3">
-            <img src="logo.jpg" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
+            <img src="./logo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
             <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
           </div>
           <div class="text-right"><p class="font-bold text-lg">${o.numero}</p><p class="text-xs">Data: ${o.dataAgendamento} | Garantia até: ${o.garantiaAte || '-'}</p></div>
