@@ -39,6 +39,10 @@
       background-color: #f3f6f4;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .safe-top {
+      padding-top: env(safe-area-inset-top);
     }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -63,7 +67,7 @@
 <body class="text-slate-800 min-h-screen flex flex-col">
 
   <!-- ==================== TELA DE LOGIN ==================== -->
-  <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 no-print">
+  <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 safe-top no-print">
     <div class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6">
       <div class="text-center space-y-2">
         <img
@@ -98,23 +102,23 @@
     </div>
   </div>
 
-  <!-- HEADER SUPERIOR -->
-  <header class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 no-print">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
+  <!-- HEADER SUPERIOR (COM SAFE-AREA PARA SMARTPHONES) -->
+  <header class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
         <img
           id="header-logo"
           src="./somentelogo.png"
           alt="CONECTA"
-          class="h-12 w-12 object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm"
+          class="h-11 w-11 object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm shrink-0"
           onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');"
         />
-        <div id="logo-fallback" class="hidden h-12 w-12 rounded-lg bg-conecta-emerald/20 border border-conecta-green flex items-center justify-center font-bold text-conecta-lime">
+        <div id="logo-fallback" class="hidden h-11 w-11 rounded-lg bg-conecta-emerald/20 border border-conecta-green flex items-center justify-center font-bold text-conecta-lime shrink-0">
           C
         </div>
         <div>
-          <h1 class="text-lg font-extrabold tracking-wide text-conecta-green leading-tight">CONECTA</h1>
-          <p class="text-xs text-slate-300 tracking-wider uppercase">Segurança e Climatização</p>
+          <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-conecta-green leading-tight">CONECTA</h1>
+          <p class="text-[11px] sm:text-xs text-slate-300 tracking-wider uppercase leading-tight">Segurança e Climatização</p>
         </div>
       </div>
 
