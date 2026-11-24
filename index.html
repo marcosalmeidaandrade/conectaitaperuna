@@ -47,7 +47,7 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
 
-  <!-- ==================== TELA DE LOGIN ==================== -->
+  <!-- ==================== TELA DE LOGIN (SOMENTE SENHA 6 DÍGITOS) ==================== -->
   <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6">
       <div class="text-center space-y-2">
@@ -63,16 +63,19 @@
 
       <form id="form-login" onsubmit="fazerLogin(event)" class="space-y-4 text-sm">
         <div>
-          <label class="block text-slate-300 font-medium mb-1">E-mail</label>
-          <input id="login-email" type="email" required placeholder="seu@email.com"
-            class="w-full bg-[#0A0F0D] border border-slate-700 text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-conecta-green" />
+          <label class="block text-slate-300 font-medium mb-2 text-center">Digite sua senha de acesso</label>
+          <input
+            id="login-senha"
+            type="password"
+            inputmode="numeric"
+            maxlength="6"
+            required
+            placeholder="••••••"
+            oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)"
+            class="w-full bg-[#0A0F0D] border border-slate-700 text-white text-center text-2xl tracking-[0.5em] font-bold rounded-lg px-3 py-3 focus:outline-none focus:border-conecta-green"
+          />
         </div>
-        <div>
-          <label class="block text-slate-300 font-medium mb-1">Senha</label>
-          <input id="login-senha" type="password" required placeholder="••••••••"
-            class="w-full bg-[#0A0F0D] border border-slate-700 text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-conecta-green" />
-        </div>
-        <p id="login-erro" class="text-xs text-red-400 hidden"></p>
+        <p id="login-erro" class="text-xs text-red-400 text-center hidden"></p>
         <button id="btn-entrar" type="submit" class="w-full bg-conecta-green hover:bg-conecta-emerald text-white font-bold py-2.5 rounded-lg transition shadow-lg">
           Entrar no Sistema
         </button>
@@ -101,9 +104,9 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <span id="usuario-logado" class="text-xs text-conecta-lime font-semibold hidden sm:inline"></span>
-        <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium">
-          Conectando...
+        <span id="usuario-logado" class="text-xs text-conecta-lime font-semibold"></span>
+        <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium hidden sm:inline">
+          Firebase Online
         </span>
         <button onclick="fazerLogout()" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 font-semibold">
           Sair
@@ -120,6 +123,7 @@
         <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Clientes</button>
         <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Produtos & Kits</button>
         <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Financeiro</button>
+        <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Usuários</button>
         <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Configurações</button>
       </div>
     </nav>
@@ -272,6 +276,21 @@
       <div id="lista-financeiro" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"></div>
     </section>
 
+    <!-- ==================== ABA: USUÁRIOS (EXCLUSIVO ADMIN) ==================== -->
+    <section id="tab-usuarios" class="tab-content space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">Gerenciamento de Usuários</h2>
+          <p class="text-xs text-slate-500">Cadastre nomes curtos (máx. 10 caracteres) e senhas numéricas únicas (até 6 dígitos).</p>
+        </div>
+        <button onclick="abrirModalUsuario()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+          + Novo Usuário
+        </button>
+      </div>
+
+      <div id="lista-usuarios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
     <!-- ==================== ABA: CONFIGURAÇÕES ==================== -->
     <section id="tab-config" class="tab-content space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -302,7 +321,7 @@
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h2 class="text-lg font-bold text-slate-800">Backup e Restauração (JSON)</h2>
-          <p class="text-sm text-slate-500">Exporte uma cópia de segurança de todos os clientes, produtos, orçamentos, OS e lançamentos financeiros.</p>
+          <p class="text-sm text-slate-500">Exporte uma cópia de segurança de todos os usuários, clientes, produtos, orçamentos, OS e lançamentos financeiros.</p>
           <div class="flex flex-wrap gap-3">
             <button onclick="exportarBackup()" class="bg-conecta-green text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-conecta-emerald">
               Baixar Backup JSON
@@ -316,6 +335,41 @@
       </div>
     </section>
   </main>
+
+  <!-- ==================== MODAL USUÁRIO ==================== -->
+  <div id="modal-usuario" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="modal-usu-titulo" class="font-bold text-lg text-slate-800">Cadastro de Usuário</h3>
+        <button onclick="fecharModal('modal-usuario')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-usuario" onsubmit="salvarUsuario(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="usu-id" />
+        <div>
+          <label class="block font-medium mb-1">Nome Curto (máx. 10 caracteres) *</label>
+          <input id="usu-nome" type="text" maxlength="10" required placeholder="Ex: MARCOS"
+            class="w-full border rounded-lg px-3 py-2 uppercase font-semibold" />
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Senha Numérica (até 6 números) *</label>
+          <input id="usu-senha" type="text" inputmode="numeric" maxlength="6" required placeholder="Ex: 123456"
+            oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)"
+            class="w-full border rounded-lg px-3 py-2 tracking-widest font-bold" />
+        </div>
+        <div class="border rounded-xl p-3 bg-emerald-50/70">
+          <label class="flex items-center gap-2 font-semibold text-conecta-emerald cursor-pointer">
+            <input type="checkbox" id="usu-admin" class="rounded h-4 w-4" />
+            Tornar este usuário ADMINISTRADOR
+          </label>
+          <p class="text-xs text-slate-500 mt-1">Administradores têm acesso total (Financeiro, Orçamentos, Produtos, Usuários e Configurações).</p>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-usuario')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Usuário</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- ==================== MODAL CLIENTE ==================== -->
   <div id="modal-cliente" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
@@ -683,13 +737,12 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, doc, setDoc, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     // =========================================================================
-    // 1. CONFIGURAÇÃO FIREBASE E ADMINISTRADORES (AJUSTE AQUI)
+    // 1. CONFIGURAÇÃO FIREBASE
     // =========================================================================
     const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
+      apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
       authDomain: "conectaitaperuna.firebaseapp.com",
       projectId: "conectaitaperuna",
       storageBucket: "conectaitaperuna.firebasestorage.app",
@@ -697,17 +750,13 @@
       appId: "1:1028592894211:web:d93f3651e676a4de8e6936"
     };
 
-    // E-mails com acesso total (Administrador). Qualquer outro e-mail entra como Técnico.
-    const ADMIN_EMAILS = [
-      "admin@conecta.com"
-    ];
-
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
 
     const state = {
+      usuarioAtual: null,
       perfil: 'tecnico',
+      usuarios: [],
       clientes: [],
       produtos: [],
       os: [],
@@ -723,62 +772,7 @@
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     // =========================================================================
-    // 2. AUTENTICAÇÃO (LOGIN / LOGOUT / CONTROLE DE PERFIL)
-    // =========================================================================
-    window.fazerLogin = async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value.trim();
-      const senha = document.getElementById('login-senha').value;
-      const erroEl = document.getElementById('login-erro');
-      const btn = document.getElementById('btn-entrar');
-      erroEl.classList.add('hidden');
-      btn.disabled = true;
-      btn.textContent = "Verificando...";
-
-      try {
-        await signInWithEmailAndPassword(auth, email, senha);
-      } catch (err) {
-        erroEl.textContent = "E-mail ou senha inválidos.";
-        erroEl.classList.remove('hidden');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Entrar no Sistema";
-      }
-    };
-
-    window.fazerLogout = async () => {
-      if (confirm("Deseja sair do sistema?")) {
-        await signOut(auth);
-      }
-    };
-
-    onAuthStateChanged(auth, (user) => {
-      const loginScreen = document.getElementById('login-screen');
-      const badge = document.getElementById('db-status');
-
-      if (user) {
-        loginScreen.classList.add('hidden');
-        const isAdmin = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase());
-        state.perfil = isAdmin ? 'admin' : 'tecnico';
-
-        document.getElementById('usuario-logado').textContent = `${user.email} (${isAdmin ? 'Admin' : 'Técnico'})`;
-        badge.textContent = "Firebase Online";
-        badge.className = "text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium";
-
-        document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
-          el.style.display = isAdmin ? '' : 'none';
-        });
-
-        switchTab('painel');
-        init();
-      } else {
-        loginScreen.classList.remove('hidden');
-        document.getElementById('form-login').reset();
-      }
-    });
-
-    // =========================================================================
-    // 3. PERSISTÊNCIA NO FIRESTORE
+    // 2. PERSISTÊNCIA NO FIRESTORE
     // =========================================================================
     async function carregarColecao(nome) {
       const snap = await getDocs(collection(db, nome));
@@ -821,7 +815,194 @@
     }
 
     // =========================================================================
-    // 4. NAVEGAÇÃO E PAINEL
+    // 3. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
+    // =========================================================================
+    async function garantirAdminPadrao() {
+      state.usuarios = await carregarColecao('usuarios');
+      if (state.usuarios.length === 0) {
+        const adminPadrao = {
+          nome: "ADMIN",
+          senha: "123456",
+          isAdmin: true,
+          ativo: true,
+          criadoEm: new Date().toISOString()
+        };
+        await salvarDocumento('usuarios', 'usu_admin_inicial', adminPadrao);
+        state.usuarios = [{ id: 'usu_admin_inicial', ...adminPadrao }];
+      }
+    }
+
+    function aplicarSessao(usuario) {
+      state.usuarioAtual = usuario;
+      state.perfil = usuario.isAdmin ? 'admin' : 'tecnico';
+      sessionStorage.setItem('conecta_user_id', usuario.id);
+
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('usuario-logado').textContent = `${usuario.nome} (${usuario.isAdmin ? 'Admin' : 'Técnico'})`;
+
+      document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
+        el.style.display = usuario.isAdmin ? '' : 'none';
+      });
+
+      switchTab('painel');
+      initDados();
+    }
+
+    window.fazerLogin = async (e) => {
+      e.preventDefault();
+      const senha = document.getElementById('login-senha').value.trim();
+      const erroEl = document.getElementById('login-erro');
+      const btn = document.getElementById('btn-entrar');
+      erroEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.textContent = "Verificando...";
+
+      try {
+        await garantirAdminPadrao();
+        const encontrado = state.usuarios.find(u => String(u.senha) === senha);
+
+        if (!encontrado) {
+          erroEl.textContent = "Senha inválida. Verifique e tente novamente.";
+          erroEl.classList.remove('hidden');
+          return;
+        }
+        if (encontrado.ativo === false) {
+          erroEl.textContent = "Usuário desativado. Contate o administrador.";
+          erroEl.classList.remove('hidden');
+          return;
+        }
+        aplicarSessao(encontrado);
+      } catch (err) {
+        console.error(err);
+        erroEl.textContent = "Erro ao conectar ao banco. Verifique as regras do Firestore.";
+        erroEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Entrar no Sistema";
+      }
+    };
+
+    window.fazerLogout = () => {
+      if (confirm("Deseja sair do sistema?")) {
+        sessionStorage.removeItem('conecta_user_id');
+        state.usuarioAtual = null;
+        document.getElementById('form-login').reset();
+        document.getElementById('login-screen').classList.remove('hidden');
+      }
+    };
+
+    // Verifica sessão salva ao abrir a página
+    async function verificarSessaoInicial() {
+      try {
+        await garantirAdminPadrao();
+        const savedId = sessionStorage.getItem('conecta_user_id');
+        if (savedId) {
+          const user = state.usuarios.find(u => u.id === savedId && u.ativo !== false);
+          if (user) aplicarSessao(user);
+        }
+      } catch (e) {
+        console.error("Erro ao verificar sessão:", e);
+      }
+    }
+
+    // =========================================================================
+    // 4. MÓDULO USUÁRIOS (EXCLUSIVO ADMINISTRADOR)
+    // =========================================================================
+    window.abrirModalUsuario = (id = null) => {
+      document.getElementById('form-usuario').reset();
+      document.getElementById('usu-id').value = id || '';
+      if (id) {
+        const u = state.usuarios.find(x => x.id === id);
+        if (u) {
+          document.getElementById('modal-usu-titulo').textContent = `Editar Usuário: ${u.nome}`;
+          document.getElementById('usu-nome').value = u.nome;
+          document.getElementById('usu-senha').value = u.senha;
+          document.getElementById('usu-admin').checked = !!u.isAdmin;
+        }
+      } else {
+        document.getElementById('modal-usu-titulo').textContent = "Novo Usuário";
+      }
+      abrirModal('modal-usuario');
+    };
+
+    window.salvarUsuario = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('usu-id').value || `usu_${Date.now()}`;
+      const nome = document.getElementById('usu-nome').value.trim().toUpperCase().slice(0, 10);
+      const senha = document.getElementById('usu-senha').value.replace(/\D/g, '').slice(0, 6);
+      const isAdmin = document.getElementById('usu-admin').checked;
+
+      if (!nome || !senha) {
+        alert("Informe um nome curto e uma senha numérica.");
+        return;
+      }
+
+      // Garante que a senha não pertença a outro usuário
+      const duplicado = state.usuarios.find(u => u.senha === senha && u.id !== id);
+      if (duplicado) {
+        alert(`A senha "${senha}" já está em uso pelo usuário ${duplicado.nome}. Escolha outra senha.`);
+        return;
+      }
+
+      const antigo = state.usuarios.find(x => x.id === id);
+      const dados = {
+        nome,
+        senha,
+        isAdmin,
+        ativo: antigo ? (antigo.ativo !== false) : true,
+        atualizadoEm: new Date().toISOString()
+      };
+
+      await salvarDocumento('usuarios', id, dados);
+      state.usuarios = await carregarColecao('usuarios');
+      fecharModal('modal-usuario');
+      renderUsuarios();
+    };
+
+    window.alternarStatusUsuario = async (id) => {
+      if (state.usuarioAtual && state.usuarioAtual.id === id) {
+        alert("Você não pode desativar o seu próprio usuário.");
+        return;
+      }
+      const u = state.usuarios.find(x => x.id === id);
+      if (!u) return;
+      const novoStatus = u.ativo === false ? true : false;
+      const acao = novoStatus ? "reativar" : "desativar";
+      if (!confirm(`Deseja ${acao} o usuário ${u.nome}?`)) return;
+
+      await salvarDocumento('usuarios', id, { ativo: novoStatus });
+      state.usuarios = await carregarColecao('usuarios');
+      renderUsuarios();
+    };
+
+    function renderUsuarios() {
+      document.getElementById('lista-usuarios').innerHTML = state.usuarios.map(u => {
+        const ativo = u.ativo !== false;
+        const souEu = state.usuarioAtual && state.usuarioAtual.id === u.id;
+        return `
+        <div class="bg-white p-4 rounded-xl shadow-sm border ${ativo ? 'border-slate-200' : 'border-red-200 bg-red-50/30'} flex flex-col justify-between gap-3">
+          <div>
+            <div class="flex justify-between items-center">
+              <h3 class="font-extrabold text-slate-800 text-base">${u.nome} ${souEu ? '<span class="text-xs text-conecta-green">(Você)</span>' : ''}</h3>
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${u.isAdmin ? 'bg-conecta-dark text-conecta-lime' : 'bg-slate-100 text-slate-700'}">
+                ${u.isAdmin ? 'ADMIN' : 'TÉCNICO'}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Senha: <strong class="tracking-widest text-slate-800">${u.senha}</strong></p>
+            <p class="text-xs mt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-600'}">
+              ${ativo ? '● Ativo' : '● Desativado'}
+            </p>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t text-xs">
+            ${!souEu ? `<button onclick="alternarStatusUsuario('${u.id}')" class="font-semibold ${ativo ? 'text-red-600 hover:underline' : 'text-conecta-green hover:underline'}">${ativo ? 'Desativar' : 'Reativar'}</button>` : '<span></span>'}
+            <button onclick="abrirModalUsuario('${u.id}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700">Editar</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // =========================================================================
+    // 5. NAVEGAÇÃO E PAINEL
     // =========================================================================
     window.switchTab = (tabName) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -890,7 +1071,7 @@
     }
 
     // =========================================================================
-    // 5. MÓDULO CLIENTES
+    // 6. MÓDULO CLIENTES
     // =========================================================================
     window.abrirModalCliente = (id = null) => {
       document.getElementById('form-cliente').reset();
@@ -964,7 +1145,7 @@
     };
 
     // =========================================================================
-    // 6. MÓDULO PRODUTOS & KITS
+    // 7. MÓDULO PRODUTOS & KITS
     // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
@@ -1025,7 +1206,7 @@
     }
 
     // =========================================================================
-    // 7. MÓDULO ORÇAMENTOS
+    // 8. MÓDULO ORÇAMENTOS
     // =========================================================================
     window.abrirModalOrcamento = (id = null) => {
       if (!state.clientes.length) {
@@ -1240,7 +1421,7 @@
     };
 
     // =========================================================================
-    // 8. MÓDULO AGENDA & OS
+    // 9. MÓDULO AGENDA & OS
     // =========================================================================
     window.abrirModalOS = (id = null) => {
       if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
@@ -1249,6 +1430,7 @@
       document.getElementById('os-id').value = id || '';
       document.getElementById('os-data').value = new Date().toISOString().split('T')[0];
       document.getElementById('os-garantia-dias').value = 90;
+      document.getElementById('os-tecnico').value = state.usuarioAtual ? state.usuarioAtual.nome : '';
       document.querySelectorAll('.os-chk').forEach(c => c.checked = false);
       state.fotosOSAntes = []; state.fotosOSDepois = [];
       limparAssinatura();
@@ -1429,7 +1611,7 @@
     };
 
     // =========================================================================
-    // 9. MÓDULO FINANCEIRO
+    // 10. MÓDULO FINANCEIRO
     // =========================================================================
     window.abrirModalFinanceiro = () => {
       document.getElementById('form-financeiro').reset();
@@ -1496,7 +1678,7 @@
     };
 
     // =========================================================================
-    // 10. CONFIGURAÇÕES E BACKUP JSON
+    // 11. CONFIGURAÇÕES E BACKUP JSON
     // =========================================================================
     window.salvarConfig = () => {
       state.config = {
@@ -1511,8 +1693,8 @@
 
     window.exportarBackup = () => {
       const blob = new Blob([JSON.stringify({
-        clientes: state.clientes, produtos: state.produtos, orcamentos: state.orcamentos,
-        os: state.os, financeiro: state.financeiro, config: state.config
+        usuarios: state.usuarios, clientes: state.clientes, produtos: state.produtos,
+        orcamentos: state.orcamentos, os: state.os, financeiro: state.financeiro, config: state.config
       }, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -1527,19 +1709,20 @@
       reader.onload = async (e) => {
         try {
           const data = JSON.parse(e.target.result);
+          if (data.usuarios) for (const x of data.usuarios) await salvarDocumento('usuarios', x.id, x);
           if (data.clientes) for (const x of data.clientes) await salvarDocumento('clientes', x.id, x);
           if (data.produtos) for (const x of data.produtos) await salvarDocumento('produtos_kits', x.id, x);
           if (data.orcamentos) for (const x of data.orcamentos) await salvarDocumento('orcamentos', x.id, x);
           if (data.os) for (const x of data.os) await salvarDocumento('ordens_servico', x.id, x);
           if (data.financeiro) for (const x of data.financeiro) await salvarDocumento('financeiro', x.id, x);
           alert("Backup restaurado com sucesso!");
-          init();
+          initDados();
         } catch (err) { alert("Arquivo JSON inválido."); }
       };
       reader.readAsText(file);
     };
 
-    async function init() {
+    async function initDados() {
       const cfg = localStorage.getItem('conecta_config');
       if (cfg) {
         state.config = JSON.parse(cfg);
@@ -1548,13 +1731,16 @@
         document.getElementById('cfg-tel').value = state.config.tel || '';
         document.getElementById('cfg-cidade').value = state.config.cidade || '';
       }
+      state.usuarios = await carregarColecao('usuarios');
       state.clientes = await carregarColecao('clientes');
       state.produtos = await carregarColecao('produtos_kits');
       state.os = await carregarColecao('ordens_servico');
       state.orcamentos = await carregarColecao('orcamentos');
       state.financeiro = await carregarColecao('financeiro');
-      renderClientes(); renderProdutos(); renderOrcamentos(); renderOS(); renderFinanceiro(); atualizarPainel();
+      renderUsuarios(); renderClientes(); renderProdutos(); renderOrcamentos(); renderOS(); renderFinanceiro(); atualizarPainel();
     }
+
+    verificarSessaoInicial();
   </script>
 </body>
 </html>
