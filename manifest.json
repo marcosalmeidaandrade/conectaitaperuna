@@ -1,0 +1,23 @@
+{
+  "name": "CONECTA - Segurança e Climatização",
+  "short_name": "CONECTA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0A0F0D",
+  "theme_color": "#0A0F0D",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./somentelogo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./somentelogo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
