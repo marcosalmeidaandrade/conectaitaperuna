@@ -73,6 +73,9 @@
       color: #0f172a;
       border-bottom-color: #d1e7dd;
     }
+    body.theme-light #header-subtitle {
+      color: #475569;
+    }
     body.theme-light #app-nav {
       background-color: #f1f7f4;
       border-top-color: #e2ece7;
@@ -135,15 +138,13 @@
     </div>
 
     <div id="login-card" class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6 transition-colors">
-      <div class="text-center space-y-2">
+      <div class="text-center">
         <img
           src="./logo.png"
           alt="CONECTA"
-          class="h-32 w-32 mx-auto object-contain rounded-2xl bg-black p-2 border border-conecta-green/40 shadow-lg"
+          class="h-36 w-36 mx-auto object-contain rounded-2xl bg-black p-2 border border-conecta-green/40 shadow-lg"
           onerror="this.style.display='none'"
         />
-        <h1 class="text-2xl font-extrabold text-conecta-green tracking-wide">CONECTA</h1>
-        <p class="text-xs text-slate-400 uppercase tracking-widest">Segurança e Climatização</p>
       </div>
 
       <form id="form-login" onsubmit="fazerLogin(event)" class="space-y-4 text-sm">
@@ -168,19 +169,23 @@
     </div>
   </div>
 
-  <!-- HEADER SUPERIOR (COM SAFE-AREA, SEM TEXTO DUPLICADO E COM BOAS-VINDAS + TEMA) -->
+  <!-- HEADER SUPERIOR (COM SAFE-AREA, LOGO + CONECTA SEGURANÇA E CLIMATIZAÇÃO + BOAS-VINDAS + TEMA) -->
   <header id="app-header" class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print transition-colors">
     <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center">
+      <div class="flex items-center gap-2.5">
         <img
           id="header-logo"
           src="./somentelogo.png"
           alt="CONECTA"
-          class="h-11 w-auto max-w-[140px] object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm shrink-0"
+          class="h-11 w-11 object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm shrink-0"
           onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');"
         />
         <div id="logo-fallback" class="hidden h-11 w-11 rounded-lg bg-conecta-emerald/20 border border-conecta-green flex items-center justify-center font-bold text-conecta-lime shrink-0">
           C
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-conecta-green leading-tight">CONECTA</h1>
+          <p id="header-subtitle" class="text-[11px] sm:text-xs text-slate-300 tracking-wider uppercase leading-tight">Segurança e Climatização</p>
         </div>
       </div>
 
