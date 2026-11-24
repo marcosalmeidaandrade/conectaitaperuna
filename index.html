@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CONECTA - Segurança e Climatização</title>
-  <link rel="icon" type="image/png" href="./logo.png" />
+  <link rel="icon" type="image/png" href="./somentelogo.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -47,7 +47,7 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
 
-  <!-- ==================== TELA DE LOGIN (SOMENTE SENHA 6 DÍGITOS) ==================== -->
+  <!-- ==================== TELA DE LOGIN ==================== -->
   <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6">
       <div class="text-center space-y-2">
@@ -89,7 +89,7 @@
       <div class="flex items-center gap-3">
         <img
           id="header-logo"
-          src="./logo.png"
+          src="./somentelogo.png"
           alt="CONECTA"
           class="h-12 w-12 object-contain rounded-lg bg-black p-1 border border-conecta-green/50 shadow-sm"
           onerror="this.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden');"
@@ -276,12 +276,12 @@
       <div id="lista-financeiro" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"></div>
     </section>
 
-    <!-- ==================== ABA: USUÁRIOS (EXCLUSIVO ADMIN) ==================== -->
+    <!-- ==================== ABA: USUÁRIOS ==================== -->
     <section id="tab-usuarios" class="tab-content space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-xl font-bold text-slate-800">Gerenciamento de Usuários</h2>
-          <p class="text-xs text-slate-500">Cadastre nomes curtos (máx. 10 caracteres) e senhas numéricas únicas (até 6 dígitos).</p>
+          <p class="text-xs text-slate-500">Cadastro completo da equipe com nome curto (máx. 10 caracteres) e senha numérica (até 6 dígitos).</p>
         </div>
         <button onclick="abrirModalUsuario()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
           + Novo Usuário
@@ -303,11 +303,11 @@
             </div>
             <div>
               <label class="block text-slate-600 font-medium mb-1">CNPJ</label>
-              <input id="cfg-cnpj" type="text" placeholder="00.000.000/0001-00" class="w-full border rounded-lg px-3 py-2" />
+              <input id="cfg-cnpj" type="text" placeholder="00.000.000/0001-00" oninput="aplicarMascaraDoc(this, 'PJ')" maxlength="18" class="w-full border rounded-lg px-3 py-2" />
             </div>
             <div>
               <label class="block text-slate-600 font-medium mb-1">WhatsApp / Telefone</label>
-              <input id="cfg-tel" type="text" placeholder="(22) 99999-9999" class="w-full border rounded-lg px-3 py-2" />
+              <input id="cfg-tel" type="text" inputmode="numeric" placeholder="(22) 99999-9999" oninput="aplicarMascaraTelefone(this)" maxlength="15" class="w-full border rounded-lg px-3 py-2" />
             </div>
             <div>
               <label class="block text-slate-600 font-medium mb-1">Cidade / UF</label>
@@ -338,24 +338,66 @@
 
   <!-- ==================== MODAL USUÁRIO ==================== -->
   <div id="modal-usuario" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[92vh] overflow-y-auto space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 id="modal-usu-titulo" class="font-bold text-lg text-slate-800">Cadastro de Usuário</h3>
         <button onclick="fecharModal('modal-usuario')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
       </div>
       <form id="form-usuario" onsubmit="salvarUsuario(event)" class="space-y-4 text-sm">
         <input type="hidden" id="usu-id" />
-        <div>
-          <label class="block font-medium mb-1">Nome Curto (máx. 10 caracteres) *</label>
-          <input id="usu-nome" type="text" maxlength="10" required placeholder="Ex: MARCOS"
-            class="w-full border rounded-lg px-3 py-2 uppercase font-semibold" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Nome Curto / Login (máx. 10 caract.) *</label>
+            <input id="usu-nome" type="text" maxlength="10" required placeholder="Ex: MARCOS"
+              class="w-full border rounded-lg px-3 py-2 uppercase font-semibold" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Senha Numérica (até 6 números) *</label>
+            <input id="usu-senha" type="text" inputmode="numeric" maxlength="6" required placeholder="Ex: 123456"
+              oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)"
+              class="w-full border rounded-lg px-3 py-2 tracking-widest font-bold" />
+          </div>
         </div>
+
         <div>
-          <label class="block font-medium mb-1">Senha Numérica (até 6 números) *</label>
-          <input id="usu-senha" type="text" inputmode="numeric" maxlength="6" required placeholder="Ex: 123456"
-            oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)"
-            class="w-full border rounded-lg px-3 py-2 tracking-widest font-bold" />
+          <label class="block font-medium mb-1">Nome Completo *</label>
+          <input id="usu-nome-completo" type="text" required placeholder="Nome completo do colaborador" class="w-full border rounded-lg px-3 py-2" />
         </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">CPF *</label>
+            <input id="usu-cpf" type="text" inputmode="numeric" maxlength="14" required placeholder="000.000.000-00"
+              oninput="aplicarMascaraCPF(this)" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Telefone *</label>
+            <input id="usu-telefone" type="text" inputmode="numeric" maxlength="15" required placeholder="(22) 99999-9999"
+              oninput="aplicarMascaraTelefone(this)" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium mb-1">Endereço</label>
+          <input id="usu-endereco" type="text" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+        </div>
+
+        <div class="border rounded-xl p-3 bg-amber-50/60 space-y-3">
+          <p class="font-semibold text-amber-900 text-xs uppercase">Contato de Emergência</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-medium mb-1">Nome do Contato</label>
+              <input id="usu-emerg-nome" type="text" placeholder="Ex: Maria (Esposa)" class="w-full border bg-white rounded-lg px-3 py-2" />
+            </div>
+            <div>
+              <label class="block font-medium mb-1">Telefone de Emergência</label>
+              <input id="usu-emerg-tel" type="text" inputmode="numeric" maxlength="15" placeholder="(22) 99999-9999"
+                oninput="aplicarMascaraTelefone(this)" class="w-full border bg-white rounded-lg px-3 py-2" />
+            </div>
+          </div>
+        </div>
+
         <div class="border rounded-xl p-3 bg-emerald-50/70">
           <label class="flex items-center gap-2 font-semibold text-conecta-emerald cursor-pointer">
             <input type="checkbox" id="usu-admin" class="rounded h-4 w-4" />
@@ -363,6 +405,7 @@
           </label>
           <p class="text-xs text-slate-500 mt-1">Administradores têm acesso total (Financeiro, Orçamentos, Produtos, Usuários e Configurações).</p>
         </div>
+
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="fecharModal('modal-usuario')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
           <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Usuário</button>
@@ -383,7 +426,7 @@
         <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block font-medium mb-1">Tipo</label>
-            <select id="cli-tipo" class="w-full border rounded-lg px-3 py-2">
+            <select id="cli-tipo" onchange="atualizarMascaraDocCliente()" class="w-full border rounded-lg px-3 py-2">
               <option value="PF">Pessoa Física</option>
               <option value="PJ">Pessoa Jurídica</option>
             </select>
@@ -395,12 +438,14 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-medium mb-1">CPF / CNPJ</label>
-            <input id="cli-doc" class="w-full border rounded-lg px-3 py-2" />
+            <label id="cli-doc-label" class="block font-medium mb-1">CPF</label>
+            <input id="cli-doc" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"
+              oninput="aplicarMascaraDoc(this, document.getElementById('cli-tipo').value)" class="w-full border rounded-lg px-3 py-2" />
           </div>
           <div>
             <label class="block font-medium mb-1">WhatsApp *</label>
-            <input id="cli-tel" required placeholder="22999999999" class="w-full border rounded-lg px-3 py-2" />
+            <input id="cli-tel" type="text" inputmode="numeric" maxlength="15" required placeholder="(22) 99999-9999"
+              oninput="aplicarMascaraTelefone(this)" class="w-full border rounded-lg px-3 py-2" />
           </div>
         </div>
         <div>
@@ -772,7 +817,56 @@
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     // =========================================================================
-    // 2. PERSISTÊNCIA NO FIRESTORE
+    // 2. MÁSCARAS GLOBAIS (SOMENTE NÚMEROS -> CPF / CNPJ / TELEFONE)
+    // =========================================================================
+    function formatarCPF(valor) {
+      const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
+      return v
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+
+    function formatarCNPJ(valor) {
+      const v = String(valor || '').replace(/\D/g, '').slice(0, 14);
+      return v
+        .replace(/^(\d{2})(\d)/, '$1.$2')
+        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+        .replace(/(\d{4})(\d)/, '$1-$2');
+    }
+
+    function formatarTelefone(valor) {
+      const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
+      if (v.length <= 2) return v.replace(/(\d{1,2})/, '($1');
+      if (v.length <= 7) return v.replace(/(\d{2})(\d{1,5})/, '($1) $2');
+      return v.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+    }
+
+    window.aplicarMascaraCPF = (el) => { el.value = formatarCPF(el.value); };
+    window.aplicarMascaraTelefone = (el) => { el.value = formatarTelefone(el.value); };
+    window.aplicarMascaraDoc = (el, tipo) => {
+      el.value = tipo === 'PJ' ? formatarCNPJ(el.value) : formatarCPF(el.value);
+    };
+
+    window.atualizarMascaraDocCliente = () => {
+      const tipo = document.getElementById('cli-tipo').value;
+      const input = document.getElementById('cli-doc');
+      const label = document.getElementById('cli-doc-label');
+      if (tipo === 'PJ') {
+        label.textContent = 'CNPJ';
+        input.placeholder = '00.000.000/0001-00';
+        input.maxLength = 18;
+      } else {
+        label.textContent = 'CPF';
+        input.placeholder = '000.000.000-00';
+        input.maxLength = 14;
+      }
+      aplicarMascaraDoc(input, tipo);
+    };
+
+    // =========================================================================
+    // 3. PERSISTÊNCIA NO FIRESTORE
     // =========================================================================
     async function carregarColecao(nome) {
       const snap = await getDocs(collection(db, nome));
@@ -815,13 +909,19 @@
     }
 
     // =========================================================================
-    // 3. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
+    // 4. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
     // =========================================================================
     async function garantirAdminPadrao() {
       state.usuarios = await carregarColecao('usuarios');
       if (state.usuarios.length === 0) {
         const adminPadrao = {
           nome: "ADMIN",
+          nomeCompleto: "Administrador do Sistema",
+          cpf: "",
+          telefone: "",
+          endereco: "",
+          contatoEmergencia: "",
+          telefoneEmergencia: "",
           senha: "123456",
           isAdmin: true,
           ativo: true,
@@ -891,7 +991,6 @@
       }
     };
 
-    // Verifica sessão salva ao abrir a página
     async function verificarSessaoInicial() {
       try {
         await garantirAdminPadrao();
@@ -906,7 +1005,7 @@
     }
 
     // =========================================================================
-    // 4. MÓDULO USUÁRIOS (EXCLUSIVO ADMINISTRADOR)
+    // 5. MÓDULO USUÁRIOS
     // =========================================================================
     window.abrirModalUsuario = (id = null) => {
       document.getElementById('form-usuario').reset();
@@ -915,8 +1014,14 @@
         const u = state.usuarios.find(x => x.id === id);
         if (u) {
           document.getElementById('modal-usu-titulo').textContent = `Editar Usuário: ${u.nome}`;
-          document.getElementById('usu-nome').value = u.nome;
-          document.getElementById('usu-senha').value = u.senha;
+          document.getElementById('usu-nome').value = u.nome || '';
+          document.getElementById('usu-senha').value = u.senha || '';
+          document.getElementById('usu-nome-completo').value = u.nomeCompleto || '';
+          document.getElementById('usu-cpf').value = formatarCPF(u.cpf || '');
+          document.getElementById('usu-telefone').value = formatarTelefone(u.telefone || '');
+          document.getElementById('usu-endereco').value = u.endereco || '';
+          document.getElementById('usu-emerg-nome').value = u.contatoEmergencia || '';
+          document.getElementById('usu-emerg-tel').value = formatarTelefone(u.telefoneEmergencia || '');
           document.getElementById('usu-admin').checked = !!u.isAdmin;
         }
       } else {
@@ -930,6 +1035,12 @@
       const id = document.getElementById('usu-id').value || `usu_${Date.now()}`;
       const nome = document.getElementById('usu-nome').value.trim().toUpperCase().slice(0, 10);
       const senha = document.getElementById('usu-senha').value.replace(/\D/g, '').slice(0, 6);
+      const nomeCompleto = document.getElementById('usu-nome-completo').value.trim();
+      const cpf = document.getElementById('usu-cpf').value.replace(/\D/g, '').slice(0, 11);
+      const telefone = document.getElementById('usu-telefone').value.replace(/\D/g, '').slice(0, 11);
+      const endereco = document.getElementById('usu-endereco').value.trim();
+      const contatoEmergencia = document.getElementById('usu-emerg-nome').value.trim();
+      const telefoneEmergencia = document.getElementById('usu-emerg-tel').value.replace(/\D/g, '').slice(0, 11);
       const isAdmin = document.getElementById('usu-admin').checked;
 
       if (!nome || !senha) {
@@ -937,7 +1048,6 @@
         return;
       }
 
-      // Garante que a senha não pertença a outro usuário
       const duplicado = state.usuarios.find(u => u.senha === senha && u.id !== id);
       if (duplicado) {
         alert(`A senha "${senha}" já está em uso pelo usuário ${duplicado.nome}. Escolha outra senha.`);
@@ -948,6 +1058,12 @@
       const dados = {
         nome,
         senha,
+        nomeCompleto,
+        cpf,
+        telefone,
+        endereco,
+        contatoEmergencia,
+        telefoneEmergencia,
         isAdmin,
         ativo: antigo ? (antigo.ativo !== false) : true,
         atualizadoEm: new Date().toISOString()
@@ -981,15 +1097,19 @@
         const souEu = state.usuarioAtual && state.usuarioAtual.id === u.id;
         return `
         <div class="bg-white p-4 rounded-xl shadow-sm border ${ativo ? 'border-slate-200' : 'border-red-200 bg-red-50/30'} flex flex-col justify-between gap-3">
-          <div>
+          <div class="space-y-1">
             <div class="flex justify-between items-center">
               <h3 class="font-extrabold text-slate-800 text-base">${u.nome} ${souEu ? '<span class="text-xs text-conecta-green">(Você)</span>' : ''}</h3>
               <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${u.isAdmin ? 'bg-conecta-dark text-conecta-lime' : 'bg-slate-100 text-slate-700'}">
                 ${u.isAdmin ? 'ADMIN' : 'TÉCNICO'}
               </span>
             </div>
-            <p class="text-xs text-slate-500 mt-1">Senha: <strong class="tracking-widest text-slate-800">${u.senha}</strong></p>
-            <p class="text-xs mt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-600'}">
+            ${u.nomeCompleto ? `<p class="text-xs font-semibold text-slate-700">${u.nomeCompleto}</p>` : ''}
+            <p class="text-xs text-slate-500">Senha: <strong class="tracking-widest text-slate-800">${u.senha}</strong></p>
+            ${u.cpf ? `<p class="text-xs text-slate-500">CPF: ${formatarCPF(u.cpf)}</p>` : ''}
+            ${u.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(u.telefone)}</p>` : ''}
+            ${u.contatoEmergencia ? `<p class="text-xs text-amber-800 bg-amber-50 p-1.5 rounded mt-1"><strong>Emergência:</strong> ${u.contatoEmergencia} ${u.telefoneEmergencia ? '(' + formatarTelefone(u.telefoneEmergencia) + ')' : ''}</p>` : ''}
+            <p class="text-xs pt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-600'}">
               ${ativo ? '● Ativo' : '● Desativado'}
             </p>
           </div>
@@ -1002,7 +1122,7 @@
     }
 
     // =========================================================================
-    // 5. NAVEGAÇÃO E PAINEL
+    // 6. NAVEGAÇÃO E PAINEL
     // =========================================================================
     window.switchTab = (tabName) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -1071,7 +1191,7 @@
     }
 
     // =========================================================================
-    // 6. MÓDULO CLIENTES
+    // 7. MÓDULO CLIENTES
     // =========================================================================
     window.abrirModalCliente = (id = null) => {
       document.getElementById('form-cliente').reset();
@@ -1079,10 +1199,10 @@
       if (id) {
         const c = state.clientes.find(x => x.id === id);
         if (c) {
-          document.getElementById('cli-tipo').value = c.tipo;
-          document.getElementById('cli-nome').value = c.nome;
-          document.getElementById('cli-doc').value = c.documento || '';
-          document.getElementById('cli-tel').value = c.telefone || '';
+          document.getElementById('cli-tipo').value = c.tipo || 'PF';
+          document.getElementById('cli-nome').value = c.nome || '';
+          document.getElementById('cli-doc').value = c.tipo === 'PJ' ? formatarCNPJ(c.documento || '') : formatarCPF(c.documento || '');
+          document.getElementById('cli-tel').value = formatarTelefone(c.telefone || '');
           document.getElementById('cli-endereco').value = c.endereco || '';
           document.getElementById('cli-equipamentos').value = c.equipamentos || '';
           document.getElementById('cli-ultima-prev').value = c.ultimaPreventiva || '';
@@ -1092,17 +1212,19 @@
           document.getElementById('cli-monit-dia').value = c.monitoramentoDia || 10;
         }
       }
+      atualizarMascaraDocCliente();
       abrirModal('modal-cliente');
     };
 
     window.salvarCliente = async (e) => {
       e.preventDefault();
       const id = document.getElementById('cli-id').value || `cli_${Date.now()}`;
+      const tipo = document.getElementById('cli-tipo').value;
       const dados = {
-        tipo: document.getElementById('cli-tipo').value,
+        tipo,
         nome: document.getElementById('cli-nome').value.trim(),
-        documento: document.getElementById('cli-doc').value.trim(),
-        telefone: document.getElementById('cli-tel').value.replace(/\D/g, ''),
+        documento: document.getElementById('cli-doc').value.replace(/\D/g, ''),
+        telefone: document.getElementById('cli-tel').value.replace(/\D/g, '').slice(0, 11),
         endereco: document.getElementById('cli-endereco').value.trim(),
         equipamentos: document.getElementById('cli-equipamentos').value.trim(),
         ultimaPreventiva: document.getElementById('cli-ultima-prev').value,
@@ -1131,6 +1253,8 @@
               <h3 class="font-bold text-slate-800">${c.nome}</h3>
               <span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold">${c.tipo}</span>
             </div>
+            ${c.documento ? `<p class="text-xs text-slate-500 mt-0.5">${c.tipo === 'PJ' ? 'CNPJ: ' + formatarCNPJ(c.documento) : 'CPF: ' + formatarCPF(c.documento)}</p>` : ''}
+            ${c.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(c.telefone)}</p>` : ''}
             <p class="text-xs text-slate-500 mt-1">${c.endereco || 'Endereço não informado'}</p>
             ${c.monitoramentoAtivo ? `<p class="text-xs text-conecta-green font-semibold mt-1">★ Monitoramento: ${formatBRL(c.monitoramentoValor)}/mês (dia ${c.monitoramentoDia})</p>` : ''}
             ${c.equipamentos ? `<p class="text-xs bg-emerald-50 text-conecta-emerald p-2 rounded mt-2"><strong>Base Instalada:</strong> ${c.equipamentos}</p>` : ''}
@@ -1145,7 +1269,7 @@
     };
 
     // =========================================================================
-    // 7. MÓDULO PRODUTOS & KITS
+    // 8. MÓDULO PRODUTOS & KITS
     // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
@@ -1206,7 +1330,7 @@
     }
 
     // =========================================================================
-    // 8. MÓDULO ORÇAMENTOS
+    // 9. MÓDULO ORÇAMENTOS
     // =========================================================================
     window.abrirModalOrcamento = (id = null) => {
       if (!state.clientes.length) {
@@ -1403,7 +1527,7 @@
       area.innerHTML = `
         <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
           <div class="flex items-center gap-3">
-            <img src="./logo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
+            <img src="./somentelogo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
             <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
           </div>
           <div class="text-right"><p class="font-bold text-lg">ORÇAMENTO ${o.numero}</p><p class="text-xs">Validade: ${o.validade || '-'}</p></div>
@@ -1421,7 +1545,7 @@
     };
 
     // =========================================================================
-    // 9. MÓDULO AGENDA & OS
+    // 10. MÓDULO AGENDA & OS
     // =========================================================================
     window.abrirModalOS = (id = null) => {
       if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
@@ -1590,7 +1714,7 @@
       area.innerHTML = `
         <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
           <div class="flex items-center gap-3">
-            <img src="./logo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
+            <img src="./somentelogo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
             <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
           </div>
           <div class="text-right"><p class="font-bold text-lg">${o.numero}</p><p class="text-xs">Data: ${o.dataAgendamento} | Garantia até: ${o.garantiaAte || '-'}</p></div>
@@ -1611,7 +1735,7 @@
     };
 
     // =========================================================================
-    // 10. MÓDULO FINANCEIRO
+    // 11. MÓDULO FINANCEIRO
     // =========================================================================
     window.abrirModalFinanceiro = () => {
       document.getElementById('form-financeiro').reset();
@@ -1678,7 +1802,7 @@
     };
 
     // =========================================================================
-    // 11. CONFIGURAÇÕES E BACKUP JSON
+    // 12. CONFIGURAÇÕES E BACKUP JSON
     // =========================================================================
     window.salvarConfig = () => {
       state.config = {
