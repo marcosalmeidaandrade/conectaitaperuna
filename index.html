@@ -2,9 +2,19 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>CONECTA - Segurança e Climatização</title>
+
+  <!-- Configurações de App para Smartphone (PWA - iOS e Android) -->
+  <meta name="theme-color" content="#0A0F0D" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CONECTA" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="icon" type="image/png" href="./somentelogo.png" />
+  <link rel="apple-touch-icon" href="./somentelogo.png" />
+  <link rel="manifest" href="./manifest.json" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -24,7 +34,12 @@
     }
   </script>
   <style>
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f3f6f4; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #f3f6f4;
+      overscroll-behavior-y: none;
+      -webkit-tap-highlight-color: transparent;
+    }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     #signature-pad { touch-action: none; cursor: crosshair; }
