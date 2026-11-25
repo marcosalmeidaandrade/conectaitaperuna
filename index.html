@@ -50,6 +50,24 @@
     .tab-content.active { display: block; }
     #signature-pad { touch-action: none; cursor: crosshair; }
 
+    /* Ocultar barra de rolagem horizontal nas abas */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Menu de abas elegante + recolhimento suave ao rolar para baixo */
+    #app-nav {
+      max-height: 68px;
+      opacity: 1;
+      transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease, border-color 0.25s ease;
+    }
+    #app-nav.nav-hidden {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      border-top-color: transparent !important;
+      pointer-events: none;
+    }
+
     /* ==================== TEMA CLARO ==================== */
     body.theme-light {
       background-color: #f8faf9;
@@ -70,7 +88,7 @@
       color: #0f172a;
     }
     body.theme-light #app-header {
-      background-color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.96);
       color: #0f172a;
       border-bottom-color: #d1e7dd;
     }
@@ -78,18 +96,20 @@
       color: #475569;
     }
     body.theme-light #app-nav {
-      background-color: #f1f7f4;
+      background-color: #f4f9f6;
       border-top-color: #e2ece7;
     }
     body.theme-light #app-nav .nav-btn-inactive {
       color: #475569;
+      background-color: transparent;
     }
     body.theme-light #app-nav .nav-btn-inactive:hover {
       color: #006837;
+      background-color: #e2f2ea;
     }
     body.theme-light #app-nav .nav-btn-active {
-      color: #006837;
-      border-color: #00A859;
+      background-color: #00A859;
+      color: #ffffff;
     }
     body.theme-light #usuario-logado {
       color: #006837;
@@ -170,7 +190,7 @@
   </div>
 
   <!-- HEADER SUPERIOR -->
-  <header id="app-header" class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print transition-colors">
+  <header id="app-header" class="bg-conecta-dark/95 backdrop-blur-md text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print transition-colors">
     <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2.5">
         <img
@@ -204,18 +224,18 @@
       </div>
     </div>
 
-    <!-- NAVEGAÇÃO EM ABAS -->
-    <nav id="app-nav" class="bg-[#0f1714] border-t border-white/10 overflow-x-auto transition-colors">
-      <div class="max-w-7xl mx-auto px-4 flex gap-1 min-w-max">
-        <button onclick="switchTab('painel')" data-tab="painel" class="nav-btn nav-btn-active px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime">Painel</button>
-        <button onclick="switchTab('os')" data-tab="os" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Agenda & OS</button>
-        <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Orçamentos</button>
-        <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Clientes</button>
-        <button onclick="switchTab('fornecedores')" data-tab="fornecedores" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Fornecedores</button>
-        <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Produtos & Kits</button>
-        <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Financeiro</button>
-        <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Usuários</button>
-        <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Configurações</button>
+    <!-- NAVEGAÇÃO EM ABAS (ELEGANTE + AUTO-HIDE AO ROLAR) -->
+    <nav id="app-nav" class="bg-[#0f1714]/95 border-t border-white/10 overflow-x-auto no-scrollbar">
+      <div class="max-w-7xl mx-auto px-3 py-2 flex items-center gap-1.5 min-w-max">
+        <button onclick="switchTab('painel')" data-tab="painel" class="nav-btn nav-btn-active px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-conecta-green text-white shadow-md shadow-conecta-green/25 transition-all">Painel</button>
+        <button onclick="switchTab('os')" data-tab="os" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Agenda & OS</button>
+        <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Orçamentos</button>
+        <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Clientes</button>
+        <button onclick="switchTab('fornecedores')" data-tab="fornecedores" data-admin-only="true" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Fornecedores</button>
+        <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Produtos & Kits</button>
+        <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Financeiro</button>
+        <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Usuários</button>
+        <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">Configurações</button>
       </div>
     </nav>
   </header>
@@ -247,10 +267,10 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-slate-800 text-base">Próximas Ordens de Serviço</h2>
+            <h2 id="painel-os-titulo" class="font-bold text-slate-800 text-base">Ordens de Serviço Direcionadas / Abertas</h2>
             <button onclick="switchTab('os')" class="text-xs font-semibold text-conecta-green hover:underline">Ver todas →</button>
           </div>
-          <div id="painel-os-lista" class="space-y-2 text-sm text-slate-500"></div>
+          <div id="painel-os-lista" class="space-y-2.5 text-sm text-slate-500"></div>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
@@ -261,6 +281,31 @@
             <div id="painel-estoque" class="space-y-1.5 text-xs text-slate-500"></div>
           </div>
         </div>
+      </div>
+
+      <!-- ESTATÍSTICAS DE TEMPO E DESEMPENHO POR TÉCNICO -->
+      <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="font-bold text-slate-800 text-base">Estatísticas de Tempo e Produtividade por Técnico</h2>
+            <p class="text-xs text-slate-500">Medição automática desde a geração do orçamento até a finalização da OS em campo.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+            <p class="text-[11px] uppercase font-semibold text-slate-500">Tempo Médio Ciclo Completo (Orç. → Fim OS)</p>
+            <p id="stat-tempo-ciclo" class="text-lg font-extrabold text-conecta-emerald mt-1">--</p>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+            <p class="text-[11px] uppercase font-semibold text-slate-500">Tempo Médio Execução em Campo (Início → Fim)</p>
+            <p id="stat-tempo-campo" class="text-lg font-extrabold text-blue-700 mt-1">--</p>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+            <p class="text-[11px] uppercase font-semibold text-slate-500">Total de OS Concluídas</p>
+            <p id="stat-total-concluidas" class="text-lg font-extrabold text-slate-800 mt-1">0</p>
+          </div>
+        </div>
+        <div id="painel-stats-tecnicos" class="overflow-x-auto"></div>
       </div>
     </section>
 
@@ -443,6 +488,32 @@
       </div>
     </section>
   </main>
+
+  <!-- ==================== MODAL APROVAR ORÇAMENTO E AGENDAR OS ==================== -->
+  <div id="modal-agendar-os" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-lg text-slate-800">Agendar e Direcionar OS</h3>
+        <button onclick="fecharModal('modal-agendar-os')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-agendar-os" onsubmit="confirmarAprovacaoEGerarOS(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="ag-orc-id" />
+        <p id="ag-orc-resumo" class="text-xs bg-emerald-50 text-conecta-emerald p-3 rounded-lg font-medium"></p>
+        <div>
+          <label class="block font-medium mb-1">Data do Agendamento *</label>
+          <input id="ag-data" type="date" required class="w-full border rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Técnico Responsável *</label>
+          <select id="ag-tecnico" required class="w-full border rounded-lg px-3 py-2"></select>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-agendar-os')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Confirmar e Gerar OS</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- ==================== MODAL USUÁRIO ==================== -->
   <div id="modal-usuario" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
@@ -773,7 +844,6 @@
           </div>
         </div>
 
-        <!-- Campo Motivo da Recusa (exibido quando status = recusado) -->
         <div id="orc-recusa-box" class="hidden border border-red-300 bg-red-50 rounded-xl p-3 space-y-1.5">
           <label class="block font-semibold text-red-700 text-xs uppercase">Motivo da Recusa *</label>
           <textarea id="orc-motivo-recusa" rows="2" placeholder="Descreva o motivo pelo qual o orçamento foi recusado pelo cliente..." class="w-full border border-red-200 bg-white rounded-lg px-3 py-2 text-sm"></textarea>
@@ -836,6 +906,8 @@
       </div>
       <form id="form-os" onsubmit="salvarOS(event)" class="space-y-4 text-sm">
         <input type="hidden" id="os-id" />
+        <div id="os-timeline-box" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-1"></div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div class="md:col-span-2">
             <label class="block font-medium mb-1">Cliente *</label>
@@ -866,7 +938,7 @@
           </div>
           <div class="md:col-span-2">
             <label class="block font-medium mb-1">Técnico Responsável</label>
-            <input id="os-tecnico" placeholder="Nome do técnico" class="w-full border rounded-lg px-3 py-2" />
+            <select id="os-tecnico" class="w-full border rounded-lg px-3 py-2"></select>
           </div>
           <div>
             <label class="block font-medium mb-1">Valor Total (R$)</label>
@@ -917,9 +989,15 @@
           <canvas id="signature-pad" width="540" height="120" class="w-full bg-white border border-slate-300 rounded-lg"></canvas>
         </div>
 
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="fecharModal('modal-os')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
-          <button id="btn-salvar-os" type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar OS</button>
+        <div class="flex flex-wrap justify-between items-center gap-2 pt-2">
+          <div class="flex gap-2">
+            <button type="button" id="btn-os-iniciar-modal" onclick="marcarOSIniciadaNoModal()" class="hidden px-3 py-2 rounded-lg bg-amber-500 text-white font-semibold text-xs">▶ Iniciar Serviço</button>
+            <button type="button" id="btn-os-fechar-modal" onclick="marcarOSConcluidaNoModal()" class="hidden px-3 py-2 rounded-lg bg-conecta-dark text-conecta-lime font-semibold text-xs">✓ Fechar / Concluir OS</button>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="fecharModal('modal-os')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+            <button id="btn-salvar-os" type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar OS</button>
+          </div>
         </div>
       </form>
     </div>
@@ -982,9 +1060,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // =========================================================================
-    // 1. CONFIGURAÇÃO FIREBASE E CLOUDINARY
-    // =========================================================================
     const firebaseConfig = {
       apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
       authDomain: "conectaitaperuna.firebaseapp.com",
@@ -997,7 +1072,7 @@
     const CLOUDINARY_CLOUD_NAME = "ortti51a";
     const CLOUDINARY_UPLOAD_PRESET = "conecta_fotos";
     const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-    const TEMPO_INATIVIDADE_MS = 3 * 60 * 1000; // 3 minutos
+    const TEMPO_INATIVIDADE_MS = 3 * 60 * 1000;
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -1024,13 +1099,34 @@
 
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-    function formatarDataHoraBR(date = new Date()) {
+    function formatarDataBR(isoDate) {
+      if (!isoDate) return '-';
+      const parts = String(isoDate).split('T')[0].split('-');
+      if (parts.length !== 3) return isoDate;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function formatarDataHoraBR(dateInput = new Date()) {
+      const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+      if (isNaN(date.getTime())) return '-';
       const d = String(date.getDate()).padStart(2, '0');
       const m = String(date.getMonth() + 1).padStart(2, '0');
       const y = date.getFullYear();
       const h = String(date.getHours()).padStart(2, '0');
       const min = String(date.getMinutes()).padStart(2, '0');
       return `${d}/${m}/${y} ${h}:${min}hs`;
+    }
+
+    function formatarDuracaoMs(ms) {
+      if (!ms || ms < 0) return '--';
+      const totalMin = Math.round(ms / 60000);
+      if (totalMin < 60) return `${totalMin} min`;
+      const horas = Math.floor(totalMin / 60);
+      const mins = totalMin % 60;
+      if (horas < 24) return `${horas}h ${String(mins).padStart(2, '0')}m`;
+      const dias = Math.floor(horas / 24);
+      const hRest = horas % 24;
+      return `${dias}d ${hRest}h ${mins}m`;
     }
 
     const STATUS_ORDEM = [
@@ -1040,17 +1136,23 @@
       { chave: 'recusado', label: 'Recusado' }
     ];
 
-    // =========================================================================
-    // 2. TEMA DE CORES (ESCURO PADRÃO / CLARO)
-    // =========================================================================
+    let ultimoScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('app-nav');
+      if (!nav) return;
+      const atualY = window.scrollY;
+      if (atualY <= 24) nav.classList.remove('nav-hidden');
+      else if (atualY > ultimoScrollY + 6 && atualY > 60) nav.classList.add('nav-hidden');
+      else if (atualY < ultimoScrollY - 6) nav.classList.remove('nav-hidden');
+      ultimoScrollY = atualY;
+    }, { passive: true });
+
     function aplicarTema(tema) {
       const claro = tema === 'light';
       document.body.classList.toggle('theme-light', claro);
       localStorage.setItem('conecta_tema', claro ? 'light' : 'dark');
-
       const metaTheme = document.getElementById('meta-theme-color');
       if (metaTheme) metaTheme.setAttribute('content', claro ? '#ffffff' : '#0A0F0D');
-
       document.querySelectorAll('.tema-icone').forEach(el => el.textContent = claro ? '🌙' : '☀️');
       document.querySelectorAll('.tema-texto').forEach(el => el.textContent = claro ? 'Escuro' : 'Claro');
     }
@@ -1059,18 +1161,12 @@
       const atual = document.body.classList.contains('theme-light') ? 'light' : 'dark';
       aplicarTema(atual === 'light' ? 'dark' : 'light');
     };
-
     aplicarTema(localStorage.getItem('conecta_tema') || 'dark');
 
-    // =========================================================================
-    // 3. ESCUTA DE INATIVIDADE (3 MINUTOS -> LOGOUT AUTOMÁTICO)
-    // =========================================================================
     function reiniciarTimerInatividade() {
       if (!state.usuarioAtual) return;
       clearTimeout(timerInatividade);
-      timerInatividade = setTimeout(() => {
-        encerrarSessao(true);
-      }, TEMPO_INATIVIDADE_MS);
+      timerInatividade = setTimeout(() => encerrarSessao(true), TEMPO_INATIVIDADE_MS);
     }
 
     ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'].forEach(evt => {
@@ -1085,7 +1181,6 @@
       state.usuarioAtual = null;
       document.getElementById('form-login').reset();
       document.getElementById('login-screen').classList.remove('hidden');
-
       const erroEl = document.getElementById('login-erro');
       if (porInatividade) {
         erroEl.textContent = "Sessão encerrada automaticamente após 3 minutos de inatividade.";
@@ -1095,19 +1190,11 @@
       }
     }
 
-    // =========================================================================
-    // 4. UPLOAD ORIGINAL PARA CLOUDINARY
-    // =========================================================================
     async function uploadFotoCloudinary(file) {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-      const res = await fetch(CLOUDINARY_URL, {
-        method: 'POST',
-        body: formData
-      });
-
+      const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error?.message || 'Falha ao enviar imagem para o Cloudinary.');
@@ -1116,26 +1203,14 @@
       return data.secure_url;
     }
 
-    // =========================================================================
-    // 5. MÁSCARAS GLOBAIS (SOMENTE NÚMEROS -> CPF / CNPJ / TELEFONE)
-    // =========================================================================
     function formatarCPF(valor) {
       const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
-      return v
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      return v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
     }
-
     function formatarCNPJ(valor) {
       const v = String(valor || '').replace(/\D/g, '').slice(0, 14);
-      return v
-        .replace(/^(\d{2})(\d)/, '$1.$2')
-        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-        .replace(/\.(\d{3})(\d)/, '.$1/$2')
-        .replace(/(\d{4})(\d)/, '$1-$2');
+      return v.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
     }
-
     function formatarTelefone(valor) {
       const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
       if (v.length <= 2) return v.replace(/(\d{1,2})/, '($1');
@@ -1145,23 +1220,14 @@
 
     window.aplicarMascaraCPF = (el) => { el.value = formatarCPF(el.value); };
     window.aplicarMascaraTelefone = (el) => { el.value = formatarTelefone(el.value); };
-    window.aplicarMascaraDoc = (el, tipo) => {
-      el.value = tipo === 'PJ' ? formatarCNPJ(el.value) : formatarCPF(el.value);
-    };
+    window.aplicarMascaraDoc = (el, tipo) => { el.value = tipo === 'PJ' ? formatarCNPJ(el.value) : formatarCPF(el.value); };
 
     window.atualizarMascaraDocCliente = () => {
       const tipo = document.getElementById('cli-tipo').value;
       const input = document.getElementById('cli-doc');
       const label = document.getElementById('cli-doc-label');
-      if (tipo === 'PJ') {
-        label.textContent = 'CNPJ';
-        input.placeholder = '00.000.000/0001-00';
-        input.maxLength = 18;
-      } else {
-        label.textContent = 'CPF';
-        input.placeholder = '000.000.000-00';
-        input.maxLength = 14;
-      }
+      if (tipo === 'PJ') { label.textContent = 'CNPJ'; input.placeholder = '00.000.000/0001-00'; input.maxLength = 18; }
+      else { label.textContent = 'CPF'; input.placeholder = '000.000.000-00'; input.maxLength = 14; }
       aplicarMascaraDoc(input, tipo);
     };
 
@@ -1169,30 +1235,18 @@
       const tipo = document.getElementById('forn-tipo').value;
       const input = document.getElementById('forn-doc');
       const label = document.getElementById('forn-doc-label');
-      if (tipo === 'PJ') {
-        label.textContent = 'CNPJ';
-        input.placeholder = '00.000.000/0001-00';
-        input.maxLength = 18;
-      } else {
-        label.textContent = 'CPF';
-        input.placeholder = '000.000.000-00';
-        input.maxLength = 14;
-      }
+      if (tipo === 'PJ') { label.textContent = 'CNPJ'; input.placeholder = '00.000.000/0001-00'; input.maxLength = 18; }
+      else { label.textContent = 'CPF'; input.placeholder = '000.000.000-00'; input.maxLength = 14; }
       aplicarMascaraDoc(input, tipo);
     };
 
-    // =========================================================================
-    // 6. PERSISTÊNCIA E SINCRONIZAÇÃO EM TEMPO REAL (onSnapshot POR ABA)
-    // =========================================================================
     async function carregarColecao(nome) {
       const snap = await getDocs(collection(db, nome));
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
-
     async function salvarDocumento(nome, id, dados) {
       await setDoc(doc(db, nome, id), dados, { merge: true });
     }
-
     async function proximoNumero(chave, prefixo) {
       const ano = new Date().getFullYear();
       const ref = doc(db, "configuracoes", "contadores");
@@ -1207,16 +1261,12 @@
     }
 
     function desligarListenerAtivo() {
-      if (activeUnsubscribe) {
-        activeUnsubscribe();
-        activeUnsubscribe = null;
-      }
+      if (activeUnsubscribe) { activeUnsubscribe(); activeUnsubscribe = null; }
     }
 
     function ativarSincronizacaoAba(tabName) {
       desligarListenerAtivo();
       const badge = document.getElementById('db-status');
-
       const mapa = {
         os: { colecao: 'ordens_servico', chave: 'os', render: renderOS },
         orcamentos: { colecao: 'orcamentos', chave: 'orcamentos', render: renderOrcamentos },
@@ -1226,62 +1276,45 @@
         financeiro: { colecao: 'financeiro', chave: 'financeiro', render: renderFinanceiro },
         usuarios: { colecao: 'usuarios', chave: 'usuarios', render: renderUsuarios }
       };
-
       if (tabName === 'painel') {
         badge.textContent = "Painel Atualizado";
         carregarPainelSobDemanda();
         return;
       }
-
       const alvo = mapa[tabName];
-      if (!alvo) {
-        badge.textContent = "Firebase Online";
-        return;
-      }
-
+      if (!alvo) { badge.textContent = "Firebase Online"; return; }
       badge.textContent = "● Tempo Real";
       activeUnsubscribe = onSnapshot(collection(db, alvo.colecao), (snap) => {
         state[alvo.chave] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         alvo.render();
-      }, (err) => {
-        console.error("Erro no onSnapshot:", err);
-      });
+      }, (err) => console.error("Erro no onSnapshot:", err));
     }
 
     async function carregarPainelSobDemanda() {
-      const [clientes, produtos, os, orcamentos, financeiro] = await Promise.all([
-        carregarColecao('clientes'),
-        carregarColecao('produtos_kits'),
-        carregarColecao('ordens_servico'),
-        carregarColecao('orcamentos'),
-        carregarColecao('financeiro')
+      const [usuarios, clientes, produtos, os, orcamentos, financeiro] = await Promise.all([
+        carregarColecao('usuarios'), carregarColecao('clientes'), carregarColecao('produtos_kits'),
+        carregarColecao('ordens_servico'), carregarColecao('orcamentos'), carregarColecao('financeiro')
       ]);
-      state.clientes = clientes;
-      state.produtos = produtos;
-      state.os = os;
-      state.orcamentos = orcamentos;
-      state.financeiro = financeiro;
+      state.usuarios = usuarios; state.clientes = clientes; state.produtos = produtos;
+      state.os = os; state.orcamentos = orcamentos; state.financeiro = financeiro;
       atualizarPainel();
     }
 
-    // =========================================================================
-    // 7. AUTENTICAÇÃO POR SENHA NUMÉRICA (ATÉ 6 DÍGITOS)
-    // =========================================================================
+    function popularSelectTecnicos(selectId, valorSelecionado = '') {
+      const ativos = state.usuarios.filter(u => u.ativo !== false);
+      const el = document.getElementById(selectId);
+      el.innerHTML = '<option value="">Selecione o técnico...</option>' +
+        ativos.map(u => `<option value="${u.nome}">${u.nome}${u.nomeCompleto ? ' - ' + u.nomeCompleto : ''}</option>`).join('');
+      if (valorSelecionado) el.value = valorSelecionado;
+    }
+
     async function garantirAdminPadrao() {
       state.usuarios = await carregarColecao('usuarios');
       if (state.usuarios.length === 0) {
         const adminPadrao = {
-          nome: "ADMIN",
-          nomeCompleto: "Administrador do Sistema",
-          cpf: "",
-          telefone: "",
-          endereco: "",
-          contatoEmergencia: "",
-          telefoneEmergencia: "",
-          senha: "123456",
-          isAdmin: true,
-          ativo: true,
-          criadoEm: new Date().toISOString()
+          nome: "ADMIN", nomeCompleto: "Administrador do Sistema", cpf: "", telefone: "",
+          endereco: "", contatoEmergencia: "", telefoneEmergencia: "", senha: "123456",
+          isAdmin: true, ativo: true, criadoEm: new Date().toISOString()
         };
         await salvarDocumento('usuarios', 'usu_admin_inicial', adminPadrao);
         state.usuarios = [{ id: 'usu_admin_inicial', ...adminPadrao }];
@@ -1292,14 +1325,9 @@
       state.usuarioAtual = usuario;
       state.perfil = usuario.isAdmin ? 'admin' : 'tecnico';
       sessionStorage.setItem('conecta_user_id', usuario.id);
-
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('usuario-logado').textContent = `Bem-vindo, ${usuario.nome}! (${usuario.isAdmin ? 'Admin' : 'Técnico'})`;
-
-      document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
-        el.style.display = usuario.isAdmin ? '' : 'none';
-      });
-
+      document.querySelectorAll('[data-admin-only="true"]').forEach(el => el.style.display = usuario.isAdmin ? '' : 'none');
       const cfg = localStorage.getItem('conecta_config');
       if (cfg) {
         state.config = JSON.parse(cfg);
@@ -1308,7 +1336,6 @@
         document.getElementById('cfg-tel').value = state.config.tel || '';
         document.getElementById('cfg-cidade').value = state.config.cidade || '';
       }
-
       reiniciarTimerInatividade();
       switchTab('painel');
     }
@@ -1318,40 +1345,19 @@
       const senha = document.getElementById('login-senha').value.trim();
       const erroEl = document.getElementById('login-erro');
       const btn = document.getElementById('btn-entrar');
-      erroEl.classList.add('hidden');
-      btn.disabled = true;
-      btn.textContent = "Verificando...";
-
+      erroEl.classList.add('hidden'); btn.disabled = true; btn.textContent = "Verificando...";
       try {
         await garantirAdminPadrao();
         const encontrado = state.usuarios.find(u => String(u.senha) === senha);
-
-        if (!encontrado) {
-          erroEl.textContent = "Senha inválida. Verifique e tente novamente.";
-          erroEl.classList.remove('hidden');
-          return;
-        }
-        if (encontrado.ativo === false) {
-          erroEl.textContent = "Usuário desativado. Contate o administrador.";
-          erroEl.classList.remove('hidden');
-          return;
-        }
+        if (!encontrado) { erroEl.textContent = "Senha inválida. Verifique e tente novamente."; erroEl.classList.remove('hidden'); return; }
+        if (encontrado.ativo === false) { erroEl.textContent = "Usuário desativado. Contate o administrador."; erroEl.classList.remove('hidden'); return; }
         aplicarSessao(encontrado);
       } catch (err) {
-        console.error(err);
-        erroEl.textContent = "Erro ao conectar ao banco. Verifique as regras do Firestore.";
-        erroEl.classList.remove('hidden');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Entrar no Sistema";
-      }
+        console.error(err); erroEl.textContent = "Erro ao conectar ao banco. Verifique as regras do Firestore."; erroEl.classList.remove('hidden');
+      } finally { btn.disabled = false; btn.textContent = "Entrar no Sistema"; }
     };
 
-    window.fazerLogout = () => {
-      if (confirm("Deseja sair do sistema?")) {
-        encerrarSessao(false);
-      }
-    };
+    window.fazerLogout = () => { if (confirm("Deseja sair do sistema?")) encerrarSessao(false); };
 
     async function verificarSessaoInicial() {
       try {
@@ -1361,14 +1367,9 @@
           const user = state.usuarios.find(u => u.id === savedId && u.ativo !== false);
           if (user) aplicarSessao(user);
         }
-      } catch (e) {
-        console.error("Erro ao verificar sessão:", e);
-      }
+      } catch (e) { console.error("Erro ao verificar sessão:", e); }
     }
 
-    // =========================================================================
-    // 8. MÓDULO USUÁRIOS
-    // =========================================================================
     window.abrirModalUsuario = (id = null) => {
       document.getElementById('form-usuario').reset();
       document.getElementById('usu-id').value = id || '';
@@ -1386,9 +1387,7 @@
           document.getElementById('usu-emerg-tel').value = formatarTelefone(u.telefoneEmergencia || '');
           document.getElementById('usu-admin').checked = !!u.isAdmin;
         }
-      } else {
-        document.getElementById('modal-usu-titulo').textContent = "Novo Usuário";
-      }
+      } else { document.getElementById('modal-usu-titulo').textContent = "Novo Usuário"; }
       abrirModal('modal-usuario');
     };
 
@@ -1404,48 +1403,23 @@
       const contatoEmergencia = document.getElementById('usu-emerg-nome').value.trim();
       const telefoneEmergencia = document.getElementById('usu-emerg-tel').value.replace(/\D/g, '').slice(0, 11);
       const isAdmin = document.getElementById('usu-admin').checked;
-
-      if (!nome || !senha) {
-        alert("Informe um nome curto e uma senha numérica.");
-        return;
-      }
-
+      if (!nome || !senha) { alert("Informe um nome curto e uma senha numérica."); return; }
       const duplicado = state.usuarios.find(u => u.senha === senha && u.id !== id);
-      if (duplicado) {
-        alert(`A senha "${senha}" já está em uso pelo usuário ${duplicado.nome}. Escolha outra senha.`);
-        return;
-      }
-
+      if (duplicado) { alert(`A senha "${senha}" já está em uso pelo usuário ${duplicado.nome}.`); return; }
       const antigo = state.usuarios.find(x => x.id === id);
-      const dados = {
-        nome,
-        senha,
-        nomeCompleto,
-        cpf,
-        telefone,
-        endereco,
-        contatoEmergencia,
-        telefoneEmergencia,
-        isAdmin,
-        ativo: antigo ? (antigo.ativo !== false) : true,
-        atualizadoEm: new Date().toISOString()
-      };
-
-      await salvarDocumento('usuarios', id, dados);
+      await salvarDocumento('usuarios', id, {
+        nome, senha, nomeCompleto, cpf, telefone, endereco, contatoEmergencia, telefoneEmergencia,
+        isAdmin, ativo: antigo ? (antigo.ativo !== false) : true, atualizadoEm: new Date().toISOString()
+      });
       fecharModal('modal-usuario');
     };
 
     window.alternarStatusUsuario = async (id) => {
-      if (state.usuarioAtual && state.usuarioAtual.id === id) {
-        alert("Você não pode desativar o seu próprio usuário.");
-        return;
-      }
+      if (state.usuarioAtual && state.usuarioAtual.id === id) { alert("Você não pode desativar o seu próprio usuário."); return; }
       const u = state.usuarios.find(x => x.id === id);
       if (!u) return;
       const novoStatus = u.ativo === false ? true : false;
-      const acao = novoStatus ? "reativar" : "desativar";
-      if (!confirm(`Deseja ${acao} o usuário ${u.nome}?`)) return;
-
+      if (!confirm(`Deseja ${novoStatus ? "reativar" : "desativar"} o usuário ${u.nome}?`)) return;
       await salvarDocumento('usuarios', id, { ativo: novoStatus });
     };
 
@@ -1458,18 +1432,14 @@
           <div class="space-y-1">
             <div class="flex justify-between items-center">
               <h3 class="font-extrabold text-slate-800 text-base">${u.nome} ${souEu ? '<span class="text-xs text-conecta-green">(Você)</span>' : ''}</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${u.isAdmin ? 'bg-conecta-dark text-conecta-lime' : 'bg-slate-100 text-slate-700'}">
-                ${u.isAdmin ? 'ADMIN' : 'TÉCNICO'}
-              </span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${u.isAdmin ? 'bg-conecta-dark text-conecta-lime' : 'bg-slate-100 text-slate-700'}">${u.isAdmin ? 'ADMIN' : 'TÉCNICO'}</span>
             </div>
             ${u.nomeCompleto ? `<p class="text-xs font-semibold text-slate-700">${u.nomeCompleto}</p>` : ''}
             <p class="text-xs text-slate-500">Senha: <strong class="tracking-widest text-slate-800">${u.senha}</strong></p>
             ${u.cpf ? `<p class="text-xs text-slate-500">CPF: ${formatarCPF(u.cpf)}</p>` : ''}
             ${u.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(u.telefone)}</p>` : ''}
             ${u.contatoEmergencia ? `<p class="text-xs text-amber-800 bg-amber-50 p-1.5 rounded mt-1"><strong>Emergência:</strong> ${u.contatoEmergencia} ${u.telefoneEmergencia ? '(' + formatarTelefone(u.telefoneEmergencia) + ')' : ''}</p>` : ''}
-            <p class="text-xs pt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-600'}">
-              ${ativo ? '● Ativo' : '● Desativado'}
-            </p>
+            <p class="text-xs pt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-600'}">${ativo ? '● Ativo' : '● Desativado'}</p>
           </div>
           <div class="flex items-center justify-between pt-2 border-t text-xs">
             ${!souEu ? `<button onclick="alternarStatusUsuario('${u.id}')" class="font-semibold ${ativo ? 'text-red-600 hover:underline' : 'text-conecta-green hover:underline'}">${ativo ? 'Desativar' : 'Reativar'}</button>` : '<span></span>'}
@@ -1479,67 +1449,72 @@
       }).join('');
     }
 
-    // =========================================================================
-    // 9. NAVEGAÇÃO E PAINEL
-    // =========================================================================
     window.switchTab = (tabName) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabName}`).classList.add('active');
       document.querySelectorAll('.nav-btn').forEach(btn => {
         const active = btn.dataset.tab === tabName;
         btn.className = active
-          ? "nav-btn nav-btn-active px-4 py-3 text-sm font-semibold border-b-2 border-conecta-green text-conecta-lime"
-          : "nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white";
+          ? "nav-btn nav-btn-active px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-conecta-green text-white shadow-md shadow-conecta-green/25 transition-all"
+          : "nav-btn nav-btn-inactive px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all";
       });
+      const nav = document.getElementById('app-nav');
+      if (nav) nav.classList.remove('nav-hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       ativarSincronizacaoAba(tabName);
     };
 
-    window.fecharModal = (id) => {
-      document.getElementById(id).classList.add('hidden');
-      document.getElementById(id).classList.remove('flex');
+    window.fecharModal = (id) => { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); };
+    function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+
+    window.iniciarOSRapido = async (osId) => {
+      const o = state.os.find(x => x.id === osId);
+      if (!o) return;
+      const agora = new Date().toISOString();
+      await salvarDocumento('ordens_servico', osId, { status: 'em_andamento', iniciadaEm: o.iniciadaEm || agora, atualizadoEm: agora });
+      await carregarPainelSobDemanda();
+      editarOS(osId);
     };
-    function abrirModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-      document.getElementById(id).classList.add('flex');
-    }
 
     function atualizarPainel() {
       document.getElementById('kpi-clientes').textContent = state.clientes.length;
       document.getElementById('kpi-os-abertas').textContent = state.os.filter(o => o.status !== 'concluida').length;
       document.getElementById('kpi-orcamentos').textContent = state.orcamentos.filter(o => o.status === 'enviado' || o.status === 'rascunho').length;
-
-      const saldo = state.financeiro
-        .filter(f => f.status === 'pago')
-        .reduce((acc, f) => acc + (f.tipo === 'receita' ? Number(f.valor) : -Number(f.valor)), 0);
+      const saldo = state.financeiro.filter(f => f.status === 'pago').reduce((acc, f) => acc + (f.tipo === 'receita' ? Number(f.valor) : -Number(f.valor)), 0);
       document.getElementById('kpi-saldo').textContent = formatBRL(saldo);
 
-      const proximas = state.os.filter(o => o.status !== 'concluida').slice(0, 5);
-      document.getElementById('painel-os-lista').innerHTML = proximas.length
-        ? proximas.map(o => `
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+      const nomeLogado = state.usuarioAtual ? state.usuarioAtual.nome : '';
+      const ehTecnico = state.perfil !== 'admin';
+      document.getElementById('painel-os-titulo').textContent = ehTecnico ? `Minhas Ordens de Serviço (${nomeLogado})` : 'Ordens de Serviço Direcionadas / Abertas';
+
+      const abertas = state.os.filter(o => {
+        if (o.status === 'concluida') return false;
+        if (ehTecnico) return (o.tecnico || '').toUpperCase() === nomeLogado.toUpperCase();
+        return true;
+      });
+
+      document.getElementById('painel-os-lista').innerHTML = abertas.length
+        ? abertas.slice(0, 8).map(o => `
+            <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
               <div>
                 <span class="font-bold text-conecta-emerald">${o.numero}</span> • <span class="font-semibold text-slate-800">${o.clienteNome}</span>
-                <p class="text-xs text-slate-500">${o.categoria === 'seguranca' ? 'Segurança/CFTV' : 'Climatização'} • ${o.dataAgendamento}</p>
+                <p class="text-xs text-slate-500">Agendada: <strong>${formatarDataBR(o.dataAgendamento)}</strong> • Técnico: <strong>${o.tecnico || 'Não atribuído'}</strong></p>
+                <p class="text-[11px] text-slate-500">Status: <strong class="${o.status === 'em_andamento' ? 'text-amber-600' : 'text-blue-600'}">${o.status.replace('_', ' ').toUpperCase()}</strong>${o.iniciadaEm ? ` • Iniciada: ${formatarDataHoraBR(o.iniciadaEm)}` : ''}</p>
               </div>
-              <button onclick="editarOS('${o.id}')" class="text-xs bg-white border px-3 py-1.5 rounded-lg font-semibold hover:bg-slate-100">Abrir</button>
+              <div class="flex gap-1.5">
+                ${o.status === 'agendada' ? `<button onclick="iniciarOSRapido('${o.id}')" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold">▶ Iniciar</button>` : ''}
+                <button onclick="editarOS('${o.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-lg font-semibold">${o.status === 'em_andamento' ? 'Finalizar / Abrir' : 'Abrir'}</button>
+              </div>
             </div>`).join('')
-        : "Nenhuma OS pendente.";
+        : '<p class="text-xs text-slate-400">Nenhuma OS pendente.</p>';
 
-      const limite = new Date();
-      limite.setDate(limite.getDate() + 30);
+      const limite = new Date(); limite.setDate(limite.getDate() + 30);
       const limiteStr = limite.toISOString().split('T')[0];
       const preventivas = state.clientes.filter(c => c.proximaPreventiva && c.proximaPreventiva <= limiteStr);
       document.getElementById('painel-preventivas').innerHTML = preventivas.length
         ? preventivas.map(c => {
             const msg = encodeURIComponent(`Olá ${c.nome}, aqui é da ${state.config.nome}! Está na época da manutenção preventiva/higienização dos seus equipamentos. Podemos agendar uma visita?`);
-            return `
-            <div class="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
-              <div>
-                <p class="font-semibold text-slate-800 text-xs">${c.nome}</p>
-                <p class="text-xs text-amber-800">Preventiva prevista: ${c.proximaPreventiva}</p>
-              </div>
-              <a href="https://wa.me/55${c.telefone}?text=${msg}" target="_blank" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">WhatsApp</a>
-            </div>`;
+            return `<div class="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded-lg"><div><p class="font-semibold text-slate-800 text-xs">${c.nome}</p><p class="text-xs text-amber-800">Preventiva prevista: ${formatarDataBR(c.proximaPreventiva)}</p></div><a href="https://wa.me/55${c.telefone}?text=${msg}" target="_blank" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">WhatsApp</a></div>`;
           }).join('')
         : '<p class="text-xs text-slate-400">Nenhuma manutenção preventiva vencendo nos próximos 30 dias.</p>';
 
@@ -1547,11 +1522,37 @@
       document.getElementById('painel-estoque').innerHTML = baixo.length
         ? baixo.map(p => `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-200"><strong>${p.nome}:</strong> ${p.estoqueAtual} un. (mínimo: ${p.estoqueMinimo})</div>`).join('')
         : '<p class="text-slate-400">Estoque dentro dos níveis normais.</p>';
+
+      renderEstatisticasTecnicos();
     }
 
-    // =========================================================================
-    // 10. MÓDULO CLIENTES
-    // =========================================================================
+    function renderEstatisticasTecnicos() {
+      const concluidas = state.os.filter(o => o.status === 'concluida');
+      document.getElementById('stat-total-concluidas').textContent = concluidas.length;
+      let somaCiclo = 0, qtdCiclo = 0, somaCampo = 0, qtdCampo = 0;
+      const porTecnico = {};
+      state.os.forEach(o => {
+        const tec = (o.tecnico || 'SEM TÉCNICO').toUpperCase();
+        if (!porTecnico[tec]) porTecnico[tec] = { abertas: 0, concluidas: 0, somaCampo: 0, qtdCampo: 0, somaCiclo: 0, qtdCiclo: 0 };
+        if (o.status === 'concluida') {
+          porTecnico[tec].concluidas++;
+          const fim = o.concluidaEm ? new Date(o.concluidaEm).getTime() : null;
+          const iniCampo = o.iniciadaEm ? new Date(o.iniciadaEm).getTime() : null;
+          const iniCiclo = o.orcamentoCriadoEm ? new Date(o.orcamentoCriadoEm).getTime() : (o.criadaEm ? new Date(o.criadaEm).getTime() : null);
+          if (fim && iniCampo && fim >= iniCampo) { const diff = fim - iniCampo; somaCampo += diff; qtdCampo++; porTecnico[tec].somaCampo += diff; porTecnico[tec].qtdCampo++; }
+          if (fim && iniCiclo && fim >= iniCiclo) { const diff = fim - iniCiclo; somaCiclo += diff; qtdCiclo++; porTecnico[tec].somaCiclo += diff; porTecnico[tec].qtdCiclo++; }
+        } else { porTecnico[tec].abertas++; }
+      });
+      document.getElementById('stat-tempo-ciclo').textContent = qtdCiclo ? formatarDuracaoMs(somaCiclo / qtdCiclo) : '--';
+      document.getElementById('stat-tempo-campo').textContent = qtdCampo ? formatarDuracaoMs(somaCampo / qtdCampo) : '--';
+      const entradas = Object.entries(porTecnico).sort((a, b) => b[1].concluidas - a[1].concluidas);
+      document.getElementById('painel-stats-tecnicos').innerHTML = entradas.length ? `
+        <table class="w-full text-xs text-left border-collapse">
+          <thead><tr class="border-b bg-slate-50 text-slate-600 uppercase"><th class="py-2 px-3">Técnico</th><th class="py-2 px-3 text-center">Concluídas</th><th class="py-2 px-3 text-center">Em Aberto</th><th class="py-2 px-3 text-right">Média Execução (Campo)</th><th class="py-2 px-3 text-right">Média Ciclo (Orç. → Fim)</th></tr></thead>
+          <tbody>${entradas.map(([nome, d]) => `<tr class="border-b hover:bg-slate-50"><td class="py-2 px-3 font-bold text-slate-800">${nome}</td><td class="py-2 px-3 text-center font-semibold text-conecta-green">${d.concluidas}</td><td class="py-2 px-3 text-center text-amber-600 font-semibold">${d.abertas}</td><td class="py-2 px-3 text-right font-medium text-blue-700">${d.qtdCampo ? formatarDuracaoMs(d.somaCampo / d.qtdCampo) : '--'}</td><td class="py-2 px-3 text-right font-medium text-slate-700">${d.qtdCiclo ? formatarDuracaoMs(d.somaCiclo / d.qtdCiclo) : '--'}</td></tr>`).join('')}</tbody>
+        </table>` : '<p class="text-xs text-slate-400">Nenhuma OS registrada para gerar estatísticas.</p>';
+    }
+
     window.abrirModalCliente = (id = null) => {
       document.getElementById('form-cliente').reset();
       document.getElementById('cli-id').value = id || '';
@@ -1579,9 +1580,8 @@
       e.preventDefault();
       const id = document.getElementById('cli-id').value || `cli_${Date.now()}`;
       const tipo = document.getElementById('cli-tipo').value;
-      const dados = {
-        tipo,
-        nome: document.getElementById('cli-nome').value.trim(),
+      await salvarDocumento('clientes', id, {
+        tipo, nome: document.getElementById('cli-nome').value.trim(),
         documento: document.getElementById('cli-doc').value.replace(/\D/g, ''),
         telefone: document.getElementById('cli-tel').value.replace(/\D/g, '').slice(0, 11),
         endereco: document.getElementById('cli-endereco').value.trim(),
@@ -1592,41 +1592,31 @@
         monitoramentoValor: Number(document.getElementById('cli-monit-valor').value || 0),
         monitoramentoDia: Number(document.getElementById('cli-monit-dia').value || 10),
         atualizadoEm: new Date().toISOString()
-      };
-      await salvarDocumento('clientes', id, dados);
+      });
       fecharModal('modal-cliente');
     };
 
     window.renderClientes = () => {
       const q = (document.getElementById('busca-cliente').value || '').toLowerCase();
-      const filtrados = state.clientes.filter(c =>
-        c.nome.toLowerCase().includes(q) || (c.documento || '').includes(q) || (c.equipamentos || '').toLowerCase().includes(q)
-      );
+      const filtrados = state.clientes.filter(c => c.nome.toLowerCase().includes(q) || (c.documento || '').includes(q) || (c.equipamentos || '').toLowerCase().includes(q));
       document.getElementById('lista-clientes').innerHTML = filtrados.map(c => `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between gap-3">
           <div>
-            <div class="flex justify-between items-start">
-              <h3 class="font-bold text-slate-800">${c.nome}</h3>
-              <span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold">${c.tipo}</span>
-            </div>
+            <div class="flex justify-between items-start"><h3 class="font-bold text-slate-800">${c.nome}</h3><span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold">${c.tipo}</span></div>
             ${c.documento ? `<p class="text-xs text-slate-500 mt-0.5">${c.tipo === 'PJ' ? 'CNPJ: ' + formatarCNPJ(c.documento) : 'CPF: ' + formatarCPF(c.documento)}</p>` : ''}
             ${c.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(c.telefone)}</p>` : ''}
             <p class="text-xs text-slate-500 mt-1">${c.endereco || 'Endereço não informado'}</p>
             ${c.monitoramentoAtivo ? `<p class="text-xs text-conecta-green font-semibold mt-1">★ Monitoramento: ${formatBRL(c.monitoramentoValor)}/mês (dia ${c.monitoramentoDia})</p>` : ''}
             ${c.equipamentos ? `<p class="text-xs bg-emerald-50 text-conecta-emerald p-2 rounded mt-2"><strong>Base Instalada:</strong> ${c.equipamentos}</p>` : ''}
-            ${c.proximaPreventiva ? `<p class="text-xs text-amber-700 mt-1">Próxima preventiva: <strong>${c.proximaPreventiva}</strong></p>` : ''}
+            ${c.proximaPreventiva ? `<p class="text-xs text-amber-700 mt-1">Próxima preventiva: <strong>${formatarDataBR(c.proximaPreventiva)}</strong></p>` : ''}
           </div>
           <div class="flex items-center justify-between pt-2 border-t text-xs">
             <a href="https://wa.me/55${c.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
             ${state.perfil === 'admin' ? `<button onclick="abrirModalCliente('${c.id}')" class="text-slate-600 font-semibold hover:text-black">Editar</button>` : ''}
           </div>
-        </div>
-      `).join('') || '<p class="text-sm text-slate-500">Nenhum cliente cadastrado.</p>';
+        </div>`).join('') || '<p class="text-sm text-slate-500">Nenhum cliente cadastrado.</p>';
     };
 
-    // =========================================================================
-    // 11. MÓDULO FORNECEDORES
-    // =========================================================================
     window.abrirModalFornecedor = (id = null) => {
       document.getElementById('form-fornecedor').reset();
       document.getElementById('forn-id').value = id || '';
@@ -1645,9 +1635,7 @@
           document.getElementById('forn-endereco').value = f.endereco || '';
           document.getElementById('forn-obs').value = f.obs || '';
         }
-      } else {
-        document.getElementById('modal-forn-titulo').textContent = "Novo Fornecedor";
-      }
+      } else { document.getElementById('modal-forn-titulo').textContent = "Novo Fornecedor"; }
       atualizarMascaraDocFornecedor();
       abrirModal('modal-fornecedor');
     };
@@ -1656,9 +1644,8 @@
       e.preventDefault();
       const id = document.getElementById('forn-id').value || `forn_${Date.now()}`;
       const tipo = document.getElementById('forn-tipo').value;
-      const dados = {
-        tipo,
-        nome: document.getElementById('forn-nome').value.trim(),
+      await salvarDocumento('fornecedores', id, {
+        tipo, nome: document.getElementById('forn-nome').value.trim(),
         documento: document.getElementById('forn-doc').value.replace(/\D/g, ''),
         telefone: document.getElementById('forn-tel').value.replace(/\D/g, '').slice(0, 11),
         categoria: document.getElementById('forn-categoria').value,
@@ -1668,26 +1655,20 @@
         endereco: document.getElementById('forn-endereco').value.trim(),
         obs: document.getElementById('forn-obs').value.trim(),
         atualizadoEm: new Date().toISOString()
-      };
-      await salvarDocumento('fornecedores', id, dados);
+      });
       fecharModal('modal-fornecedor');
     };
 
     window.renderFornecedores = () => {
       const q = (document.getElementById('busca-fornecedor').value || '').toLowerCase();
       const filtrados = state.fornecedores.filter(f =>
-        (f.nome || '').toLowerCase().includes(q) ||
-        (f.documento || '').includes(q) ||
-        (f.categoria || '').toLowerCase().includes(q) ||
-        (f.telefone || '').includes(q)
+        (f.nome || '').toLowerCase().includes(q) || (f.documento || '').includes(q) ||
+        (f.categoria || '').toLowerCase().includes(q) || (f.telefone || '').includes(q)
       );
       document.getElementById('lista-fornecedores').innerHTML = filtrados.map(f => `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between gap-3">
           <div class="space-y-1">
-            <div class="flex justify-between items-start gap-2">
-              <h3 class="font-bold text-slate-800">${f.nome}</h3>
-              <span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold shrink-0">${f.tipo || 'PJ'}</span>
-            </div>
+            <div class="flex justify-between items-start gap-2"><h3 class="font-bold text-slate-800">${f.nome}</h3><span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold shrink-0">${f.tipo || 'PJ'}</span></div>
             <p class="text-xs font-semibold text-conecta-emerald">${f.categoria || 'Geral'}</p>
             ${f.documento ? `<p class="text-xs text-slate-500">${f.tipo === 'PF' ? 'CPF: ' + formatarCPF(f.documento) : 'CNPJ: ' + formatarCNPJ(f.documento)}</p>` : ''}
             ${f.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(f.telefone)}${f.contato ? ' (' + f.contato + ')' : ''}</p>` : ''}
@@ -1699,13 +1680,9 @@
             <a href="https://wa.me/55${f.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
             <button onclick="abrirModalFornecedor('${f.id}')" class="text-slate-600 font-semibold hover:text-black">Editar</button>
           </div>
-        </div>
-      `).join('') || '<p class="text-sm text-slate-500">Nenhum fornecedor cadastrado.</p>';
+        </div>`).join('') || '<p class="text-sm text-slate-500">Nenhum fornecedor cadastrado.</p>';
     };
 
-    // =========================================================================
-    // 12. MÓDULO PRODUTOS & KITS
-    // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
       document.getElementById('prod-id').value = id || '';
@@ -1727,16 +1704,14 @@
     window.salvarProduto = async (e) => {
       e.preventDefault();
       const id = document.getElementById('prod-id').value || `prod_${Date.now()}`;
-      const dados = {
-        tipo: document.getElementById('prod-tipo').value,
-        categoria: document.getElementById('prod-cat').value,
+      await salvarDocumento('produtos_kits', id, {
+        tipo: document.getElementById('prod-tipo').value, categoria: document.getElementById('prod-cat').value,
         nome: document.getElementById('prod-nome').value.trim(),
         precoCusto: Number(document.getElementById('prod-custo').value || 0),
         precoVenda: Number(document.getElementById('prod-venda').value || 0),
         estoqueAtual: Number(document.getElementById('prod-estoque').value || 0),
         estoqueMinimo: Number(document.getElementById('prod-minimo').value || 0)
-      };
-      await salvarDocumento('produtos_kits', id, dados);
+      });
       fecharModal('modal-produto');
     };
 
@@ -1745,60 +1720,36 @@
         const margem = p.precoVenda - p.precoCusto;
         return `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
-          <div class="flex justify-between items-start">
-            <h3 class="font-bold text-slate-800 text-sm">${p.nome}</h3>
-            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 uppercase font-semibold">${p.tipo}</span>
-          </div>
+          <div class="flex justify-between items-start"><h3 class="font-bold text-slate-800 text-sm">${p.nome}</h3><span class="text-xs px-2 py-0.5 rounded bg-slate-100 uppercase font-semibold">${p.tipo}</span></div>
           <p class="text-xs text-slate-500">Custo: ${formatBRL(p.precoCusto)} • Lucro unit.: <strong class="text-conecta-green">${formatBRL(margem)}</strong></p>
           <div class="flex justify-between items-center pt-2 border-t text-xs">
             <span class="font-extrabold text-base text-slate-800">${formatBRL(p.precoVenda)}</span>
-            <div class="flex items-center gap-3">
-              ${p.tipo === 'produto' ? `<span class="${p.estoqueAtual <= p.estoqueMinimo ? 'text-red-600 font-bold' : 'text-slate-500'}">Est: ${p.estoqueAtual}</span>` : ''}
-              <button onclick="abrirModalProduto('${p.id}')" class="text-conecta-green font-semibold">Editar</button>
-            </div>
+            <div class="flex items-center gap-3">${p.tipo === 'produto' ? `<span class="${p.estoqueAtual <= p.estoqueMinimo ? 'text-red-600 font-bold' : 'text-slate-500'}">Est: ${p.estoqueAtual}</span>` : ''}<button onclick="abrirModalProduto('${p.id}')" class="text-conecta-green font-semibold">Editar</button></div>
           </div>
         </div>`;
       }).join('') || '<p class="text-sm text-slate-500">Nenhum produto ou kit cadastrado.</p>';
     }
 
-    // =========================================================================
-    // 13. MÓDULO ORÇAMENTOS (PDF COM FOTOS, WHATSAPP, HISTÓRICO E RECUSA)
-    // =========================================================================
     window.alternarCampoRecusa = () => {
       const status = document.getElementById('orc-status').value;
       const box = document.getElementById('orc-recusa-box');
       const txt = document.getElementById('orc-motivo-recusa');
-      if (status === 'recusado') {
-        box.classList.remove('hidden');
-        txt.required = true;
-      } else {
-        box.classList.add('hidden');
-        txt.required = false;
-      }
+      if (status === 'recusado') { box.classList.remove('hidden'); txt.required = true; }
+      else { box.classList.add('hidden'); txt.required = false; }
     };
 
     window.abrirModalOrcamento = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
       if (!state.produtos.length) state.produtos = await carregarColecao('produtos_kits');
-      if (!state.clientes.length) {
-        alert("Cadastre pelo menos um cliente antes de criar um orçamento.");
-        switchTab('clientes');
-        return;
-      }
+      if (!state.clientes.length) { alert("Cadastre pelo menos um cliente antes de criar um orçamento."); switchTab('clientes'); return; }
       document.getElementById('orc-cliente').innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
-      document.getElementById('orc-catalogo-select').innerHTML = state.produtos.length
-        ? state.produtos.map(p => `<option value="${p.id}">${p.nome} (${formatBRL(p.precoVenda)})</option>`).join('')
-        : '<option value="">Sem catálogo</option>';
-
+      document.getElementById('orc-catalogo-select').innerHTML = state.produtos.length ? state.produtos.map(p => `<option value="${p.id}">${p.nome} (${formatBRL(p.precoVenda)})</option>`).join('') : '<option value="">Sem catálogo</option>';
       document.getElementById('form-orcamento').reset();
       document.getElementById('orc-id').value = id || '';
-      const validadePadrao = new Date();
-      validadePadrao.setDate(validadePadrao.getDate() + 15);
+      const validadePadrao = new Date(); validadePadrao.setDate(validadePadrao.getDate() + 15);
       document.getElementById('orc-validade').value = validadePadrao.toISOString().split('T')[0];
-
       state.fotosOrcTemp = [];
       state.itensOrcTemp = [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }];
-
       if (id) {
         const o = state.orcamentos.find(x => x.id === id);
         if (o) {
@@ -1813,13 +1764,8 @@
           state.itensOrcTemp = (o.itens && o.itens.length) ? o.itens.map(i => ({ ...i })) : [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }];
           state.fotosOrcTemp = [...(o.fotos || [])];
         }
-      } else {
-        document.getElementById('modal-orc-titulo').textContent = "Novo Orçamento";
-      }
-      alternarCampoRecusa();
-      renderItensOrcamento();
-      renderFotosOrcPreview();
-      abrirModal('modal-orcamento');
+      } else { document.getElementById('modal-orc-titulo').textContent = "Novo Orçamento"; }
+      alternarCampoRecusa(); renderItensOrcamento(); renderFotosOrcPreview(); abrirModal('modal-orcamento');
     };
 
     window.puxarDoCatalogo = () => {
@@ -1830,22 +1776,9 @@
       state.itensOrcTemp.push({ descricao: p.nome, qtd: 1, custoUnit: p.precoCusto || 0, valorUnit: p.precoVenda || 0 });
       renderItensOrcamento();
     };
-
-    window.adicionarItemOrcamento = () => {
-      state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 });
-      renderItensOrcamento();
-    };
-
-    window.removerItemOrcamento = (idx) => {
-      state.itensOrcTemp.splice(idx, 1);
-      if (!state.itensOrcTemp.length) state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 });
-      renderItensOrcamento();
-    };
-
-    window.atualizarItemOrcamento = (idx, campo, valor) => {
-      state.itensOrcTemp[idx][campo] = campo === 'descricao' ? valor : Number(valor || 0);
-      recalcularTotalOrcamento();
-    };
+    window.adicionarItemOrcamento = () => { state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }); renderItensOrcamento(); };
+    window.removerItemOrcamento = (idx) => { state.itensOrcTemp.splice(idx, 1); if (!state.itensOrcTemp.length) state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }); renderItensOrcamento(); };
+    window.atualizarItemOrcamento = (idx, campo, valor) => { state.itensOrcTemp[idx][campo] = campo === 'descricao' ? valor : Number(valor || 0); recalcularTotalOrcamento(); };
 
     function renderItensOrcamento() {
       document.getElementById('orc-itens-lista').innerHTML = state.itensOrcTemp.map((item, idx) => `
@@ -1854,8 +1787,7 @@
           <input type="number" min="1" value="${item.qtd}" oninput="atualizarItemOrcamento(${idx}, 'qtd', this.value)" class="col-span-2 border rounded px-2 py-1 text-xs text-center" />
           <input type="number" min="0" step="0.01" value="${item.valorUnit}" oninput="atualizarItemOrcamento(${idx}, 'valorUnit', this.value)" class="col-span-3 border rounded px-2 py-1 text-xs text-right" />
           <button type="button" onclick="removerItemOrcamento(${idx})" class="col-span-1 text-red-500 font-bold text-center">&times;</button>
-        </div>
-      `).join('');
+        </div>`).join('');
       recalcularTotalOrcamento();
     }
 
@@ -1876,34 +1808,18 @@
       const statusEl = document.getElementById('orc-upload-status');
       const btnSalvar = document.getElementById('btn-salvar-orc');
       statusEl.textContent = `Enviando ${files.length} foto(s) em qualidade original...`;
-      statusEl.classList.remove('hidden');
-      btnSalvar.disabled = true;
-
+      statusEl.classList.remove('hidden'); btnSalvar.disabled = true;
       try {
-        for (const file of files) {
-          const url = await uploadFotoCloudinary(file);
-          state.fotosOrcTemp.push(url);
-          renderFotosOrcPreview();
-        }
-        statusEl.textContent = "Upload concluído!";
-        setTimeout(() => statusEl.classList.add('hidden'), 2500);
-      } catch (err) {
-        alert("Erro ao enviar foto: " + err.message);
-        statusEl.classList.add('hidden');
-      } finally {
-        btnSalvar.disabled = false;
-        event.target.value = '';
-      }
+        for (const file of files) { const url = await uploadFotoCloudinary(file); state.fotosOrcTemp.push(url); renderFotosOrcPreview(); }
+        statusEl.textContent = "Upload concluído!"; setTimeout(() => statusEl.classList.add('hidden'), 2500);
+      } catch (err) { alert("Erro ao enviar foto: " + err.message); statusEl.classList.add('hidden'); }
+      finally { btnSalvar.disabled = false; event.target.value = ''; }
     };
 
     function renderFotosOrcPreview() {
       document.getElementById('orc-fotos-preview').innerHTML = state.fotosOrcTemp.map((src, i) => `
-        <div class="relative">
-          <a href="${src}" target="_blank" title="Abrir foto original">
-            <img src="${src}" class="h-16 w-16 object-cover rounded border hover:opacity-80" />
-          </a>
-          <button type="button" onclick="removerFotoOrcTemp(${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button>
-        </div>`).join('');
+        <div class="relative"><a href="${src}" target="_blank" title="Abrir foto original"><img src="${src}" class="h-16 w-16 object-cover rounded border hover:opacity-80" /></a>
+        <button type="button" onclick="removerFotoOrcTemp(${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button></div>`).join('');
     }
     window.removerFotoOrcTemp = (i) => { state.fotosOrcTemp.splice(i, 1); renderFotosOrcPreview(); };
 
@@ -1916,135 +1832,99 @@
       const clienteId = document.getElementById('orc-cliente').value;
       const cliente = state.clientes.find(c => c.id === clienteId);
       const { total, lucro } = recalcularTotalOrcamento();
-
       const novoStatus = document.getElementById('orc-status').value;
       const motivoRecusa = novoStatus === 'recusado' ? document.getElementById('orc-motivo-recusa').value.trim() : (antigo?.motivoRecusa || '');
-      if (novoStatus === 'recusado' && !motivoRecusa) {
-        alert("Informe o motivo da recusa do orçamento.");
-        return;
-      }
-
+      if (novoStatus === 'recusado' && !motivoRecusa) { alert("Informe o motivo da recusa do orçamento."); return; }
       const historicoStatus = { ...(antigo?.historicoStatus || {}) };
-      if (!antigo || antigo.status !== novoStatus || !historicoStatus[novoStatus]) {
-        historicoStatus[novoStatus] = formatarDataHoraBR(new Date());
-      }
-
-      const dados = {
-        numero, clienteId,
-        clienteNome: cliente ? cliente.nome : 'Cliente',
-        clienteTelefone: cliente ? (cliente.telefone || '') : '',
-        categoria: document.getElementById('orc-categoria').value,
-        validade: document.getElementById('orc-validade').value,
-        status: novoStatus,
-        historicoStatus,
-        motivoRecusa,
-        itens: state.itensOrcTemp.filter(i => i.descricao.trim() !== ''),
-        desconto: Number(document.getElementById('orc-desconto').value || 0),
-        valorTotal: total,
-        lucroEstimado: lucro,
-        obs: document.getElementById('orc-obs').value.trim(),
-        fotos: state.fotosOrcTemp,
-        osGeradaId: antigo ? (antigo.osGeradaId || null) : null,
-        osGeradaNumero: antigo ? (antigo.osGeradaNumero || null) : null,
-        atualizadoEm: new Date().toISOString()
-      };
-      await salvarDocumento('orcamentos', id, dados);
+      if (!antigo || antigo.status !== novoStatus || !historicoStatus[novoStatus]) historicoStatus[novoStatus] = formatarDataHoraBR(new Date());
+      const agoraISO = new Date().toISOString();
+      await salvarDocumento('orcamentos', id, {
+        numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente', clienteTelefone: cliente ? (cliente.telefone || '') : '',
+        categoria: document.getElementById('orc-categoria').value, validade: document.getElementById('orc-validade').value,
+        status: novoStatus, historicoStatus, motivoRecusa, itens: state.itensOrcTemp.filter(i => i.descricao.trim() !== ''),
+        desconto: Number(document.getElementById('orc-desconto').value || 0), valorTotal: total, lucroEstimado: lucro,
+        obs: document.getElementById('orc-obs').value.trim(), fotos: state.fotosOrcTemp,
+        osGeradaId: antigo ? (antigo.osGeradaId || null) : null, osGeradaNumero: antigo ? (antigo.osGeradaNumero || null) : null,
+        criadoEm: antigo?.criadoEm || agoraISO, atualizadoEm: agoraISO
+      });
       fecharModal('modal-orcamento');
     };
 
     window.aprovarEGerarOS = async (orcId) => {
       const orc = state.orcamentos.find(x => x.id === orcId);
       if (!orc || orc.osGeradaId) return;
-      if (!confirm(`Aprovar ${orc.numero} (${formatBRL(orc.valorTotal)}) e gerar Ordem de Serviço?`)) return;
+      if (!state.usuarios.length) state.usuarios = await carregarColecao('usuarios');
+      document.getElementById('ag-orc-id').value = orc.id;
+      document.getElementById('ag-orc-resumo').textContent = `${orc.numero} • ${orc.clienteNome} • ${formatBRL(orc.valorTotal)}`;
+      document.getElementById('ag-data').value = new Date().toISOString().split('T')[0];
+      popularSelectTecnicos('ag-tecnico');
+      abrirModal('modal-agendar-os');
+    };
 
+    window.confirmarAprovacaoEGerarOS = async (e) => {
+      e.preventDefault();
+      const orcId = document.getElementById('ag-orc-id').value;
+      const dataAg = document.getElementById('ag-data').value;
+      const tecnico = document.getElementById('ag-tecnico').value;
+      const orc = state.orcamentos.find(x => x.id === orcId);
+      if (!orc || !dataAg || !tecnico) return;
       const osId = `os_${Date.now()}`;
       const osNumero = await proximoNumero('ultimaOS', 'OS');
       const resumoItens = (orc.itens || []).map(i => `• ${i.qtd}x ${i.descricao} (${formatBRL(i.valorUnit)})`).join('\n');
-
+      const agoraISO = new Date().toISOString();
+      const dGarantia = new Date(dataAg + 'T12:00:00'); dGarantia.setDate(dGarantia.getDate() + 90);
       await salvarDocumento('ordens_servico', osId, {
-        numero: osNumero, orcamentoId: orc.id, clienteId: orc.clienteId, clienteNome: orc.clienteNome,
-        categoria: orc.categoria || 'seguranca', dataAgendamento: new Date().toISOString().split('T')[0],
-        status: 'agendada', garantiaDias: 90, tecnico: '', valorTotal: orc.valorTotal || 0,
+        numero: osNumero, orcamentoId: orc.id, orcamentoNumero: orc.numero, orcamentoCriadoEm: orc.criadoEm || agoraISO,
+        criadaEm: agoraISO, iniciadaEm: null, concluidaEm: null, clienteId: orc.clienteId, clienteNome: orc.clienteNome,
+        categoria: orc.categoria || 'seguranca', dataAgendamento: dataAg, status: 'agendada', garantiaDias: 90,
+        garantiaAte: dGarantia.toISOString().split('T')[0], tecnico, valorTotal: orc.valorTotal || 0,
         relato: `Aprovado via ${orc.numero}:\n${resumoItens}${orc.obs ? '\nObs: ' + orc.obs : ''}`,
-        laudo: '', checklist: [], fotosAntes: [...(orc.fotos || [])], fotosDepois: [], assinatura: '', lancadoFinanceiro: false
+        laudo: '', checklist: [], fotosAntes: [...(orc.fotos || [])], fotosDepois: [], assinatura: '', lancadoFinanceiro: false, atualizadoEm: agoraISO
       });
-
       const historicoStatus = { ...(orc.historicoStatus || {}), aprovado: formatarDataHoraBR(new Date()) };
       await salvarDocumento('orcamentos', orc.id, { status: 'aprovado', historicoStatus, osGeradaId: osId, osGeradaNumero: osNumero });
-
-      alert(`${osNumero} gerada com sucesso!`);
+      fecharModal('modal-agendar-os');
+      alert(`${osNumero} agendada para ${formatarDataBR(dataAg)} e direcionada para ${tecnico}!`);
       switchTab('os');
     };
 
     function montarHtmlPDFOrcamento(o) {
-      const linhas = (o.itens || []).map(i => `
-        <tr style="border-bottom: 1px solid #e2e8f0;">
-          <td style="padding: 8px 4px;">${i.descricao}</td>
-          <td style="padding: 8px 4px; text-align: center;">${i.qtd}</td>
-          <td style="padding: 8px 4px; text-align: right;">${formatBRL(i.valorUnit)}</td>
-          <td style="padding: 8px 4px; text-align: right; font-weight: 600;">${formatBRL(i.qtd * i.valorUnit)}</td>
-        </tr>`).join('');
-
+      const linhas = (o.itens || []).map(i => `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 8px 4px;">${i.descricao}</td><td style="padding: 8px 4px; text-align: center;">${i.qtd}</td><td style="padding: 8px 4px; text-align: right;">${formatBRL(i.valorUnit)}</td><td style="padding: 8px 4px; text-align: right; font-weight: 600;">${formatBRL(i.qtd * i.valorUnit)}</td></tr>`).join('');
       const fotosHtml = (o.fotos && o.fotos.length) ? `
-        <div style="margin-top: 20px; page-break-inside: avoid;">
-          <p style="font-weight: 700; font-size: 13px; margin-bottom: 8px; color: #006837;">FOTOS ANEXAS DO ORÇAMENTO</p>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            ${o.fotos.map(f => `<img src="${f}" crossorigin="anonymous" style="width: 100%; height: 180px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px;" />`).join('')}
+        <div style="margin-top: 20px;">
+          <p style="font-weight: 700; font-size: 13px; margin-bottom: 10px; color: #006837;">FOTOS ANEXAS DO ORÇAMENTO</p>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-items: start;">
+            ${o.fotos.map(f => `<div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; background: #f8fafc; page-break-inside: avoid; text-align: center;"><img src="${f}" crossorigin="anonymous" style="max-width: 100%; max-height: 260px; width: auto; height: auto; object-fit: contain; margin: 0 auto; display: block; border-radius: 4px;" /></div>`).join('')}
           </div>
         </div>` : '';
-
       return `
         <div style="font-family: Inter, Arial, sans-serif; color: #0f172a; padding: 10px; background: #ffffff;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A859; padding-bottom: 12px; margin-bottom: 16px;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <img src="./somentelogo.png" crossorigin="anonymous" style="height: 54px; width: 54px; object-fit: contain; background: #000; padding: 4px; border-radius: 8px;" />
-              <div>
-                <h1 style="font-size: 18px; font-weight: 800; color: #006837; margin: 0;">${state.config.nome}</h1>
-                <p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">${state.config.cnpj || ''} ${state.config.tel ? '• ' + state.config.tel : ''} • ${state.config.cidade || ''}</p>
-              </div>
+              <div><h1 style="font-size: 18px; font-weight: 800; color: #006837; margin: 0;">${state.config.nome}</h1><p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">${state.config.cnpj || ''} ${state.config.tel ? '• ' + state.config.tel : ''} • ${state.config.cidade || ''}</p></div>
             </div>
-            <div style="text-align: right;">
-              <p style="font-weight: 800; font-size: 16px; margin: 0;">${o.numero}</p>
-              <p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">Validade: ${o.validade || '-'}</p>
-            </div>
+            <div style="text-align: right;"><p style="font-weight: 800; font-size: 16px; margin: 0;">${o.numero}</p><p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">Validade: ${formatarDataBR(o.validade)}</p></div>
           </div>
-
-          <div style="margin-bottom: 14px; font-size: 13px;">
-            <strong>Cliente:</strong> ${o.clienteNome}
-          </div>
-
+          <div style="margin-bottom: 14px; font-size: 13px;"><strong>Cliente:</strong> ${o.clienteNome}</div>
           <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 16px;">
-            <thead>
-              <tr style="border-bottom: 2px solid #0f172a; text-align: left; background: #f8fafc;">
-                <th style="padding: 8px 4px;">Descrição</th>
-                <th style="padding: 8px 4px; text-align: center;">Qtd</th>
-                <th style="padding: 8px 4px; text-align: right;">Unitário</th>
-                <th style="padding: 8px 4px; text-align: right;">Subtotal</th>
-              </tr>
-            </thead>
+            <thead><tr style="border-bottom: 2px solid #0f172a; text-align: left; background: #f8fafc;"><th style="padding: 8px 4px;">Descrição</th><th style="padding: 8px 4px; text-align: center;">Qtd</th><th style="padding: 8px 4px; text-align: right;">Unitário</th><th style="padding: 8px 4px; text-align: right;">Subtotal</th></tr></thead>
             <tbody>${linhas}</tbody>
           </table>
-
           ${o.desconto > 0 ? `<p style="text-align: right; font-size: 12px; color: #64748b; margin: 0 0 4px 0;">Desconto: - ${formatBRL(o.desconto)}</p>` : ''}
           <p style="text-align: right; font-size: 18px; font-weight: 800; color: #006837; margin: 0;">Total da Proposta: ${formatBRL(o.valorTotal)}</p>
-
           ${o.obs ? `<div style="margin-top: 16px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #f8fafc;"><strong>Observações / Condições:</strong><br/>${o.obs}</div>` : ''}
           ${fotosHtml}
-        </div>
-      `;
+        </div>`;
     }
 
     async function gerarPDFOrcamentoBlob(o) {
       const container = document.createElement('div');
       container.innerHTML = montarHtmlPDFOrcamento(o);
-      const opt = {
-        margin: 10,
-        filename: `${o.numero}.pdf`,
-        image: { type: 'jpeg', quality: 0.92 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      return await html2pdf().set(opt).from(container).outputPdf('blob');
+      return await html2pdf().set({
+        margin: 10, filename: `${o.numero}.pdf`, image: { type: 'jpeg', quality: 0.92 },
+        html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }).from(container).outputPdf('blob');
     }
 
     window.baixarPDFOrcamento = async (id) => {
@@ -2053,53 +1933,30 @@
       try {
         const blob = await gerarPDFOrcamentoBlob(o);
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${o.numero}.pdf`;
-        a.click();
+        const a = document.createElement('a'); a.href = url; a.download = `${o.numero}.pdf`; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 5000);
-      } catch (err) {
-        alert("Erro ao gerar PDF: " + err.message);
-      }
+      } catch (err) { alert("Erro ao gerar PDF: " + err.message); }
     };
 
     window.enviarOrcamentoWhatsApp = async (id) => {
       const o = state.orcamentos.find(x => x.id === id);
       if (!o) return;
-      const texto = `Olá ${o.clienteNome}, segue o orçamento ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal)}. Validade: ${o.validade || '-'}.`;
-
+      const texto = `Olá ${o.clienteNome}, segue o orçamento ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal)}. Validade: ${formatarDataBR(o.validade)}.`;
       try {
         const blob = await gerarPDFOrcamentoBlob(o);
         const file = new File([blob], `${o.numero}.pdf`, { type: 'application/pdf' });
-
-        // Atualiza status automaticamente para ENVIADO AO CLIENTE com data/hora
         const historicoStatus = { ...(o.historicoStatus || {}), enviado: formatarDataHoraBR(new Date()) };
         await salvarDocumento('orcamentos', o.id, { status: 'enviado', historicoStatus });
-
-        // Em smartphones (iOS/Android), compartilha o PDF diretamente para o WhatsApp
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: `Orçamento ${o.numero}`,
-            text: texto
-          });
+          await navigator.share({ files: [file], title: `Orçamento ${o.numero}`, text: texto });
         } else {
-          // No PC, baixa o PDF com nome automático e abre o WhatsApp com o texto pronto
           const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${o.numero}.pdf`;
-          a.click();
+          const a = document.createElement('a'); a.href = url; a.download = `${o.numero}.pdf`; a.click();
           setTimeout(() => URL.revokeObjectURL(url), 5000);
-
           const tel = (o.clienteTelefone || '').replace(/\D/g, '');
           window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(texto)}`, '_blank');
         }
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          alert("Erro ao preparar envio: " + err.message);
-        }
-      }
+      } catch (err) { if (err.name !== 'AbortError') alert("Erro ao preparar envio: " + err.message); }
     };
 
     window.renderOrcamentos = () => {
@@ -2107,39 +1964,17 @@
       const lista = state.orcamentos.filter(o => filtro === 'todos' || o.status === filtro);
       document.getElementById('lista-orcamentos').innerHTML = lista.map(o => {
         const hist = o.historicoStatus || {};
-        const linhasHistorico = STATUS_ORDEM
-          .filter(s => hist[s.chave])
-          .map(s => `<div class="text-[11px] text-slate-600"><strong>${s.label}</strong> – ${hist[s.chave]}</div>`)
-          .join('');
-
-        const badgeCor = o.status === 'aprovado'
-          ? 'bg-emerald-100 text-emerald-800'
-          : o.status === 'recusado'
-            ? 'bg-red-100 text-red-700'
-            : o.status === 'enviado'
-              ? 'bg-blue-100 text-blue-800'
-              : 'bg-slate-100 text-slate-700';
-
+        const linhasHistorico = STATUS_ORDEM.filter(s => hist[s.chave]).map(s => `<div class="text-[11px] text-slate-600"><strong>${s.label}</strong> – ${hist[s.chave]}</div>`).join('');
+        const badgeCor = o.status === 'aprovado' ? 'bg-emerald-100 text-emerald-800' : o.status === 'recusado' ? 'bg-red-100 text-red-700' : o.status === 'enviado' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700';
         const statusLabel = (STATUS_ORDEM.find(s => s.chave === o.status)?.label || 'Rascunho').toUpperCase();
-
         return `
         <div class="bg-white p-4 rounded-xl shadow-sm border ${o.status === 'recusado' ? 'border-red-200' : 'border-slate-200'} space-y-2.5">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-conecta-emerald">${o.numero}</span>
-            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${badgeCor}">${statusLabel}</span>
-          </div>
+          <div class="flex justify-between items-center"><span class="font-bold text-conecta-emerald">${o.numero}</span><span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${badgeCor}">${statusLabel}</span></div>
           <h3 class="font-bold text-slate-800">${o.clienteNome}</h3>
           <p class="text-xs text-slate-500">${(o.itens || []).length} item(ns) • ${(o.fotos || []).length} foto(s) • Lucro est.: <strong class="text-conecta-green">${formatBRL(o.lucroEstimado)}</strong></p>
-
           ${linhasHistorico ? `<div class="bg-slate-50 border border-slate-200 rounded-lg p-2 space-y-0.5">${linhasHistorico}</div>` : ''}
-
-          ${o.status === 'recusado' && o.motivoRecusa ? `
-            <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-2 text-xs">
-              <strong>Motivo da recusa:</strong> ${o.motivoRecusa}
-            </div>` : ''}
-
+          ${o.status === 'recusado' && o.motivoRecusa ? `<div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-2 text-xs"><strong>Motivo da recusa:</strong> ${o.motivoRecusa}</div>` : ''}
           ${o.osGeradaNumero ? `<p class="text-xs text-conecta-green font-semibold">✓ Convertido em ${o.osGeradaNumero}</p>` : ''}
-
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
             <span class="text-base font-extrabold">${formatBRL(o.valorTotal)}</span>
             <div class="flex flex-wrap gap-1.5">
@@ -2153,22 +1988,23 @@
       }).join('') || '<p class="text-sm text-slate-500">Nenhum orçamento encontrado.</p>';
     };
 
-    // =========================================================================
-    // 14. MÓDULO AGENDA & OS (COM UPLOAD ORIGINAL CLOUDINARY)
-    // =========================================================================
     window.abrirModalOS = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
+      if (!state.usuarios.length) state.usuarios = await carregarColecao('usuarios');
       if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
       document.getElementById('os-cliente').innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
       document.getElementById('form-os').reset();
       document.getElementById('os-id').value = id || '';
       document.getElementById('os-data').value = new Date().toISOString().split('T')[0];
       document.getElementById('os-garantia-dias').value = 90;
-      document.getElementById('os-tecnico').value = state.usuarioAtual ? state.usuarioAtual.nome : '';
+      popularSelectTecnicos('os-tecnico', state.usuarioAtual ? state.usuarioAtual.nome : '');
       document.querySelectorAll('.os-chk').forEach(c => c.checked = false);
       state.fotosOSAntes = []; state.fotosOSDepois = [];
       limparAssinatura();
-
+      const timelineBox = document.getElementById('os-timeline-box');
+      const btnIni = document.getElementById('btn-os-iniciar-modal');
+      const btnFim = document.getElementById('btn-os-fechar-modal');
+      timelineBox.classList.add('hidden'); btnIni.classList.add('hidden'); btnFim.classList.add('hidden');
       if (id) {
         const o = state.os.find(x => x.id === id);
         if (o) {
@@ -2178,24 +2014,27 @@
           document.getElementById('os-data').value = o.dataAgendamento;
           document.getElementById('os-status').value = o.status;
           document.getElementById('os-garantia-dias').value = o.garantiaDias || 90;
-          document.getElementById('os-tecnico').value = o.tecnico || '';
+          popularSelectTecnicos('os-tecnico', o.tecnico || '');
           document.getElementById('os-valor').value = o.valorTotal || 0;
           document.getElementById('os-relato').value = o.relato || '';
           document.getElementById('os-laudo').value = o.laudo || '';
-          (o.checklist || []).forEach(item => {
-            const el = Array.from(document.querySelectorAll('.os-chk')).find(c => c.value === item);
-            if (el) el.checked = true;
-          });
-          state.fotosOSAntes = [...(o.fotosAntes || [])];
-          state.fotosOSDepois = [...(o.fotosDepois || [])];
+          (o.checklist || []).forEach(item => { const el = Array.from(document.querySelectorAll('.os-chk')).find(c => c.value === item); if (el) el.checked = true; });
+          state.fotosOSAntes = [...(o.fotosAntes || [])]; state.fotosOSDepois = [...(o.fotosDepois || [])];
+          if (o.status === 'agendada') btnIni.classList.remove('hidden');
+          if (o.status !== 'concluida') btnFim.classList.remove('hidden');
+          const eventos = [];
+          if (o.orcamentoCriadoEm) eventos.push(`<strong>Orçamento Gerado:</strong> ${formatarDataHoraBR(o.orcamentoCriadoEm)}`);
+          if (o.criadaEm) eventos.push(`<strong>OS Criada:</strong> ${formatarDataHoraBR(o.criadaEm)}`);
+          if (o.iniciadaEm) eventos.push(`<strong>Início em Campo:</strong> ${formatarDataHoraBR(o.iniciadaEm)}`);
+          if (o.concluidaEm) eventos.push(`<strong>OS Finalizada:</strong> ${formatarDataHoraBR(o.concluidaEm)}`);
+          if (eventos.length) { timelineBox.innerHTML = eventos.map(e => `<div>• ${e}</div>`).join(''); timelineBox.classList.remove('hidden'); }
         }
-      } else {
-        document.getElementById('modal-os-titulo').textContent = "Nova Ordem de Serviço";
-      }
-      renderFotosOSPreview();
-      abrirModal('modal-os');
+      } else { document.getElementById('modal-os-titulo').textContent = "Nova Ordem de Serviço"; }
+      renderFotosOSPreview(); abrirModal('modal-os');
     };
     window.editarOS = (id) => abrirModalOS(id);
+    window.marcarOSIniciadaNoModal = () => { document.getElementById('os-status').value = 'em_andamento'; document.getElementById('form-os').requestSubmit(); };
+    window.marcarOSConcluidaNoModal = () => { document.getElementById('os-status').value = 'concluida'; document.getElementById('form-os').requestSubmit(); };
 
     window.processarFotosOS = async (event, tipo) => {
       const files = Array.from(event.target.files);
@@ -2203,66 +2042,37 @@
       const statusEl = document.getElementById(tipo === 'antes' ? 'os-upload-antes' : 'os-upload-depois');
       const btnSalvar = document.getElementById('btn-salvar-os');
       statusEl.textContent = `Enviando ${files.length} foto(s) em qualidade original...`;
-      statusEl.classList.remove('hidden');
-      btnSalvar.disabled = true;
-
+      statusEl.classList.remove('hidden'); btnSalvar.disabled = true;
       try {
-        for (const file of files) {
-          const url = await uploadFotoCloudinary(file);
-          if (tipo === 'antes') state.fotosOSAntes.push(url);
-          else state.fotosOSDepois.push(url);
-          renderFotosOSPreview();
-        }
-        statusEl.textContent = "Upload concluído!";
-        setTimeout(() => statusEl.classList.add('hidden'), 2500);
-      } catch (err) {
-        alert("Erro ao enviar foto: " + err.message);
-        statusEl.classList.add('hidden');
-      } finally {
-        btnSalvar.disabled = false;
-        event.target.value = '';
-      }
+        for (const file of files) { const url = await uploadFotoCloudinary(file); if (tipo === 'antes') state.fotosOSAntes.push(url); else state.fotosOSDepois.push(url); renderFotosOSPreview(); }
+        statusEl.textContent = "Upload concluído!"; setTimeout(() => statusEl.classList.add('hidden'), 2500);
+      } catch (err) { alert("Erro ao enviar foto: " + err.message); statusEl.classList.add('hidden'); }
+      finally { btnSalvar.disabled = false; event.target.value = ''; }
     };
 
-    window.removerFotoOS = (tipo, idx) => {
-      if (tipo === 'antes') state.fotosOSAntes.splice(idx, 1);
-      else state.fotosOSDepois.splice(idx, 1);
-      renderFotosOSPreview();
-    };
-
+    window.removerFotoOS = (tipo, idx) => { if (tipo === 'antes') state.fotosOSAntes.splice(idx, 1); else state.fotosOSDepois.splice(idx, 1); renderFotosOSPreview(); };
     function renderFotosOSPreview() {
-      document.getElementById('os-fotos-antes').innerHTML = state.fotosOSAntes.map((s, i) => `
-        <div class="relative">
-          <a href="${s}" target="_blank" title="Abrir foto original">
-            <img src="${s}" class="h-16 w-16 object-cover rounded border hover:opacity-80" />
-          </a>
-          <button type="button" onclick="removerFotoOS('antes', ${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button>
-        </div>`).join('');
-      document.getElementById('os-fotos-depois').innerHTML = state.fotosOSDepois.map((s, i) => `
-        <div class="relative">
-          <a href="${s}" target="_blank" title="Abrir foto original">
-            <img src="${s}" class="h-16 w-16 object-cover rounded border hover:opacity-80" />
-          </a>
-          <button type="button" onclick="removerFotoOS('depois', ${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button>
-        </div>`).join('');
+      document.getElementById('os-fotos-antes').innerHTML = state.fotosOSAntes.map((s, i) => `<div class="relative"><a href="${s}" target="_blank" title="Abrir foto original"><img src="${s}" class="h-16 w-16 object-cover rounded border hover:opacity-80" /></a><button type="button" onclick="removerFotoOS('antes', ${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button></div>`).join('');
+      document.getElementById('os-fotos-depois').innerHTML = state.fotosOSDepois.map((s, i) => `<div class="relative"><a href="${s}" target="_blank" title="Abrir foto original"><img src="${s}" class="h-16 w-16 object-cover rounded border hover:opacity-80" /></a><button type="button" onclick="removerFotoOS('depois', ${i})" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">×</button></div>`).join('');
     }
 
     const sigCanvas = document.getElementById('signature-pad');
     const sigCtx = sigCanvas.getContext('2d');
     let desenhando = false; sigCtx.lineWidth = 2; sigCtx.lineCap = 'round';
+    let assinaturaAlterada = false;
     function getPos(e) {
       const r = sigCanvas.getBoundingClientRect();
       const cx = e.touches ? e.touches[0].clientX : e.clientX;
       const cy = e.touches ? e.touches[0].clientY : e.clientY;
       return { x: (cx - r.left) * (sigCanvas.width / r.width), y: (cy - r.top) * (sigCanvas.height / r.height) };
     }
-    sigCanvas.addEventListener('mousedown', e => { desenhando = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); });
+    sigCanvas.addEventListener('mousedown', e => { desenhando = true; assinaturaAlterada = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); });
     sigCanvas.addEventListener('mousemove', e => { if (!desenhando) return; const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); });
     window.addEventListener('mouseup', () => desenhando = false);
-    sigCanvas.addEventListener('touchstart', e => { desenhando = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); }, { passive: false });
+    sigCanvas.addEventListener('touchstart', e => { desenhando = true; assinaturaAlterada = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); }, { passive: false });
     sigCanvas.addEventListener('touchmove', e => { if (!desenhando) return; e.preventDefault(); const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); }, { passive: false });
     window.addEventListener('touchend', () => desenhando = false);
-    window.limparAssinatura = () => sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    window.limparAssinatura = () => { sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); assinaturaAlterada = false; };
 
     window.salvarOS = async (e) => {
       e.preventDefault();
@@ -2273,32 +2083,26 @@
       const clienteId = document.getElementById('os-cliente').value;
       const cliente = state.clientes.find(c => c.id === clienteId);
       const dataAg = document.getElementById('os-data').value;
+      const statusNovo = document.getElementById('os-status').value;
       const garantiaDias = Number(document.getElementById('os-garantia-dias').value || 90);
-      const dGarantia = new Date(dataAg + 'T12:00:00');
-      dGarantia.setDate(dGarantia.getDate() + garantiaDias);
-
+      const dGarantia = new Date(dataAg + 'T12:00:00'); dGarantia.setDate(dGarantia.getDate() + garantiaDias);
       const checklist = Array.from(document.querySelectorAll('.os-chk:checked')).map(c => c.value);
+      const agoraISO = new Date().toISOString();
+      const criadaEm = antiga?.criadaEm || agoraISO;
+      let iniciadaEm = antiga?.iniciadaEm || null;
+      let concluidaEm = antiga?.concluidaEm || null;
+      if (statusNovo === 'em_andamento' && !iniciadaEm) iniciadaEm = agoraISO;
+      if (statusNovo === 'concluida') { if (!iniciadaEm) iniciadaEm = criadaEm; if (!concluidaEm) concluidaEm = agoraISO; }
+      const assinaturaFinal = assinaturaAlterada ? sigCanvas.toDataURL('image/png') : (antiga?.assinatura || '');
 
-      const dados = {
-        numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente',
-        categoria: document.getElementById('os-categoria').value,
-        dataAgendamento: dataAg,
-        status: document.getElementById('os-status').value,
-        garantiaDias,
-        garantiaAte: dGarantia.toISOString().split('T')[0],
-        tecnico: document.getElementById('os-tecnico').value.trim(),
-        valorTotal: Number(document.getElementById('os-valor').value || 0),
-        relato: document.getElementById('os-relato').value.trim(),
-        laudo: document.getElementById('os-laudo').value.trim(),
-        checklist,
-        fotosAntes: state.fotosOSAntes,
-        fotosDepois: state.fotosOSDepois,
-        assinatura: sigCanvas.toDataURL('image/png'),
-        lancadoFinanceiro: antiga ? !!antiga.lancadoFinanceiro : false,
-        atualizadoEm: new Date().toISOString()
-      };
-
-      await salvarDocumento('ordens_servico', id, dados);
+      await salvarDocumento('ordens_servico', id, {
+        numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente', categoria: document.getElementById('os-categoria').value,
+        dataAgendamento: dataAg, status: statusNovo, garantiaDias, garantiaAte: dGarantia.toISOString().split('T')[0],
+        tecnico: document.getElementById('os-tecnico').value, valorTotal: Number(document.getElementById('os-valor').value || 0),
+        relato: document.getElementById('os-relato').value.trim(), laudo: document.getElementById('os-laudo').value.trim(),
+        checklist, fotosAntes: state.fotosOSAntes, fotosDepois: state.fotosOSDepois, assinatura: assinaturaFinal,
+        lancadoFinanceiro: antiga ? !!antiga.lancadoFinanceiro : false, criadaEm, iniciadaEm, concluidaEm, atualizadoEm: agoraISO
+      });
       fecharModal('modal-os');
       if (document.getElementById('tab-painel').classList.contains('active')) carregarPainelSobDemanda();
     };
@@ -2309,11 +2113,9 @@
       const parcelas = Math.max(1, Number(prompt(`Lançar ${o.numero} (${formatBRL(o.valorTotal)}) no Contas a Receber.\nQuantas parcelas?`, "1") || 1));
       const valorParcela = Number((o.valorTotal / parcelas).toFixed(2));
       for (let i = 1; i <= parcelas; i++) {
-        const d = new Date();
-        d.setMonth(d.getMonth() + (i - 1));
+        const d = new Date(); d.setMonth(d.getMonth() + (i - 1));
         await salvarDocumento('financeiro', `fin_${Date.now()}_${i}`, {
-          descricao: `${o.numero} - ${o.clienteNome} (${i}/${parcelas})`,
-          tipo: 'receita', valor: valorParcela,
+          descricao: `${o.numero} - ${o.clienteNome} (${i}/${parcelas})`, tipo: 'receita', valor: valorParcela,
           vencimento: d.toISOString().split('T')[0], status: 'pendente', origemId: o.id
         });
       }
@@ -2325,75 +2127,83 @@
       const fStatus = document.getElementById('filtro-os-status').value;
       const fCat = document.getElementById('filtro-os-categoria').value;
       const lista = state.os.filter(o => (fStatus === 'todos' || o.status === fStatus) && (fCat === 'todos' || o.categoria === fCat));
-      document.getElementById('lista-os').innerHTML = lista.map(o => `
+      document.getElementById('lista-os').innerHTML = lista.map(o => {
+        const tempoCampo = (o.iniciadaEm && o.concluidaEm) ? formatarDuracaoMs(new Date(o.concluidaEm) - new Date(o.iniciadaEm)) : null;
+        return `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-conecta-emerald">${o.numero}</span>
-            <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${o.status === 'concluida' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-              ${o.status.replace('_', ' ').toUpperCase()}
-            </span>
-          </div>
+          <div class="flex justify-between items-center"><span class="font-bold text-conecta-emerald">${o.numero}</span><span class="text-xs px-2 py-0.5 rounded-full font-semibold ${o.status === 'concluida' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${o.status.replace('_', ' ').toUpperCase()}</span></div>
           <h3 class="font-bold text-slate-800">${o.clienteNome}</h3>
-          <p class="text-xs text-slate-500">${o.categoria === 'seguranca' ? 'Segurança/CFTV' : 'Climatização'} • Data: ${o.dataAgendamento} • Garantia até: <strong>${o.garantiaAte || '-'}</strong></p>
+          <p class="text-xs text-slate-500">${o.categoria === 'seguranca' ? 'Segurança/CFTV' : 'Climatização'} • Data: <strong>${formatarDataBR(o.dataAgendamento)}</strong> • Garantia até: <strong>${formatarDataBR(o.garantiaAte)}</strong></p>
+          <p class="text-xs text-slate-600">Técnico: <strong>${o.tecnico || 'Não atribuído'}</strong>${tempoCampo ? ` • Tempo execução: <strong class="text-blue-700">${tempoCampo}</strong>` : ''}</p>
           <p class="text-xs text-slate-700 whitespace-pre-line">${o.relato || ''}</p>
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
             <span class="font-extrabold text-slate-800">${formatBRL(o.valorTotal)}</span>
             <div class="flex flex-wrap gap-1.5">
               ${state.perfil === 'admin' && !o.lancadoFinanceiro && o.valorTotal > 0 ? `<button onclick="lancarOSNoFinanceiro('${o.id}')" class="px-2.5 py-1 rounded bg-conecta-dark text-conecta-lime font-semibold">Lançar Financeiro</button>` : ''}
-              <button onclick="imprimirOS('${o.id}')" class="px-2.5 py-1 rounded bg-slate-100 font-semibold">PDF</button>
+              <button onclick="imprimirOS('${o.id}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 font-semibold">PDF</button>
               <button onclick="editarOS('${o.id}')" class="px-2.5 py-1 rounded bg-conecta-green text-white font-semibold">Editar</button>
             </div>
           </div>
-        </div>
-      `).join('') || '<p class="text-sm text-slate-500">Nenhuma OS encontrada.</p>';
+        </div>`;
+      }).join('') || '<p class="text-sm text-slate-500">Nenhuma OS encontrada.</p>';
     };
 
-    window.imprimirOS = (id) => {
+    window.imprimirOS = async (id) => {
       const o = state.os.find(x => x.id === id);
       if (!o) return;
-      const area = document.getElementById('print-area');
-      area.innerHTML = `
-        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
-          <div class="flex items-center gap-3">
-            <img src="./somentelogo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
-            <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
+      const fotosBloco = (titulo, lista) => (lista && lista.length) ? `
+        <div style="margin-top: 14px;">
+          <p style="font-weight: 700; font-size: 11px; color: #006837; margin-bottom: 6px;">${titulo}</p>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; align-items: start;">
+            ${lista.map(f => `<div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; background: #f8fafc; page-break-inside: avoid; text-align: center;"><img src="${f}" crossorigin="anonymous" style="max-width: 100%; max-height: 220px; width: auto; height: auto; object-fit: contain; margin: 0 auto; display: block; border-radius: 4px;" /></div>`).join('')}
           </div>
-          <div class="text-right"><p class="font-bold text-lg">${o.numero}</p><p class="text-xs">Data: ${o.dataAgendamento} | Garantia até: ${o.garantiaAte || '-'}</p></div>
-        </div>
-        <p><strong>Cliente:</strong> ${o.clienteNome} | <strong>Técnico:</strong> ${o.tecnico || '-'}</p>
-        <div class="mt-3 p-3 border rounded whitespace-pre-line text-sm"><strong>Serviço / Itens:</strong><br/>${o.relato || '-'}</div>
-        ${(o.checklist && o.checklist.length) ? `<div class="mt-3 p-3 border rounded text-xs"><strong>Checklist:</strong> ${o.checklist.join(' • ')}</div>` : ''}
-        <div class="mt-3 p-3 border rounded whitespace-pre-line text-sm"><strong>Laudo Técnico:</strong><br/>${o.laudo || '-'}</div>
-        <p class="mt-4 text-right text-lg font-bold">Total: ${formatBRL(o.valorTotal)}</p>
-        ${(o.fotosAntes && o.fotosAntes.length) ? `<p class="font-bold text-xs mt-3">FOTOS ANTES:</p><div class="grid grid-cols-3 gap-2 mt-1">${o.fotosAntes.map(f => `<img src="${f}" class="w-full h-28 object-cover border" />`).join('')}</div>` : ''}
-        ${(o.fotosDepois && o.fotosDepois.length) ? `<p class="font-bold text-xs mt-3">FOTOS DEPOIS:</p><div class="grid grid-cols-3 gap-2 mt-1">${o.fotosDepois.map(f => `<img src="${f}" class="w-full h-28 object-cover border" />`).join('')}</div>` : ''}
-        <div class="mt-8 text-center">
-          ${o.assinatura ? `<img src="${o.assinatura}" class="h-16 mx-auto border-b border-black" />` : '<div class="h-14 border-b border-black w-64 mx-auto"></div>'}
-          <p class="text-xs mt-1">Assinatura do Cliente</p>
-        </div>
-      `;
-      area.classList.remove('hidden'); window.print(); area.classList.add('hidden');
+        </div>` : '';
+
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <div style="font-family: Inter, Arial, sans-serif; color: #0f172a; background: #ffffff; min-height: 277mm; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; padding: 4px;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A859; padding-bottom: 12px; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="./somentelogo.png" crossorigin="anonymous" style="height: 54px; width: 54px; object-fit: contain; background: #000; padding: 4px; border-radius: 8px;" />
+                <div><h1 style="font-size: 18px; font-weight: 800; color: #006837; margin: 0;">${state.config.nome}</h1><p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">${state.config.cnpj || ''} ${state.config.tel ? '• ' + state.config.tel : ''} • ${state.config.cidade || ''}</p></div>
+              </div>
+              <div style="text-align: right;"><p style="font-weight: 800; font-size: 16px; margin: 0;">${o.numero}</p><p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">Data: ${formatarDataBR(o.dataAgendamento)} | Garantia até: ${formatarDataBR(o.garantiaAte)}</p></div>
+            </div>
+            <div style="font-size: 13px; margin-bottom: 12px;"><strong>Cliente:</strong> ${o.clienteNome} &nbsp;|&nbsp; <strong>Técnico:</strong> ${o.tecnico || '-'}</div>
+            <div style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; white-space: pre-line; margin-bottom: 10px;"><strong>Serviço / Itens:</strong><br/>${o.relato || '-'}</div>
+            ${(o.checklist && o.checklist.length) ? `<div style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11px; margin-bottom: 10px; background: #f8fafc;"><strong>Checklist Executado:</strong> ${o.checklist.join(' • ')}</div>` : ''}
+            <div style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; white-space: pre-line; margin-bottom: 12px;"><strong>Laudo Técnico:</strong><br/>${o.laudo || '-'}</div>
+            <p style="text-align: right; font-size: 16px; font-weight: 800; color: #006837; margin: 8px 0;">Valor Total: ${formatBRL(o.valorTotal)}</p>
+            ${fotosBloco('FOTOS ANTES', o.fotosAntes)}
+            ${fotosBloco('FOTOS DEPOIS', o.fotosDepois)}
+          </div>
+          <div style="margin-top: auto; padding-top: 28px; text-align: center; page-break-inside: avoid;">
+            ${o.assinatura ? `<img src="${o.assinatura}" style="height: 64px; margin: 0 auto; border-bottom: 1px solid #0f172a; display: block;" />` : '<div style="height: 54px; border-bottom: 1px solid #0f172a; width: 260px; margin: 0 auto;"></div>'}
+            <p style="font-size: 11px; color: #334155; margin-top: 6px; font-weight: 600;">Assinatura do Cliente — ${o.clienteNome}</p>
+            <p style="font-size: 10px; color: #64748b; margin-top: 2px;">${state.config.cidade || ''} • Emitido em ${formatarDataBR(new Date().toISOString())}</p>
+          </div>
+        </div>`;
+      try {
+        await html2pdf().set({
+          margin: 10, filename: `${o.numero}.pdf`, image: { type: 'jpeg', quality: 0.92 },
+          html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(container).save();
+      } catch (err) { alert("Erro ao gerar PDF da OS: " + err.message); }
     };
 
-    // =========================================================================
-    // 15. MÓDULO FINANCEIRO (COM VÍNCULO A FORNECEDORES)
-    // =========================================================================
     window.alternarFornecedorFinanceiro = () => {
       const tipo = document.getElementById('fin-tipo').value;
       const box = document.getElementById('fin-fornecedor-box');
-      if (tipo === 'despesa') box.classList.remove('hidden');
-      else box.classList.add('hidden');
+      if (tipo === 'despesa') box.classList.remove('hidden'); else box.classList.add('hidden');
     };
 
     window.abrirModalFinanceiro = async () => {
       if (!state.fornecedores.length) state.fornecedores = await carregarColecao('fornecedores');
-      document.getElementById('fin-fornecedor').innerHTML =
-        '<option value="">Nenhum fornecedor vinculado</option>' +
-        state.fornecedores.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
+      document.getElementById('fin-fornecedor').innerHTML = '<option value="">Nenhum fornecedor vinculado</option>' + state.fornecedores.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
       document.getElementById('form-financeiro').reset();
       document.getElementById('fin-vencimento').value = new Date().toISOString().split('T')[0];
-      alternarFornecedorFinanceiro();
-      abrirModal('modal-financeiro');
+      alternarFornecedorFinanceiro(); abrirModal('modal-financeiro');
     };
 
     window.salvarFinanceiro = async (e) => {
@@ -2401,22 +2211,15 @@
       const tipo = document.getElementById('fin-tipo').value;
       const fornId = tipo === 'despesa' ? document.getElementById('fin-fornecedor').value : '';
       const forn = state.fornecedores.find(f => f.id === fornId);
-
       await salvarDocumento('financeiro', `fin_${Date.now()}`, {
-        descricao: document.getElementById('fin-desc').value.trim(),
-        tipo,
-        fornecedorId: fornId || null,
-        fornecedorNome: forn ? forn.nome : '',
-        valor: Number(document.getElementById('fin-valor').value || 0),
-        vencimento: document.getElementById('fin-vencimento').value,
-        status: document.getElementById('fin-status').value
+        descricao: document.getElementById('fin-desc').value.trim(), tipo, fornecedorId: fornId || null,
+        fornecedorNome: forn ? forn.nome : '', valor: Number(document.getElementById('fin-valor').value || 0),
+        vencimento: document.getElementById('fin-vencimento').value, status: document.getElementById('fin-status').value
       });
       fecharModal('modal-financeiro');
     };
 
-    window.darBaixaFinanceiro = async (id) => {
-      await salvarDocumento('financeiro', id, { status: 'pago', dataPagamento: new Date().toISOString().split('T')[0] });
-    };
+    window.darBaixaFinanceiro = async (id) => { await salvarDocumento('financeiro', id, { status: 'pago', dataPagamento: new Date().toISOString().split('T')[0] }); };
 
     window.gerarMensalidadesLote = async () => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
@@ -2428,9 +2231,8 @@
       for (const c of ativos) {
         const dia = String(c.monitoramentoDia || 10).padStart(2, '0');
         await salvarDocumento('financeiro', `mens_${mesRef}_${c.id}`, {
-          descricao: `Monitoramento ${mesRef} - ${c.nome}`,
-          tipo: 'receita', valor: c.monitoramentoValor, vencimento: `${mesRef}-${dia}`,
-          status: 'pendente', clienteTelefone: c.telefone || ''
+          descricao: `Monitoramento ${mesRef} - ${c.nome}`, tipo: 'receita', valor: c.monitoramentoValor,
+          vencimento: `${mesRef}-${dia}`, status: 'pendente', clienteTelefone: c.telefone || ''
         });
       }
       alert("Mensalidades geradas com sucesso!");
@@ -2443,28 +2245,16 @@
       document.getElementById('lista-financeiro').innerHTML = lista.length
         ? lista.map(f => `
             <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 border-b text-sm">
-              <div>
-                <span class="font-semibold text-slate-800">${f.descricao}</span>
-                ${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}
-                <p class="text-xs text-slate-400">Vencimento: ${f.vencimento || '-'} • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-600'}">${(f.status || 'pendente').toUpperCase()}</strong></p>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="font-bold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-600'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
-                ${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">Baixar</button>` : ''}
-              </div>
+              <div><span class="font-semibold text-slate-800">${f.descricao}</span>${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}<p class="text-xs text-slate-400">Vencimento: ${formatarDataBR(f.vencimento)} • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-600'}">${(f.status || 'pendente').toUpperCase()}</strong></p></div>
+              <div class="flex items-center gap-3"><span class="font-bold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-600'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">Baixar</button>` : ''}</div>
             </div>`).join('')
         : '<p class="p-4 text-sm text-slate-500">Nenhum lançamento encontrado.</p>';
     };
 
-    // =========================================================================
-    // 16. CONFIGURAÇÕES E BACKUP JSON
-    // =========================================================================
     window.salvarConfig = () => {
       state.config = {
-        nome: document.getElementById('cfg-nome').value,
-        cnpj: document.getElementById('cfg-cnpj').value,
-        tel: document.getElementById('cfg-tel').value,
-        cidade: document.getElementById('cfg-cidade').value
+        nome: document.getElementById('cfg-nome').value, cnpj: document.getElementById('cfg-cnpj').value,
+        tel: document.getElementById('cfg-tel').value, cidade: document.getElementById('cfg-cidade').value
       };
       localStorage.setItem('conecta_config', JSON.stringify(state.config));
       alert("Configurações salvas!");
@@ -2472,21 +2262,11 @@
 
     window.exportarBackup = async () => {
       const [usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro] = await Promise.all([
-        carregarColecao('usuarios'),
-        carregarColecao('clientes'),
-        carregarColecao('fornecedores'),
-        carregarColecao('produtos_kits'),
-        carregarColecao('orcamentos'),
-        carregarColecao('ordens_servico'),
-        carregarColecao('financeiro')
+        carregarColecao('usuarios'), carregarColecao('clientes'), carregarColecao('fornecedores'),
+        carregarColecao('produtos_kits'), carregarColecao('orcamentos'), carregarColecao('ordens_servico'), carregarColecao('financeiro')
       ]);
-      const blob = new Blob([JSON.stringify({
-        usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro, config: state.config
-      }, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `backup_conecta_${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
+      const blob = new Blob([JSON.stringify({ usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro, config: state.config }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_conecta_${new Date().toISOString().split('T')[0]}.json`; a.click();
     };
 
     window.restaurarBackup = (event) => {
