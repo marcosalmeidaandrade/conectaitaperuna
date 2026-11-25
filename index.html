@@ -54,26 +54,27 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Menu de abas estilo Dashboard + recolhimento suave ao rolar para baixo */
-    #app-nav {
-      max-height: 80px;
-      opacity: 1;
-      transform: translateY(0);
-      transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease, transform 0.25s ease, border-color 0.25s ease;
+    /* ==================== OPÇÃO 1 (DESKTOP): GLASSMORPHISM DOCK ==================== */
+    #desktop-dock-wrapper {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
     }
-    #app-nav.nav-hidden {
-      max-height: 0;
+    #desktop-dock-wrapper.dock-hidden {
+      transform: translateY(-135%);
       opacity: 0;
-      transform: translateY(-8px);
-      overflow: hidden;
-      border-top-color: transparent !important;
       pointer-events: none;
     }
-    .nav-btn {
+    #desktop-dock {
+      background: rgba(12, 20, 17, 0.80);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(0, 168, 89, 0.30);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .dock-btn {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.42rem 0.78rem;
+      padding: 0.48rem 0.82rem;
       border-radius: 0.75rem;
       font-size: 0.78rem;
       line-height: 1;
@@ -81,31 +82,117 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border: 1px solid transparent;
     }
-    .nav-btn svg {
+    .dock-btn svg {
       width: 15px;
       height: 15px;
       flex-shrink: 0;
-      transition: transform 0.2s ease;
     }
-    .nav-btn:active {
-      transform: scale(0.97);
+    .dock-btn:active {
+      transform: scale(0.96);
     }
-    .nav-btn-active {
+    .dock-btn-active {
       background: linear-gradient(135deg, #00A859 0%, #007d42 100%);
       color: #ffffff;
       font-weight: 600;
       border-color: rgba(122, 193, 67, 0.55);
-      box-shadow: 0 4px 12px rgba(0, 168, 89, 0.30);
+      box-shadow: 0 4px 14px rgba(0, 168, 89, 0.35);
     }
-    .nav-btn-inactive {
-      background-color: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.08);
+    .dock-btn-inactive {
       color: #cbd5e1;
       font-weight: 500;
+      background-color: transparent;
     }
-    .nav-btn-inactive:hover {
-      background-color: rgba(0, 168, 89, 0.14);
-      border-color: rgba(0, 168, 89, 0.35);
+    .dock-btn-inactive:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    /* ==================== OPÇÃO 4 (MOBILE): BARRA INFERIOR + MENU MAIS ==================== */
+    #mobile-bottom-nav {
+      background: rgba(10, 15, 13, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-top: 1px solid rgba(0, 168, 89, 0.28);
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.22);
+    }
+    .mob-tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+      padding: 8px 4px 7px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #94a3b8;
+      position: relative;
+      transition: color 0.2s ease, transform 0.15s ease;
+    }
+    .mob-tab-btn svg {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.2s ease;
+    }
+    .mob-tab-btn:active {
+      transform: scale(0.93);
+    }
+    .mob-tab-btn.mob-active {
+      color: #7AC143;
+    }
+    .mob-tab-btn.mob-active svg {
+      transform: translateY(-1px);
+    }
+    .mob-tab-btn.mob-active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 3px;
+      border-radius: 0 0 4px 4px;
+      background: linear-gradient(90deg, #00A859, #7AC143);
+    }
+
+    /* Bottom Sheet Menu "Mais" */
+    #mobile-more-sheet {
+      background: #111916;
+      border-top: 1px solid rgba(0, 168, 89, 0.35);
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    #mobile-more-sheet.sheet-open {
+      transform: translateY(0);
+    }
+    .more-item-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.78rem 0.9rem;
+      border-radius: 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.18s ease;
+      text-align: left;
+    }
+    .more-item-btn svg {
+      width: 18px;
+      height: 18px;
+      color: #7AC143;
+      flex-shrink: 0;
+    }
+    .more-item-btn.more-active {
+      background: linear-gradient(135deg, #00A859 0%, #007d42 100%);
+      border-color: rgba(122, 193, 67, 0.6);
+      color: #ffffff;
+    }
+    .more-item-btn.more-active svg {
       color: #ffffff;
     }
 
@@ -136,26 +223,57 @@
     body.theme-light #header-subtitle {
       color: #475569;
     }
-    body.theme-light #app-nav {
-      background-color: #f4f9f6;
-      border-top-color: #e2ece7;
+    body.theme-light #desktop-dock {
+      background: rgba(255, 255, 255, 0.85);
+      border-color: rgba(0, 168, 89, 0.24);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
-    body.theme-light #app-nav .nav-btn-inactive {
+    body.theme-light .dock-btn-inactive {
       color: #475569;
-      background-color: #ffffff;
-      border-color: #dce8e2;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
-    body.theme-light #app-nav .nav-btn-inactive:hover {
-      color: #006837;
+    body.theme-light .dock-btn-inactive:hover {
       background-color: #e6f6ee;
-      border-color: #86d3ab;
+      color: #006837;
     }
-    body.theme-light #app-nav .nav-btn-active {
+    body.theme-light .dock-btn-active {
       background: linear-gradient(135deg, #00A859 0%, #007d42 100%);
       color: #ffffff;
       border-color: #00A859;
-      box-shadow: 0 4px 10px rgba(0, 168, 89, 0.25);
+      box-shadow: 0 4px 12px rgba(0, 168, 89, 0.28);
+    }
+    body.theme-light #mobile-bottom-nav {
+      background: rgba(255, 255, 255, 0.94);
+      border-top-color: #d1e7dd;
+      box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+    }
+    body.theme-light .mob-tab-btn {
+      color: #64748b;
+    }
+    body.theme-light .mob-tab-btn.mob-active {
+      color: #006837;
+    }
+    body.theme-light #mobile-more-sheet {
+      background: #ffffff;
+      border-top-color: #d1e7dd;
+    }
+    body.theme-light #mobile-more-title {
+      color: #0f172a;
+    }
+    body.theme-light .more-item-btn {
+      color: #1e293b;
+      background: #f4f9f6;
+      border-color: #dce8e2;
+    }
+    body.theme-light .more-item-btn svg {
+      color: #00A859;
+    }
+    body.theme-light .more-item-btn.more-active {
+      background: linear-gradient(135deg, #00A859 0%, #007d42 100%);
+      color: #ffffff;
+      border-color: #00A859;
+    }
+    body.theme-light .more-item-btn.more-active svg {
+      color: #ffffff;
     }
     body.theme-light #usuario-logado {
       color: #006837;
@@ -270,51 +388,52 @@
       </div>
     </div>
 
-    <!-- NAVEGAÇÃO EM ABAS (DASHBOARD COM ÍCONES + AUTO-HIDE AO ROLAR) -->
-    <nav id="app-nav" class="bg-[#0f1714]/95 border-t border-white/10 overflow-x-auto no-scrollbar">
-      <div class="max-w-7xl mx-auto px-3 py-2 flex items-center gap-2 min-w-max">
-        <button onclick="switchTab('painel')" data-tab="painel" class="nav-btn nav-btn-active">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-          <span>Painel</span>
-        </button>
-        <button onclick="switchTab('os')" data-tab="os" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>
-          <span>Agenda & OS</span>
-        </button>
-        <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
-          <span>Orçamentos</span>
-        </button>
-        <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>Clientes</span>
-        </button>
-        <button onclick="switchTab('fornecedores')" data-tab="fornecedores" data-admin-only="true" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          <span>Fornecedores</span>
-        </button>
-        <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
-          <span>Produtos & Kits</span>
-        </button>
-        <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span>Financeiro</span>
-        </button>
-        <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="10" r="2.5"/><path d="M8.5 16.5a4 4 0 0 1 7 0"/></svg>
-          <span>Usuários</span>
-        </button>
-        <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn nav-btn-inactive">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>Configurações</span>
-        </button>
-      </div>
-    </nav>
   </header>
 
+  <!-- ==================== OPÇÃO 1 (COMPUTADOR): GLASSMORPHISM DOCK FLUTUANTE ==================== -->
+  <div id="desktop-dock-wrapper" class="hidden md:flex justify-center sticky top-[68px] z-30 px-4 pt-3 pb-1 no-print">
+    <nav id="desktop-dock" class="rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar max-w-full">
+      <button onclick="switchTab('painel')" data-tab="painel" class="nav-btn dock-btn dock-btn-active">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Painel</span>
+      </button>
+      <button onclick="switchTab('os')" data-tab="os" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>
+        <span>Agenda & OS</span>
+      </button>
+      <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+        <span>Orçamentos</span>
+      </button>
+      <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Clientes</span>
+      </button>
+      <button onclick="switchTab('fornecedores')" data-tab="fornecedores" data-admin-only="true" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        <span>Fornecedores</span>
+      </button>
+      <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+        <span>Produtos & Kits</span>
+      </button>
+      <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Financeiro</span>
+      </button>
+      <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="10" r="2.5"/><path d="M8.5 16.5a4 4 0 0 1 7 0"/></svg>
+        <span>Usuários</span>
+      </button>
+      <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="nav-btn dock-btn dock-btn-inactive">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Configurações</span>
+      </button>
+    </nav>
+  </div>
+
   <!-- CONTEÚDO PRINCIPAL -->
-  <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 no-print">
+  <main class="max-w-7xl w-full mx-auto px-4 pt-4 pb-24 md:py-6 flex-1 no-print">
 
     <!-- ==================== ABA: PAINEL ==================== -->
     <section id="tab-painel" class="tab-content active space-y-6">
@@ -561,6 +680,62 @@
       </div>
     </section>
   </main>
+
+  <!-- ==================== OPÇÃO 4 (SMARTPHONE): BARRA INFERIOR + MENU MAIS ==================== -->
+  <nav id="mobile-bottom-nav" class="fixed bottom-0 inset-x-0 z-40 flex md:hidden items-stretch justify-around no-print">
+    <button onclick="switchTab('painel')" data-tab="painel" class="mob-tab-btn mob-active">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Painel</span>
+    </button>
+    <button onclick="switchTab('os')" data-tab="os" class="mob-tab-btn">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>
+      <span>OS</span>
+    </button>
+    <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="mob-tab-btn">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+      <span>Orçamentos</span>
+    </button>
+    <button onclick="switchTab('clientes')" data-tab="clientes" class="mob-tab-btn">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Clientes</span>
+    </button>
+    <button id="mob-btn-mais" onclick="abrirMenuMais()" data-admin-only="true" class="mob-tab-btn">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg>
+      <span>Mais</span>
+    </button>
+  </nav>
+
+  <!-- PAINEL DESLIZANTE (BOTTOM SHEET) DO MENU "MAIS" NO SMARTPHONE -->
+  <div id="mobile-more-backdrop" onclick="fecharMenuMais()" class="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50 hidden md:hidden no-print"></div>
+  <div id="mobile-more-sheet" class="fixed bottom-0 inset-x-0 z-50 rounded-t-3xl p-5 space-y-4 md:hidden hidden no-print shadow-2xl">
+    <div class="w-10 h-1 bg-slate-500/40 rounded-full mx-auto"></div>
+    <div class="flex items-center justify-between">
+      <h3 id="mobile-more-title" class="text-sm font-bold text-white uppercase tracking-wider">Mais Opções</h3>
+      <button onclick="fecharMenuMais()" class="text-slate-400 hover:text-white text-xl leading-none px-1">&times;</button>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <button onclick="switchTab('fornecedores')" data-tab="fornecedores" data-admin-only="true" class="more-item-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        <span>Fornecedores</span>
+      </button>
+      <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="more-item-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+        <span>Produtos & Kits</span>
+      </button>
+      <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="more-item-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Financeiro</span>
+      </button>
+      <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="more-item-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="10" r="2.5"/><path d="M8.5 16.5a4 4 0 0 1 7 0"/></svg>
+        <span>Usuários</span>
+      </button>
+      <button onclick="switchTab('config')" data-tab="config" data-admin-only="true" class="more-item-btn col-span-2">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Configurações & Backup</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ==================== MODAL APROVAR ORÇAMENTO E AGENDAR OS ==================== -->
   <div id="modal-agendar-os" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
@@ -1215,16 +1390,16 @@
       if (scrollTicking) return;
       scrollTicking = true;
       requestAnimationFrame(() => {
-        const nav = document.getElementById('app-nav');
-        if (nav) {
+        const dock = document.getElementById('desktop-dock-wrapper');
+        if (dock) {
           const atualY = Math.max(0, window.scrollY);
           const diff = atualY - ultimoScrollY;
-          if (atualY <= 20) {
-            nav.classList.remove('nav-hidden');
-          } else if (diff > 8 && atualY > 56) {
-            nav.classList.add('nav-hidden');
+          if (atualY <= 24) {
+            dock.classList.remove('dock-hidden');
+          } else if (diff > 8 && atualY > 72) {
+            dock.classList.add('dock-hidden');
           } else if (diff < -6) {
-            nav.classList.remove('nav-hidden');
+            dock.classList.remove('dock-hidden');
           }
           ultimoScrollY = atualY;
         }
@@ -1534,16 +1709,51 @@
       }).join('');
     }
 
+    const ABAS_MENU_MAIS = ['fornecedores', 'produtos', 'financeiro', 'usuarios', 'config'];
+
+    window.abrirMenuMais = () => {
+      const backdrop = document.getElementById('mobile-more-backdrop');
+      const sheet = document.getElementById('mobile-more-sheet');
+      backdrop.classList.remove('hidden');
+      sheet.classList.remove('hidden');
+      requestAnimationFrame(() => sheet.classList.add('sheet-open'));
+    };
+
+    window.fecharMenuMais = () => {
+      const backdrop = document.getElementById('mobile-more-backdrop');
+      const sheet = document.getElementById('mobile-more-sheet');
+      sheet.classList.remove('sheet-open');
+      setTimeout(() => {
+        backdrop.classList.add('hidden');
+        sheet.classList.add('hidden');
+      }, 260);
+    };
+
     window.switchTab = (tabName) => {
+      fecharMenuMais();
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabName}`).classList.add('active');
-      document.querySelectorAll('.nav-btn').forEach(btn => {
+
+      // Atualiza Desktop Glassmorphism Dock
+      document.querySelectorAll('.dock-btn').forEach(btn => {
         const active = btn.dataset.tab === tabName;
-        btn.classList.toggle('nav-btn-active', active);
-        btn.classList.toggle('nav-btn-inactive', !active);
+        btn.classList.toggle('dock-btn-active', active);
+        btn.classList.toggle('dock-btn-inactive', !active);
       });
-      const nav = document.getElementById('app-nav');
-      if (nav) nav.classList.remove('nav-hidden');
+
+      // Atualiza Smartphone Barra Inferior + Menu "Mais"
+      document.querySelectorAll('.mob-tab-btn[data-tab]').forEach(btn => {
+        btn.classList.toggle('mob-active', btn.dataset.tab === tabName);
+      });
+      const btnMais = document.getElementById('mob-btn-mais');
+      if (btnMais) btnMais.classList.toggle('mob-active', ABAS_MENU_MAIS.includes(tabName));
+
+      document.querySelectorAll('.more-item-btn[data-tab]').forEach(btn => {
+        btn.classList.toggle('more-active', btn.dataset.tab === tabName);
+      });
+
+      const dock = document.getElementById('desktop-dock-wrapper');
+      if (dock) dock.classList.remove('dock-hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       ativarSincronizacaoAba(tabName);
     };
