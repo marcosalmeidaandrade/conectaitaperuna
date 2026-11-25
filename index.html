@@ -16,6 +16,7 @@
   <link rel="manifest" href="./manifest.json" />
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -129,7 +130,6 @@
 
   <!-- ==================== TELA DE LOGIN ==================== -->
   <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 safe-top no-print transition-colors">
-    <!-- Botão de Tema no canto superior direito da tela de login -->
     <div class="fixed top-4 right-4 safe-top z-50">
       <button type="button" onclick="alternarTema()" class="btn-tema text-xs px-3 py-1.5 rounded-lg bg-white/10 text-slate-200 border border-white/20 hover:bg-white/20 font-semibold transition flex items-center gap-1.5">
         <span class="tema-icone">☀️</span>
@@ -169,7 +169,7 @@
     </div>
   </div>
 
-  <!-- HEADER SUPERIOR (COM SAFE-AREA, LOGO + CONECTA SEGURANÇA E CLIMATIZAÇÃO + BOAS-VINDAS + TEMA) -->
+  <!-- HEADER SUPERIOR -->
   <header id="app-header" class="bg-conecta-dark text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print transition-colors">
     <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2.5">
@@ -211,6 +211,7 @@
         <button onclick="switchTab('os')" data-tab="os" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Agenda & OS</button>
         <button onclick="switchTab('orcamentos')" data-tab="orcamentos" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Orçamentos</button>
         <button onclick="switchTab('clientes')" data-tab="clientes" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Clientes</button>
+        <button onclick="switchTab('fornecedores')" data-tab="fornecedores" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Fornecedores</button>
         <button onclick="switchTab('produtos')" data-tab="produtos" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Produtos & Kits</button>
         <button onclick="switchTab('financeiro')" data-tab="financeiro" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Financeiro</button>
         <button onclick="switchTab('usuarios')" data-tab="usuarios" data-admin-only="true" class="nav-btn nav-btn-inactive px-4 py-3 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-white">Usuários</button>
@@ -302,7 +303,7 @@
         <select id="filtro-orc-status" onchange="renderOrcamentos()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
           <option value="todos">Todos os status</option>
           <option value="rascunho">Rascunho</option>
-          <option value="enviado">Enviado</option>
+          <option value="enviado">Enviado ao cliente</option>
           <option value="aprovado">Aprovado</option>
           <option value="recusado">Recusado</option>
         </select>
@@ -323,6 +324,23 @@
       <input id="busca-cliente" oninput="renderClientes()" type="text" placeholder="Buscar por nome, CPF/CNPJ, telefone ou equipamento..." class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm" />
 
       <div id="lista-clientes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ==================== ABA: FORNECEDORES ==================== -->
+    <section id="tab-fornecedores" class="tab-content space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">Fornecedores</h2>
+          <p class="text-xs text-slate-500">Cadastre fornecedores e parceiros para vincular despesas e obrigações no Financeiro.</p>
+        </div>
+        <button onclick="abrirModalFornecedor()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+          + Novo Fornecedor
+        </button>
+      </div>
+
+      <input id="busca-fornecedor" oninput="renderFornecedores()" type="text" placeholder="Buscar por razão social, CNPJ/CPF, categoria ou telefone..." class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm" />
+
+      <div id="lista-fornecedores" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
     <!-- ==================== ABA: PRODUTOS & KITS ==================== -->
@@ -411,7 +429,7 @@
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h2 class="text-lg font-bold text-slate-800">Backup e Restauração (JSON)</h2>
-          <p class="text-sm text-slate-500">Exporte uma cópia de segurança de todos os usuários, clientes, produtos, orçamentos, OS e lançamentos financeiros.</p>
+          <p class="text-sm text-slate-500">Exporte uma cópia de segurança de todos os usuários, clientes, fornecedores, produtos, orçamentos, OS e lançamentos financeiros.</p>
           <div class="flex flex-wrap gap-3">
             <button onclick="exportarBackup()" class="bg-conecta-green text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-conecta-emerald">
               Baixar Backup JSON
@@ -493,7 +511,7 @@
             <input type="checkbox" id="usu-admin" class="rounded h-4 w-4" />
             Tornar este usuário ADMINISTRADOR
           </label>
-          <p class="text-xs text-slate-500 mt-1">Administradores têm acesso total (Financeiro, Orçamentos, Produtos, Usuários e Configurações).</p>
+          <p class="text-xs text-slate-500 mt-1">Administradores têm acesso total (Financeiro, Orçamentos, Fornecedores, Produtos, Usuários e Configurações).</p>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -578,6 +596,84 @@
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="fecharModal('modal-cliente')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
           <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL FORNECEDOR ==================== -->
+  <div id="modal-fornecedor" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="modal-forn-titulo" class="font-bold text-lg text-slate-800">Cadastro de Fornecedor</h3>
+        <button onclick="fecharModal('modal-fornecedor')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-fornecedor" onsubmit="salvarFornecedor(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="forn-id" />
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Tipo</label>
+            <select id="forn-tipo" onchange="atualizarMascaraDocFornecedor()" class="w-full border rounded-lg px-3 py-2">
+              <option value="PJ">Pessoa Jurídica</option>
+              <option value="PF">Pessoa Física</option>
+            </select>
+          </div>
+          <div class="col-span-2">
+            <label class="block font-medium mb-1">Razão Social / Nome *</label>
+            <input id="forn-nome" required placeholder="Nome do fornecedor" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label id="forn-doc-label" class="block font-medium mb-1">CNPJ</label>
+            <input id="forn-doc" type="text" inputmode="numeric" maxlength="18" placeholder="00.000.000/0001-00"
+              oninput="aplicarMascaraDoc(this, document.getElementById('forn-tipo').value)" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Telefone / WhatsApp *</label>
+            <input id="forn-tel" type="text" inputmode="numeric" maxlength="15" required placeholder="(22) 99999-9999"
+              oninput="aplicarMascaraTelefone(this)" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">Categoria / Ramo</label>
+            <select id="forn-categoria" class="w-full border rounded-lg px-3 py-2">
+              <option value="Segurança / CFTV">Segurança / CFTV</option>
+              <option value="Climatização / Refrigeração">Climatização / Refrigeração</option>
+              <option value="Material Elétrico / Ferramentas">Material Elétrico / Ferramentas</option>
+              <option value="Serviços / Terceiros">Serviços / Terceiros</option>
+              <option value="Despesas Fixas / Impostos">Despesas Fixas / Impostos</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Vendedor / Contato</label>
+            <input id="forn-contato" placeholder="Nome do vendedor ou contato" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium mb-1">E-mail</label>
+            <input id="forn-email" type="email" placeholder="contato@fornecedor.com" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Chave PIX / Dados Bancários</label>
+            <input id="forn-pix" placeholder="CNPJ, e-mail, telefone ou conta" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Endereço Completo</label>
+          <input id="forn-endereco" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Observações</label>
+          <textarea id="forn-obs" rows="2" placeholder="Condições de pagamento, prazos de entrega, etc." class="w-full border rounded-lg px-3 py-2"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModal('modal-fornecedor')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar Fornecedor</button>
         </div>
       </form>
     </div>
@@ -668,13 +764,19 @@
           </div>
           <div>
             <label class="block font-medium mb-1">Status</label>
-            <select id="orc-status" class="w-full border rounded-lg px-3 py-2">
+            <select id="orc-status" onchange="alternarCampoRecusa()" class="w-full border rounded-lg px-3 py-2">
               <option value="rascunho">Rascunho</option>
-              <option value="enviado">Enviado ao Cliente</option>
+              <option value="enviado">Enviado ao cliente</option>
               <option value="aprovado">Aprovado</option>
               <option value="recusado">Recusado</option>
             </select>
           </div>
+        </div>
+
+        <!-- Campo Motivo da Recusa (exibido quando status = recusado) -->
+        <div id="orc-recusa-box" class="hidden border border-red-300 bg-red-50 rounded-xl p-3 space-y-1.5">
+          <label class="block font-semibold text-red-700 text-xs uppercase">Motivo da Recusa *</label>
+          <textarea id="orc-motivo-recusa" rows="2" placeholder="Descreva o motivo pelo qual o orçamento foi recusado pelo cliente..." class="w-full border border-red-200 bg-white rounded-lg px-3 py-2 text-sm"></textarea>
         </div>
 
         <div class="border rounded-xl p-3 bg-slate-50 space-y-3">
@@ -838,7 +940,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block font-medium mb-1">Tipo</label>
-            <select id="fin-tipo" class="w-full border rounded-lg px-3 py-2">
+            <select id="fin-tipo" onchange="alternarFornecedorFinanceiro()" class="w-full border rounded-lg px-3 py-2">
               <option value="receita">Receita (A Receber)</option>
               <option value="despesa">Despesa (A Pagar)</option>
             </select>
@@ -847,6 +949,10 @@
             <label class="block font-medium mb-1">Valor (R$) *</label>
             <input id="fin-valor" type="number" step="0.01" required class="w-full border rounded-lg px-3 py-2" />
           </div>
+        </div>
+        <div id="fin-fornecedor-box" class="hidden">
+          <label class="block font-medium mb-1">Fornecedor (Opcional)</label>
+          <select id="fin-fornecedor" class="w-full border rounded-lg px-3 py-2"></select>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -904,6 +1010,7 @@
       perfil: 'tecnico',
       usuarios: [],
       clientes: [],
+      fornecedores: [],
       produtos: [],
       os: [],
       orcamentos: [],
@@ -916,6 +1023,22 @@
     };
 
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    function formatarDataHoraBR(date = new Date()) {
+      const d = String(date.getDate()).padStart(2, '0');
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const y = date.getFullYear();
+      const h = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      return `${d}/${m}/${y} ${h}:${min}hs`;
+    }
+
+    const STATUS_ORDEM = [
+      { chave: 'rascunho', label: 'Rascunho' },
+      { chave: 'enviado', label: 'Enviado ao cliente' },
+      { chave: 'aprovado', label: 'Aprovado' },
+      { chave: 'recusado', label: 'Recusado' }
+    ];
 
     // =========================================================================
     // 2. TEMA DE CORES (ESCURO PADRÃO / CLARO)
@@ -1042,6 +1165,22 @@
       aplicarMascaraDoc(input, tipo);
     };
 
+    window.atualizarMascaraDocFornecedor = () => {
+      const tipo = document.getElementById('forn-tipo').value;
+      const input = document.getElementById('forn-doc');
+      const label = document.getElementById('forn-doc-label');
+      if (tipo === 'PJ') {
+        label.textContent = 'CNPJ';
+        input.placeholder = '00.000.000/0001-00';
+        input.maxLength = 18;
+      } else {
+        label.textContent = 'CPF';
+        input.placeholder = '000.000.000-00';
+        input.maxLength = 14;
+      }
+      aplicarMascaraDoc(input, tipo);
+    };
+
     // =========================================================================
     // 6. PERSISTÊNCIA E SINCRONIZAÇÃO EM TEMPO REAL (onSnapshot POR ABA)
     // =========================================================================
@@ -1082,6 +1221,7 @@
         os: { colecao: 'ordens_servico', chave: 'os', render: renderOS },
         orcamentos: { colecao: 'orcamentos', chave: 'orcamentos', render: renderOrcamentos },
         clientes: { colecao: 'clientes', chave: 'clientes', render: renderClientes },
+        fornecedores: { colecao: 'fornecedores', chave: 'fornecedores', render: renderFornecedores },
         produtos: { colecao: 'produtos_kits', chave: 'produtos', render: renderProdutos },
         financeiro: { colecao: 'financeiro', chave: 'financeiro', render: renderFinanceiro },
         usuarios: { colecao: 'usuarios', chave: 'usuarios', render: renderUsuarios }
@@ -1485,7 +1625,86 @@
     };
 
     // =========================================================================
-    // 11. MÓDULO PRODUTOS & KITS
+    // 11. MÓDULO FORNECEDORES
+    // =========================================================================
+    window.abrirModalFornecedor = (id = null) => {
+      document.getElementById('form-fornecedor').reset();
+      document.getElementById('forn-id').value = id || '';
+      if (id) {
+        const f = state.fornecedores.find(x => x.id === id);
+        if (f) {
+          document.getElementById('modal-forn-titulo').textContent = `Editar Fornecedor`;
+          document.getElementById('forn-tipo').value = f.tipo || 'PJ';
+          document.getElementById('forn-nome').value = f.nome || '';
+          document.getElementById('forn-doc').value = f.tipo === 'PF' ? formatarCPF(f.documento || '') : formatarCNPJ(f.documento || '');
+          document.getElementById('forn-tel').value = formatarTelefone(f.telefone || '');
+          document.getElementById('forn-categoria').value = f.categoria || 'Outros';
+          document.getElementById('forn-contato').value = f.contato || '';
+          document.getElementById('forn-email').value = f.email || '';
+          document.getElementById('forn-pix').value = f.pix || '';
+          document.getElementById('forn-endereco').value = f.endereco || '';
+          document.getElementById('forn-obs').value = f.obs || '';
+        }
+      } else {
+        document.getElementById('modal-forn-titulo').textContent = "Novo Fornecedor";
+      }
+      atualizarMascaraDocFornecedor();
+      abrirModal('modal-fornecedor');
+    };
+
+    window.salvarFornecedor = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('forn-id').value || `forn_${Date.now()}`;
+      const tipo = document.getElementById('forn-tipo').value;
+      const dados = {
+        tipo,
+        nome: document.getElementById('forn-nome').value.trim(),
+        documento: document.getElementById('forn-doc').value.replace(/\D/g, ''),
+        telefone: document.getElementById('forn-tel').value.replace(/\D/g, '').slice(0, 11),
+        categoria: document.getElementById('forn-categoria').value,
+        contato: document.getElementById('forn-contato').value.trim(),
+        email: document.getElementById('forn-email').value.trim(),
+        pix: document.getElementById('forn-pix').value.trim(),
+        endereco: document.getElementById('forn-endereco').value.trim(),
+        obs: document.getElementById('forn-obs').value.trim(),
+        atualizadoEm: new Date().toISOString()
+      };
+      await salvarDocumento('fornecedores', id, dados);
+      fecharModal('modal-fornecedor');
+    };
+
+    window.renderFornecedores = () => {
+      const q = (document.getElementById('busca-fornecedor').value || '').toLowerCase();
+      const filtrados = state.fornecedores.filter(f =>
+        (f.nome || '').toLowerCase().includes(q) ||
+        (f.documento || '').includes(q) ||
+        (f.categoria || '').toLowerCase().includes(q) ||
+        (f.telefone || '').includes(q)
+      );
+      document.getElementById('lista-fornecedores').innerHTML = filtrados.map(f => `
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex justify-between items-start gap-2">
+              <h3 class="font-bold text-slate-800">${f.nome}</h3>
+              <span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold shrink-0">${f.tipo || 'PJ'}</span>
+            </div>
+            <p class="text-xs font-semibold text-conecta-emerald">${f.categoria || 'Geral'}</p>
+            ${f.documento ? `<p class="text-xs text-slate-500">${f.tipo === 'PF' ? 'CPF: ' + formatarCPF(f.documento) : 'CNPJ: ' + formatarCNPJ(f.documento)}</p>` : ''}
+            ${f.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(f.telefone)}${f.contato ? ' (' + f.contato + ')' : ''}</p>` : ''}
+            ${f.email ? `<p class="text-xs text-slate-500">${f.email}</p>` : ''}
+            ${f.pix ? `<p class="text-xs bg-slate-50 border p-1.5 rounded mt-1"><strong>PIX/Banco:</strong> ${f.pix}</p>` : ''}
+            ${f.endereco ? `<p class="text-xs text-slate-400">${f.endereco}</p>` : ''}
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t text-xs">
+            <a href="https://wa.me/55${f.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
+            <button onclick="abrirModalFornecedor('${f.id}')" class="text-slate-600 font-semibold hover:text-black">Editar</button>
+          </div>
+        </div>
+      `).join('') || '<p class="text-sm text-slate-500">Nenhum fornecedor cadastrado.</p>';
+    };
+
+    // =========================================================================
+    // 12. MÓDULO PRODUTOS & KITS
     // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
@@ -1543,8 +1762,21 @@
     }
 
     // =========================================================================
-    // 12. MÓDULO ORÇAMENTOS (COM UPLOAD ORIGINAL CLOUDINARY)
+    // 13. MÓDULO ORÇAMENTOS (PDF COM FOTOS, WHATSAPP, HISTÓRICO E RECUSA)
     // =========================================================================
+    window.alternarCampoRecusa = () => {
+      const status = document.getElementById('orc-status').value;
+      const box = document.getElementById('orc-recusa-box');
+      const txt = document.getElementById('orc-motivo-recusa');
+      if (status === 'recusado') {
+        box.classList.remove('hidden');
+        txt.required = true;
+      } else {
+        box.classList.add('hidden');
+        txt.required = false;
+      }
+    };
+
     window.abrirModalOrcamento = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
       if (!state.produtos.length) state.produtos = await carregarColecao('produtos_kits');
@@ -1574,7 +1806,8 @@
           document.getElementById('orc-cliente').value = o.clienteId;
           document.getElementById('orc-categoria').value = o.categoria || 'seguranca';
           document.getElementById('orc-validade').value = o.validade;
-          document.getElementById('orc-status').value = o.status || 'enviado';
+          document.getElementById('orc-status').value = o.status || 'rascunho';
+          document.getElementById('orc-motivo-recusa').value = o.motivoRecusa || '';
           document.getElementById('orc-desconto').value = o.desconto || 0;
           document.getElementById('orc-obs').value = o.obs || '';
           state.itensOrcTemp = (o.itens && o.itens.length) ? o.itens.map(i => ({ ...i })) : [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }];
@@ -1583,6 +1816,7 @@
       } else {
         document.getElementById('modal-orc-titulo').textContent = "Novo Orçamento";
       }
+      alternarCampoRecusa();
       renderItensOrcamento();
       renderFotosOrcPreview();
       abrirModal('modal-orcamento');
@@ -1683,13 +1917,27 @@
       const cliente = state.clientes.find(c => c.id === clienteId);
       const { total, lucro } = recalcularTotalOrcamento();
 
+      const novoStatus = document.getElementById('orc-status').value;
+      const motivoRecusa = novoStatus === 'recusado' ? document.getElementById('orc-motivo-recusa').value.trim() : (antigo?.motivoRecusa || '');
+      if (novoStatus === 'recusado' && !motivoRecusa) {
+        alert("Informe o motivo da recusa do orçamento.");
+        return;
+      }
+
+      const historicoStatus = { ...(antigo?.historicoStatus || {}) };
+      if (!antigo || antigo.status !== novoStatus || !historicoStatus[novoStatus]) {
+        historicoStatus[novoStatus] = formatarDataHoraBR(new Date());
+      }
+
       const dados = {
         numero, clienteId,
         clienteNome: cliente ? cliente.nome : 'Cliente',
         clienteTelefone: cliente ? (cliente.telefone || '') : '',
         categoria: document.getElementById('orc-categoria').value,
         validade: document.getElementById('orc-validade').value,
-        status: document.getElementById('orc-status').value,
+        status: novoStatus,
+        historicoStatus,
+        motivoRecusa,
         itens: state.itensOrcTemp.filter(i => i.descricao.trim() !== ''),
         desconto: Number(document.getElementById('orc-desconto').value || 0),
         valorTotal: total,
@@ -1720,32 +1968,184 @@
         relato: `Aprovado via ${orc.numero}:\n${resumoItens}${orc.obs ? '\nObs: ' + orc.obs : ''}`,
         laudo: '', checklist: [], fotosAntes: [...(orc.fotos || [])], fotosDepois: [], assinatura: '', lancadoFinanceiro: false
       });
-      await salvarDocumento('orcamentos', orc.id, { status: 'aprovado', osGeradaId: osId, osGeradaNumero: osNumero });
+
+      const historicoStatus = { ...(orc.historicoStatus || {}), aprovado: formatarDataHoraBR(new Date()) };
+      await salvarDocumento('orcamentos', orc.id, { status: 'aprovado', historicoStatus, osGeradaId: osId, osGeradaNumero: osNumero });
 
       alert(`${osNumero} gerada com sucesso!`);
       switchTab('os');
+    };
+
+    function montarHtmlPDFOrcamento(o) {
+      const linhas = (o.itens || []).map(i => `
+        <tr style="border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 8px 4px;">${i.descricao}</td>
+          <td style="padding: 8px 4px; text-align: center;">${i.qtd}</td>
+          <td style="padding: 8px 4px; text-align: right;">${formatBRL(i.valorUnit)}</td>
+          <td style="padding: 8px 4px; text-align: right; font-weight: 600;">${formatBRL(i.qtd * i.valorUnit)}</td>
+        </tr>`).join('');
+
+      const fotosHtml = (o.fotos && o.fotos.length) ? `
+        <div style="margin-top: 20px; page-break-inside: avoid;">
+          <p style="font-weight: 700; font-size: 13px; margin-bottom: 8px; color: #006837;">FOTOS ANEXAS DO ORÇAMENTO</p>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            ${o.fotos.map(f => `<img src="${f}" crossorigin="anonymous" style="width: 100%; height: 180px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px;" />`).join('')}
+          </div>
+        </div>` : '';
+
+      return `
+        <div style="font-family: Inter, Arial, sans-serif; color: #0f172a; padding: 10px; background: #ffffff;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A859; padding-bottom: 12px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img src="./somentelogo.png" crossorigin="anonymous" style="height: 54px; width: 54px; object-fit: contain; background: #000; padding: 4px; border-radius: 8px;" />
+              <div>
+                <h1 style="font-size: 18px; font-weight: 800; color: #006837; margin: 0;">${state.config.nome}</h1>
+                <p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">${state.config.cnpj || ''} ${state.config.tel ? '• ' + state.config.tel : ''} • ${state.config.cidade || ''}</p>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <p style="font-weight: 800; font-size: 16px; margin: 0;">${o.numero}</p>
+              <p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">Validade: ${o.validade || '-'}</p>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px; font-size: 13px;">
+            <strong>Cliente:</strong> ${o.clienteNome}
+          </div>
+
+          <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 16px;">
+            <thead>
+              <tr style="border-bottom: 2px solid #0f172a; text-align: left; background: #f8fafc;">
+                <th style="padding: 8px 4px;">Descrição</th>
+                <th style="padding: 8px 4px; text-align: center;">Qtd</th>
+                <th style="padding: 8px 4px; text-align: right;">Unitário</th>
+                <th style="padding: 8px 4px; text-align: right;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>${linhas}</tbody>
+          </table>
+
+          ${o.desconto > 0 ? `<p style="text-align: right; font-size: 12px; color: #64748b; margin: 0 0 4px 0;">Desconto: - ${formatBRL(o.desconto)}</p>` : ''}
+          <p style="text-align: right; font-size: 18px; font-weight: 800; color: #006837; margin: 0;">Total da Proposta: ${formatBRL(o.valorTotal)}</p>
+
+          ${o.obs ? `<div style="margin-top: 16px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #f8fafc;"><strong>Observações / Condições:</strong><br/>${o.obs}</div>` : ''}
+          ${fotosHtml}
+        </div>
+      `;
+    }
+
+    async function gerarPDFOrcamentoBlob(o) {
+      const container = document.createElement('div');
+      container.innerHTML = montarHtmlPDFOrcamento(o);
+      const opt = {
+        margin: 10,
+        filename: `${o.numero}.pdf`,
+        image: { type: 'jpeg', quality: 0.92 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      return await html2pdf().set(opt).from(container).outputPdf('blob');
+    }
+
+    window.baixarPDFOrcamento = async (id) => {
+      const o = state.orcamentos.find(x => x.id === id);
+      if (!o) return;
+      try {
+        const blob = await gerarPDFOrcamentoBlob(o);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${o.numero}.pdf`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      } catch (err) {
+        alert("Erro ao gerar PDF: " + err.message);
+      }
+    };
+
+    window.enviarOrcamentoWhatsApp = async (id) => {
+      const o = state.orcamentos.find(x => x.id === id);
+      if (!o) return;
+      const texto = `Olá ${o.clienteNome}, segue o orçamento ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal)}. Validade: ${o.validade || '-'}.`;
+
+      try {
+        const blob = await gerarPDFOrcamentoBlob(o);
+        const file = new File([blob], `${o.numero}.pdf`, { type: 'application/pdf' });
+
+        // Atualiza status automaticamente para ENVIADO AO CLIENTE com data/hora
+        const historicoStatus = { ...(o.historicoStatus || {}), enviado: formatarDataHoraBR(new Date()) };
+        await salvarDocumento('orcamentos', o.id, { status: 'enviado', historicoStatus });
+
+        // Em smartphones (iOS/Android), compartilha o PDF diretamente para o WhatsApp
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: `Orçamento ${o.numero}`,
+            text: texto
+          });
+        } else {
+          // No PC, baixa o PDF com nome automático e abre o WhatsApp com o texto pronto
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${o.numero}.pdf`;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+          const tel = (o.clienteTelefone || '').replace(/\D/g, '');
+          window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(texto)}`, '_blank');
+        }
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          alert("Erro ao preparar envio: " + err.message);
+        }
+      }
     };
 
     window.renderOrcamentos = () => {
       const filtro = document.getElementById('filtro-orc-status').value;
       const lista = state.orcamentos.filter(o => filtro === 'todos' || o.status === filtro);
       document.getElementById('lista-orcamentos').innerHTML = lista.map(o => {
-        const msgWpp = encodeURIComponent(`Olá ${o.clienteNome}, segue a proposta ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal)}. Validade: ${o.validade}.`);
+        const hist = o.historicoStatus || {};
+        const linhasHistorico = STATUS_ORDEM
+          .filter(s => hist[s.chave])
+          .map(s => `<div class="text-[11px] text-slate-600"><strong>${s.label}</strong> – ${hist[s.chave]}</div>`)
+          .join('');
+
+        const badgeCor = o.status === 'aprovado'
+          ? 'bg-emerald-100 text-emerald-800'
+          : o.status === 'recusado'
+            ? 'bg-red-100 text-red-700'
+            : o.status === 'enviado'
+              ? 'bg-blue-100 text-blue-800'
+              : 'bg-slate-100 text-slate-700';
+
+        const statusLabel = (STATUS_ORDEM.find(s => s.chave === o.status)?.label || 'Rascunho').toUpperCase();
+
         return `
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
+        <div class="bg-white p-4 rounded-xl shadow-sm border ${o.status === 'recusado' ? 'border-red-200' : 'border-slate-200'} space-y-2.5">
           <div class="flex justify-between items-center">
             <span class="font-bold text-conecta-emerald">${o.numero}</span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 font-semibold">${(o.status || 'enviado').toUpperCase()}</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${badgeCor}">${statusLabel}</span>
           </div>
           <h3 class="font-bold text-slate-800">${o.clienteNome}</h3>
-          <p class="text-xs text-slate-500">${(o.itens || []).length} item(ns) • Lucro est.: <strong class="text-conecta-green">${formatBRL(o.lucroEstimado)}</strong></p>
+          <p class="text-xs text-slate-500">${(o.itens || []).length} item(ns) • ${(o.fotos || []).length} foto(s) • Lucro est.: <strong class="text-conecta-green">${formatBRL(o.lucroEstimado)}</strong></p>
+
+          ${linhasHistorico ? `<div class="bg-slate-50 border border-slate-200 rounded-lg p-2 space-y-0.5">${linhasHistorico}</div>` : ''}
+
+          ${o.status === 'recusado' && o.motivoRecusa ? `
+            <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-2 text-xs">
+              <strong>Motivo da recusa:</strong> ${o.motivoRecusa}
+            </div>` : ''}
+
           ${o.osGeradaNumero ? `<p class="text-xs text-conecta-green font-semibold">✓ Convertido em ${o.osGeradaNumero}</p>` : ''}
+
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
             <span class="text-base font-extrabold">${formatBRL(o.valorTotal)}</span>
             <div class="flex flex-wrap gap-1.5">
-              ${!o.osGeradaId ? `<button onclick="aprovarEGerarOS('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-dark text-conecta-lime font-semibold">Aprovar e Gerar OS</button>` : ''}
-              <a href="https://wa.me/55${o.clienteTelefone || ''}?text=${msgWpp}" target="_blank" class="px-2.5 py-1.5 rounded bg-emerald-50 text-conecta-emerald font-semibold">WhatsApp</a>
-              <button onclick="imprimirOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-slate-100 font-semibold">PDF</button>
+              ${!o.osGeradaId && o.status !== 'recusado' ? `<button onclick="aprovarEGerarOS('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-dark text-conecta-lime font-semibold">Aprovar e Gerar OS</button>` : ''}
+              <button onclick="enviarOrcamentoWhatsApp('${o.id}')" class="px-2.5 py-1.5 rounded bg-emerald-50 text-conecta-emerald hover:bg-emerald-100 font-semibold">WhatsApp</button>
+              <button onclick="baixarPDFOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-slate-100 hover:bg-slate-200 font-semibold">PDF</button>
               <button onclick="abrirModalOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-green text-white font-semibold">Editar</button>
             </div>
           </div>
@@ -1753,33 +2153,8 @@
       }).join('') || '<p class="text-sm text-slate-500">Nenhum orçamento encontrado.</p>';
     };
 
-    window.imprimirOrcamento = (id) => {
-      const o = state.orcamentos.find(x => x.id === id);
-      if (!o) return;
-      const area = document.getElementById('print-area');
-      const linhas = (o.itens || []).map(i => `<tr class="border-b"><td class="py-2">${i.descricao}</td><td class="py-2 text-center">${i.qtd}</td><td class="py-2 text-right">${formatBRL(i.valorUnit)}</td><td class="py-2 text-right font-semibold">${formatBRL(i.qtd * i.valorUnit)}</td></tr>`).join('');
-      area.innerHTML = `
-        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
-          <div class="flex items-center gap-3">
-            <img src="./somentelogo.png" class="h-14 w-14 object-contain bg-black p-1 rounded" onerror="this.style.display='none'" />
-            <div><h1 class="text-xl font-bold">${state.config.nome}</h1><p class="text-xs">${state.config.cnpj} • ${state.config.tel} • ${state.config.cidade}</p></div>
-          </div>
-          <div class="text-right"><p class="font-bold text-lg">ORÇAMENTO ${o.numero}</p><p class="text-xs">Validade: ${o.validade || '-'}</p></div>
-        </div>
-        <p class="mb-3"><strong>Cliente:</strong> ${o.clienteNome}</p>
-        <table class="w-full text-sm border-collapse mb-4">
-          <thead><tr class="border-b-2 border-black text-left"><th class="py-2">Descrição</th><th class="py-2 text-center">Qtd</th><th class="py-2 text-right">Unitário</th><th class="py-2 text-right">Subtotal</th></tr></thead>
-          <tbody>${linhas}</tbody>
-        </table>
-        <p class="text-right text-xl font-bold">Total: ${formatBRL(o.valorTotal)}</p>
-        ${o.obs ? `<div class="mt-4 p-3 border rounded text-sm"><strong>Observações:</strong><br/>${o.obs}</div>` : ''}
-        ${(o.fotos && o.fotos.length) ? `<div class="mt-4 grid grid-cols-3 gap-2">${o.fotos.map(f => `<img src="${f}" class="w-full h-32 object-cover border" />`).join('')}</div>` : ''}
-      `;
-      area.classList.remove('hidden'); window.print(); area.classList.add('hidden');
-    };
-
     // =========================================================================
-    // 13. MÓDULO AGENDA & OS (COM UPLOAD ORIGINAL CLOUDINARY)
+    // 14. MÓDULO AGENDA & OS (COM UPLOAD ORIGINAL CLOUDINARY)
     // =========================================================================
     window.abrirModalOS = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
@@ -2001,19 +2376,37 @@
     };
 
     // =========================================================================
-    // 14. MÓDULO FINANCEIRO
+    // 15. MÓDULO FINANCEIRO (COM VÍNCULO A FORNECEDORES)
     // =========================================================================
-    window.abrirModalFinanceiro = () => {
+    window.alternarFornecedorFinanceiro = () => {
+      const tipo = document.getElementById('fin-tipo').value;
+      const box = document.getElementById('fin-fornecedor-box');
+      if (tipo === 'despesa') box.classList.remove('hidden');
+      else box.classList.add('hidden');
+    };
+
+    window.abrirModalFinanceiro = async () => {
+      if (!state.fornecedores.length) state.fornecedores = await carregarColecao('fornecedores');
+      document.getElementById('fin-fornecedor').innerHTML =
+        '<option value="">Nenhum fornecedor vinculado</option>' +
+        state.fornecedores.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
       document.getElementById('form-financeiro').reset();
       document.getElementById('fin-vencimento').value = new Date().toISOString().split('T')[0];
+      alternarFornecedorFinanceiro();
       abrirModal('modal-financeiro');
     };
 
     window.salvarFinanceiro = async (e) => {
       e.preventDefault();
+      const tipo = document.getElementById('fin-tipo').value;
+      const fornId = tipo === 'despesa' ? document.getElementById('fin-fornecedor').value : '';
+      const forn = state.fornecedores.find(f => f.id === fornId);
+
       await salvarDocumento('financeiro', `fin_${Date.now()}`, {
         descricao: document.getElementById('fin-desc').value.trim(),
-        tipo: document.getElementById('fin-tipo').value,
+        tipo,
+        fornecedorId: fornId || null,
+        fornecedorNome: forn ? forn.nome : '',
         valor: Number(document.getElementById('fin-valor').value || 0),
         vencimento: document.getElementById('fin-vencimento').value,
         status: document.getElementById('fin-status').value
@@ -2052,6 +2445,7 @@
             <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 border-b text-sm">
               <div>
                 <span class="font-semibold text-slate-800">${f.descricao}</span>
+                ${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}
                 <p class="text-xs text-slate-400">Vencimento: ${f.vencimento || '-'} • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-600'}">${(f.status || 'pendente').toUpperCase()}</strong></p>
               </div>
               <div class="flex items-center gap-3">
@@ -2063,7 +2457,7 @@
     };
 
     // =========================================================================
-    // 15. CONFIGURAÇÕES E BACKUP JSON
+    // 16. CONFIGURAÇÕES E BACKUP JSON
     // =========================================================================
     window.salvarConfig = () => {
       state.config = {
@@ -2077,16 +2471,17 @@
     };
 
     window.exportarBackup = async () => {
-      const [usuarios, clientes, produtos, orcamentos, os, financeiro] = await Promise.all([
+      const [usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro] = await Promise.all([
         carregarColecao('usuarios'),
         carregarColecao('clientes'),
+        carregarColecao('fornecedores'),
         carregarColecao('produtos_kits'),
         carregarColecao('orcamentos'),
         carregarColecao('ordens_servico'),
         carregarColecao('financeiro')
       ]);
       const blob = new Blob([JSON.stringify({
-        usuarios, clientes, produtos, orcamentos, os, financeiro, config: state.config
+        usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro, config: state.config
       }, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -2103,6 +2498,7 @@
           const data = JSON.parse(e.target.result);
           if (data.usuarios) for (const x of data.usuarios) await salvarDocumento('usuarios', x.id, x);
           if (data.clientes) for (const x of data.clientes) await salvarDocumento('clientes', x.id, x);
+          if (data.fornecedores) for (const x of data.fornecedores) await salvarDocumento('fornecedores', x.id, x);
           if (data.produtos) for (const x of data.produtos) await salvarDocumento('produtos_kits', x.id, x);
           if (data.orcamentos) for (const x of data.orcamentos) await salvarDocumento('orcamentos', x.id, x);
           if (data.os) for (const x of data.os) await salvarDocumento('ordens_servico', x.id, x);
