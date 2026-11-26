@@ -294,6 +294,79 @@
       border-color: #fecaca;
     }
 
+    /* ==================== BOTÕES-CARD DE FILTRO (ESTILO KPI DA FOTO) ==================== */
+    .kpi-filter-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 0.85rem 1.05rem;
+      border-radius: 0.95rem;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      text-align: left;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+      cursor: pointer;
+      min-width: 112px;
+    }
+    .kpi-filter-card:hover {
+      transform: translateY(-2px);
+      border-color: #00A859;
+      box-shadow: 0 6px 14px rgba(0, 168, 89, 0.12);
+    }
+    .kpi-filter-card:active {
+      transform: scale(0.97);
+    }
+    .kpi-filter-card .kpi-num {
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #006837;
+      letter-spacing: -0.02em;
+    }
+    .kpi-filter-card .kpi-lbl {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #64748b;
+      margin-top: 0.28rem;
+    }
+    .kpi-filter-card.kpi-card-active {
+      background: linear-gradient(145deg, #162620 0%, #0f1b17 100%);
+      border-color: #00A859;
+      box-shadow: 0 6px 16px rgba(0, 168, 89, 0.22);
+    }
+    .kpi-filter-card.kpi-card-active .kpi-num {
+      color: #4ade80;
+    }
+    .kpi-filter-card.kpi-card-active .kpi-lbl {
+      color: #e2e8f0;
+    }
+    body.theme-light .kpi-filter-card.kpi-card-active {
+      background: linear-gradient(145deg, #00A859 0%, #007d42 100%);
+      border-color: #006837;
+    }
+    body.theme-light .kpi-filter-card.kpi-card-active .kpi-num {
+      color: #ffffff;
+    }
+    body.theme-light .kpi-filter-card.kpi-card-active .kpi-lbl {
+      color: #ecfdf5;
+    }
+
+    /* Botões mais elegantes e modernos em todo o app */
+    main button, [id^="modal-"] button[type="submit"], [id^="modal-"] button[type="button"], main a[href*="wa.me"], main label[class*="cursor-pointer"] {
+      border-radius: 0.72rem;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    main button:hover, [id^="modal-"] button[type="submit"]:hover, [id^="modal-"] button[type="button"]:hover {
+      filter: brightness(1.04);
+    }
+    main button:active, [id^="modal-"] button[type="submit"]:active, [id^="modal-"] button[type="button"]:active {
+      transform: scale(0.97);
+    }
+
     @media print {
       body * { visibility: hidden; }
       #print-area, #print-area * { visibility: visible; }
@@ -505,23 +578,16 @@
     <section id="tab-os" class="tab-content space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-bold text-slate-800">Agenda e Ordens de Serviço</h2>
-        <button onclick="abrirModalOS()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+        <button onclick="abrirModalOS()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
           + Nova OS
         </button>
       </div>
 
-      <div class="flex flex-wrap gap-2">
-        <select id="filtro-os-status" onchange="renderOS()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <option value="todos">Todos os status</option>
-          <option value="agendada">Agendada</option>
-          <option value="em_andamento">Em Andamento</option>
-          <option value="concluida">Concluída</option>
-        </select>
-        <select id="filtro-os-categoria" onchange="renderOS()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <option value="todos">Todas as áreas</option>
-          <option value="seguranca">Segurança / CFTV</option>
-          <option value="climatizacao">Climatização</option>
-        </select>
+      <div class="space-y-3">
+        <input type="hidden" id="filtro-os-status" value="todos" />
+        <input type="hidden" id="filtro-os-categoria" value="todos" />
+        <div id="os-cards-status" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
+        <div id="os-cards-categoria" class="grid grid-cols-3 gap-2.5"></div>
       </div>
 
       <div id="lista-os" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -531,19 +597,14 @@
     <section id="tab-orcamentos" class="tab-content space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-bold text-slate-800">Gestão de Orçamentos</h2>
-        <button onclick="abrirModalOrcamento()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+        <button onclick="abrirModalOrcamento()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
           + Novo Orçamento
         </button>
       </div>
 
-      <div class="flex flex-wrap gap-2">
-        <select id="filtro-orc-status" onchange="renderOrcamentos()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <option value="todos">Todos os status</option>
-          <option value="rascunho">Rascunho</option>
-          <option value="enviado">Enviado ao cliente</option>
-          <option value="aprovado">Aprovado</option>
-          <option value="recusado">Recusado</option>
-        </select>
+      <div>
+        <input type="hidden" id="filtro-orc-status" value="todos" />
+        <div id="orc-cards-status" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5"></div>
       </div>
 
       <div id="lista-orcamentos" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -553,7 +614,7 @@
     <section id="tab-clientes" class="tab-content space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-bold text-slate-800">Clientes e Base Instalada</h2>
-        <button data-admin-only="true" onclick="abrirModalCliente()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+        <button data-admin-only="true" onclick="abrirModalCliente()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
           + Novo Cliente
         </button>
       </div>
@@ -570,7 +631,7 @@
           <h2 class="text-xl font-bold text-slate-800">Fornecedores</h2>
           <p class="text-xs text-slate-500">Cadastre fornecedores e parceiros para vincular despesas e obrigações no Financeiro.</p>
         </div>
-        <button onclick="abrirModalFornecedor()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+        <button onclick="abrirModalFornecedor()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
           + Novo Fornecedor
         </button>
       </div>
@@ -584,7 +645,7 @@
     <section id="tab-produtos" class="tab-content space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-bold text-slate-800">Produtos, Serviços e Kits</h2>
-        <button onclick="abrirModalProduto()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+        <button onclick="abrirModalProduto()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
           + Novo Item / Kit
         </button>
       </div>
@@ -596,26 +657,40 @@
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-bold text-slate-800">Fluxo de Caixa (Pagar / Receber)</h2>
         <div class="flex flex-wrap gap-2">
-          <button onclick="gerarMensalidadesLote()" class="bg-conecta-dark text-conecta-lime px-4 py-2 rounded-lg text-sm font-semibold hover:bg-black">
+          <button onclick="gerarMensalidadesLote()" class="bg-conecta-dark text-conecta-lime border border-conecta-green/40 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-black shadow-sm transition">
             Gerar Mensalidades do Mês
           </button>
-          <button onclick="abrirModalFinanceiro()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold">
+          <button onclick="abrirModalFinanceiro()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
             + Novo Lançamento
           </button>
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-2">
-        <select id="filtro-fin-tipo" onchange="renderFinanceiro()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <option value="todos">Receitas e Despesas</option>
-          <option value="receita">Apenas Receitas (A Receber)</option>
-          <option value="despesa">Apenas Despesas (A Pagar)</option>
-        </select>
-        <select id="filtro-fin-status" onchange="renderFinanceiro()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <option value="todos">Todos os status</option>
-          <option value="pendente">Pendente</option>
-          <option value="pago">Pago / Recebido</option>
-        </select>
+      <div class="space-y-3">
+        <input type="hidden" id="filtro-fin-periodo" value="mes_atual" />
+        <input type="hidden" id="filtro-fin-tipo" value="todos" />
+        <input type="hidden" id="filtro-fin-status" value="todos" />
+
+        <!-- Linha 1: Período (Mês Atual / Todos + Datas Início e Fim) -->
+        <div class="flex flex-wrap items-stretch gap-2.5">
+          <div id="fin-cards-periodo" class="grid grid-cols-2 gap-2.5 flex-1 min-w-[230px]"></div>
+          <div class="bg-white border border-slate-200 rounded-xl px-3.5 py-2 flex flex-wrap items-center gap-2 text-xs shadow-sm">
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-400">Início</label>
+              <input id="filtro-fin-inicio" type="date" onchange="aoAlterarDataFinanceiro()" class="border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-400">Fim</label>
+              <input id="filtro-fin-fim" type="date" onchange="aoAlterarDataFinanceiro()" class="border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Linha 2: Tipo (Receitas e Despesas / Apenas Receitas / Apenas Despesas) -->
+        <div id="fin-cards-tipo" class="grid grid-cols-3 gap-2.5"></div>
+
+        <!-- Linha 3: Status (Todos / Pendente / Pago ou Recebido) -->
+        <div id="fin-cards-status" class="grid grid-cols-3 gap-2.5"></div>
       </div>
 
       <div id="lista-financeiro" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"></div>
@@ -628,7 +703,7 @@
           <h2 class="text-xl font-bold text-slate-800">Gerenciamento de Usuários</h2>
           <p class="text-xs text-slate-500">Cadastro completo da equipe com nome curto (máx. 10 caracteres) e senha numérica (até 6 dígitos).</p>
         </div>
-        <button onclick="abrirModalUsuario()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">
+        <button onclick="abrirModalUsuario()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
           + Novo Usuário
         </button>
       </div>
@@ -659,7 +734,7 @@
               <input id="cfg-cidade" type="text" value="Itaperuna - RJ" class="w-full border rounded-lg px-3 py-2" />
             </div>
           </div>
-          <button onclick="salvarConfig()" class="bg-conecta-dark text-conecta-lime px-4 py-2 rounded-lg text-sm font-semibold hover:bg-black">
+          <button onclick="salvarConfig()" class="bg-conecta-dark text-conecta-lime border border-conecta-green/40 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-black shadow-sm transition">
             Salvar Configurações
           </button>
         </div>
@@ -1294,8 +1369,30 @@
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="fecharModal('modal-financeiro')" class="px-4 py-2 rounded-lg border text-slate-600">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold">Salvar</button>
+          <button type="button" onclick="fecharModal('modal-financeiro')" class="px-4 py-2 rounded-lg border text-slate-600 font-semibold">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-conecta-green text-white font-semibold shadow-sm">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL BAIXA FINANCEIRA (DATA OBRIGATÓRIA) ==================== -->
+  <div id="modal-baixa-financeiro" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-lg text-slate-800">Confirmar Baixa</h3>
+        <button onclick="fecharModal('modal-baixa-financeiro')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-baixa-financeiro" onsubmit="confirmarBaixaFinanceiro(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="baixa-fin-id" />
+        <div id="baixa-fin-resumo" class="bg-emerald-50 border border-emerald-200 text-conecta-emerald p-3 rounded-xl text-xs space-y-1"></div>
+        <div>
+          <label id="baixa-fin-data-label" class="block font-semibold text-slate-700 mb-1">Data da Baixa *</label>
+          <input id="baixa-fin-data" type="date" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold" />
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="fecharModal('modal-baixa-financeiro')" class="px-4 py-2 rounded-xl border text-slate-600 font-semibold">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-conecta-green hover:bg-conecta-emerald text-white font-semibold shadow-sm">Confirmar Baixa</button>
         </div>
       </form>
     </div>
@@ -2253,8 +2350,38 @@
       } catch (err) { if (err.name !== 'AbortError') alert("Erro ao preparar envio: " + err.message); }
     };
 
+    function cardFiltroHtml(ativo, numero, titulo, onclickStr) {
+      return `
+        <button type="button" onclick="${onclickStr}" class="kpi-filter-card ${ativo ? 'kpi-card-active' : ''}">
+          <span class="kpi-num">${numero}</span>
+          <span class="kpi-lbl">${titulo}</span>
+        </button>`;
+    }
+
+    window.setFiltroOrcStatus = (val) => {
+      document.getElementById('filtro-orc-status').value = val;
+      renderOrcamentos();
+    };
+
     window.renderOrcamentos = () => {
       const filtro = document.getElementById('filtro-orc-status').value;
+      const cTodos = state.orcamentos.length;
+      const cRasc = state.orcamentos.filter(o => (o.status || 'rascunho') === 'rascunho').length;
+      const cEnv = state.orcamentos.filter(o => o.status === 'enviado').length;
+      const cAprov = state.orcamentos.filter(o => o.status === 'aprovado').length;
+      const cRec = state.orcamentos.filter(o => o.status === 'recusado').length;
+
+      const cardsOrc = document.getElementById('orc-cards-status');
+      if (cardsOrc) {
+        cardsOrc.innerHTML = [
+          cardFiltroHtml(filtro === 'todos', cTodos, 'Todos os Status', "setFiltroOrcStatus('todos')"),
+          cardFiltroHtml(filtro === 'rascunho', cRasc, 'Rascunho', "setFiltroOrcStatus('rascunho')"),
+          cardFiltroHtml(filtro === 'enviado', cEnv, 'Enviado ao Cliente', "setFiltroOrcStatus('enviado')"),
+          cardFiltroHtml(filtro === 'aprovado', cAprov, 'Aprovado', "setFiltroOrcStatus('aprovado')"),
+          cardFiltroHtml(filtro === 'recusado', cRec, 'Recusado', "setFiltroOrcStatus('recusado')")
+        ].join('');
+      }
+
       const lista = state.orcamentos.filter(o => filtro === 'todos' || o.status === filtro);
       document.getElementById('lista-orcamentos').innerHTML = lista.map(o => {
         const hist = o.historicoStatus || {};
@@ -2417,9 +2544,40 @@
       alert(`${parcelas} parcela(s) lançada(s) no Financeiro!`);
     };
 
+    window.setFiltroOSStatus = (val) => {
+      document.getElementById('filtro-os-status').value = val;
+      renderOS();
+    };
+    window.setFiltroOSCategoria = (val) => {
+      document.getElementById('filtro-os-categoria').value = val;
+      renderOS();
+    };
+
     window.renderOS = () => {
       const fStatus = document.getElementById('filtro-os-status').value;
       const fCat = document.getElementById('filtro-os-categoria').value;
+
+      const baseCat = state.os.filter(o => fCat === 'todos' || o.categoria === fCat);
+      const cardsStatus = document.getElementById('os-cards-status');
+      if (cardsStatus) {
+        cardsStatus.innerHTML = [
+          cardFiltroHtml(fStatus === 'todos', baseCat.length, 'Todos os Status', "setFiltroOSStatus('todos')"),
+          cardFiltroHtml(fStatus === 'agendada', baseCat.filter(o => o.status === 'agendada').length, 'Agendada', "setFiltroOSStatus('agendada')"),
+          cardFiltroHtml(fStatus === 'em_andamento', baseCat.filter(o => o.status === 'em_andamento').length, 'Em Andamento', "setFiltroOSStatus('em_andamento')"),
+          cardFiltroHtml(fStatus === 'concluida', baseCat.filter(o => o.status === 'concluida').length, 'Concluída', "setFiltroOSStatus('concluida')")
+        ].join('');
+      }
+
+      const baseStatus = state.os.filter(o => fStatus === 'todos' || o.status === fStatus);
+      const cardsCat = document.getElementById('os-cards-categoria');
+      if (cardsCat) {
+        cardsCat.innerHTML = [
+          cardFiltroHtml(fCat === 'todos', baseStatus.length, 'Todas as Áreas', "setFiltroOSCategoria('todos')"),
+          cardFiltroHtml(fCat === 'seguranca', baseStatus.filter(o => o.categoria === 'seguranca').length, 'Segurança / CFTV', "setFiltroOSCategoria('seguranca')"),
+          cardFiltroHtml(fCat === 'climatizacao', baseStatus.filter(o => o.categoria === 'climatizacao').length, 'Climatização', "setFiltroOSCategoria('climatizacao')")
+        ].join('');
+      }
+
       const lista = state.os.filter(o => (fStatus === 'todos' || o.status === fStatus) && (fCat === 'todos' || o.categoria === fCat));
       document.getElementById('lista-os').innerHTML = lista.map(o => {
         const tempoCampo = (o.iniciadaEm && o.concluidaEm) ? formatarDuracaoMs(new Date(o.concluidaEm) - new Date(o.iniciadaEm)) : null;
@@ -2513,7 +2671,88 @@
       fecharModal('modal-financeiro');
     };
 
-    window.darBaixaFinanceiro = async (id) => { await salvarDocumento('financeiro', id, { status: 'pago', dataPagamento: new Date().toISOString().split('T')[0] }); };
+    function obterIntervaloMesAtual() {
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = hoje.getMonth();
+      const ini = `${ano}-${String(mes + 1).padStart(2, '0')}-01`;
+      const ultimoDia = new Date(ano, mes + 1, 0).getDate();
+      const fim = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(ultimoDia).padStart(2, '0')}`;
+      return { ini, fim };
+    }
+
+    function garantirDatasMesAtualFinanceiro() {
+      const elIni = document.getElementById('filtro-fin-inicio');
+      const elFim = document.getElementById('filtro-fin-fim');
+      if (elIni && elFim && (!elIni.value || !elFim.value)) {
+        const { ini, fim } = obterIntervaloMesAtual();
+        elIni.value = ini;
+        elFim.value = fim;
+      }
+    }
+
+    window.setFiltroFinPeriodo = (periodo) => {
+      document.getElementById('filtro-fin-periodo').value = periodo;
+      if (periodo === 'mes_atual') {
+        const { ini, fim } = obterIntervaloMesAtual();
+        document.getElementById('filtro-fin-inicio').value = ini;
+        document.getElementById('filtro-fin-fim').value = fim;
+      } else {
+        document.getElementById('filtro-fin-inicio').value = '';
+        document.getElementById('filtro-fin-fim').value = '';
+      }
+      renderFinanceiro();
+    };
+
+    window.aoAlterarDataFinanceiro = () => {
+      const ini = document.getElementById('filtro-fin-inicio').value;
+      const fim = document.getElementById('filtro-fin-fim').value;
+      const atual = obterIntervaloMesAtual();
+      const ehMesAtual = (ini === atual.ini && fim === atual.fim);
+      document.getElementById('filtro-fin-periodo').value = ehMesAtual ? 'mes_atual' : ((!ini && !fim) ? 'todos' : 'personalizado');
+      renderFinanceiro();
+    };
+
+    window.setFiltroFinTipo = (val) => {
+      document.getElementById('filtro-fin-tipo').value = val;
+      renderFinanceiro();
+    };
+
+    window.setFiltroFinStatus = (val) => {
+      document.getElementById('filtro-fin-status').value = val;
+      renderFinanceiro();
+    };
+
+    window.darBaixaFinanceiro = (id) => {
+      const f = state.financeiro.find(x => x.id === id);
+      if (!f) return;
+      document.getElementById('baixa-fin-id').value = id;
+      const tipoLabel = f.tipo === 'receita' ? 'Recebimento (Contas a Receber)' : 'Pagamento (Contas a Pagar)';
+      document.getElementById('baixa-fin-data-label').textContent = f.tipo === 'receita' ? 'Data do Recebimento *' : 'Data do Pagamento *';
+      document.getElementById('baixa-fin-resumo').innerHTML = `
+        <p class="font-bold text-slate-800">${f.descricao}</p>
+        <p>${tipoLabel} • Valor: <strong>${formatBRL(f.valor)}</strong></p>
+        <p>Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong></p>
+      `;
+      document.getElementById('baixa-fin-data').value = new Date().toISOString().split('T')[0];
+      abrirModal('modal-baixa-financeiro');
+    };
+
+    window.confirmarBaixaFinanceiro = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('baixa-fin-id').value;
+      const dataBaixa = document.getElementById('baixa-fin-data').value;
+      if (!id || !dataBaixa) {
+        alert("Informe a data da baixa.");
+        return;
+      }
+      await salvarDocumento('financeiro', id, {
+        status: 'pago',
+        dataPagamento: dataBaixa,
+        dataBaixa: dataBaixa
+      });
+      fecharModal('modal-baixa-financeiro');
+    };
 
     window.gerarMensalidadesLote = async () => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
@@ -2533,16 +2772,73 @@
     };
 
     window.renderFinanceiro = () => {
+      const fPeriodo = document.getElementById('filtro-fin-periodo').value;
+      if (fPeriodo === 'mes_atual') garantirDatasMesAtualFinanceiro();
+
+      const dIni = document.getElementById('filtro-fin-inicio').value;
+      const dFim = document.getElementById('filtro-fin-fim').value;
       const fTipo = document.getElementById('filtro-fin-tipo').value;
       const fStatus = document.getElementById('filtro-fin-status').value;
-      const lista = state.financeiro.filter(f => (fTipo === 'todos' || f.tipo === fTipo) && (fStatus === 'todos' || f.status === fStatus));
+
+      const mesAtual = obterIntervaloMesAtual();
+      const qtdMesAtual = state.financeiro.filter(f => f.vencimento && f.vencimento >= mesAtual.ini && f.vencimento <= mesAtual.fim).length;
+      const qtdTodosGeral = state.financeiro.length;
+
+      const cardsPeriodo = document.getElementById('fin-cards-periodo');
+      if (cardsPeriodo) {
+        cardsPeriodo.innerHTML = [
+          cardFiltroHtml(fPeriodo === 'mes_atual', qtdMesAtual, 'Mês Atual', "setFiltroFinPeriodo('mes_atual')"),
+          cardFiltroHtml(fPeriodo === 'todos', qtdTodosGeral, 'Todos', "setFiltroFinPeriodo('todos')")
+        ].join('');
+      }
+
+      const porData = state.financeiro.filter(f => {
+        if (dIni && (!f.vencimento || f.vencimento < dIni)) return false;
+        if (dFim && (!f.vencimento || f.vencimento > dFim)) return false;
+        return true;
+      });
+
+      const baseTipo = porData.filter(f => fStatus === 'todos' || f.status === fStatus);
+      const cardsTipo = document.getElementById('fin-cards-tipo');
+      if (cardsTipo) {
+        cardsTipo.innerHTML = [
+          cardFiltroHtml(fTipo === 'todos', baseTipo.length, 'Receitas e Despesas', "setFiltroFinTipo('todos')"),
+          cardFiltroHtml(fTipo === 'receita', baseTipo.filter(f => f.tipo === 'receita').length, 'Apenas Receitas (A Receber)', "setFiltroFinTipo('receita')"),
+          cardFiltroHtml(fTipo === 'despesa', baseTipo.filter(f => f.tipo === 'despesa').length, 'Apenas Despesas (A Pagar)', "setFiltroFinTipo('despesa')")
+        ].join('');
+      }
+
+      const baseStatus = porData.filter(f => fTipo === 'todos' || f.tipo === fTipo);
+      const cardsStatus = document.getElementById('fin-cards-status');
+      if (cardsStatus) {
+        cardsStatus.innerHTML = [
+          cardFiltroHtml(fStatus === 'todos', baseStatus.length, 'Todos os Status', "setFiltroFinStatus('todos')"),
+          cardFiltroHtml(fStatus === 'pendente', baseStatus.filter(f => f.status === 'pendente').length, 'Pendente', "setFiltroFinStatus('pendente')"),
+          cardFiltroHtml(fStatus === 'pago', baseStatus.filter(f => f.status === 'pago').length, 'Pago / Recebido', "setFiltroFinStatus('pago')")
+        ].join('');
+      }
+
+      const lista = porData
+        .filter(f => (fTipo === 'todos' || f.tipo === fTipo) && (fStatus === 'todos' || f.status === fStatus))
+        .sort((a, b) => (a.vencimento || '').localeCompare(b.vencimento || ''));
+
       document.getElementById('lista-financeiro').innerHTML = lista.length
         ? lista.map(f => `
-            <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 border-b text-sm">
-              <div><span class="font-semibold text-slate-800">${f.descricao}</span>${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}<p class="text-xs text-slate-400">Vencimento: ${formatarDataBR(f.vencimento)} • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-600'}">${(f.status || 'pendente').toUpperCase()}</strong></p></div>
-              <div class="flex items-center gap-3"><span class="font-bold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-600'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">Baixar</button>` : ''}</div>
+            <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3.5 border-b text-sm hover:bg-slate-50/70 transition">
+              <div>
+                <span class="font-semibold text-slate-800">${f.descricao}</span>
+                ${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong> • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-600'}">${(f.status || 'pendente').toUpperCase()}</strong>
+                  ${f.status === 'pago' && f.dataPagamento ? ` • Baixa em: <strong class="text-slate-600">${formatarDataBR(f.dataPagamento)}</strong>` : ''}
+                </p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-bold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-600'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
+                ${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">Baixar</button>` : ''}
+              </div>
             </div>`).join('')
-        : '<p class="p-4 text-sm text-slate-500">Nenhum lançamento encontrado.</p>';
+        : '<p class="p-4 text-sm text-slate-500">Nenhum lançamento encontrado para o filtro selecionado.</p>';
     };
 
     window.salvarConfig = () => {
