@@ -17,6 +17,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -37,11 +38,146 @@
   <style>
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #f3f6f4;
+      background-color: #090e0c;
+      color: #e2e8f0;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
       padding-bottom: env(safe-area-inset-bottom);
       transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* ==================== MODO ESCURO COMPLETO (PADRÃO) ==================== */
+    body:not(.theme-light) main .bg-white,
+    body:not(.theme-light) [id^="modal-"] > div.bg-white {
+      background-color: #111a16 !important;
+      border-color: #1f3029 !important;
+      color: #e2e8f0;
+    }
+    body:not(.theme-light) main .bg-slate-50,
+    body:not(.theme-light) [id^="modal-"] .bg-slate-50 {
+      background-color: #16231e !important;
+      border-color: #243830 !important;
+    }
+    body:not(.theme-light) main .bg-slate-100,
+    body:not(.theme-light) [id^="modal-"] .bg-slate-100 {
+      background-color: #1c2c26 !important;
+      color: #e2e8f0 !important;
+    }
+    body:not(.theme-light) main .text-slate-800,
+    body:not(.theme-light) [id^="modal-"] .text-slate-800 {
+      color: #f1f5f9 !important;
+    }
+    body:not(.theme-light) main .text-slate-700,
+    body:not(.theme-light) [id^="modal-"] .text-slate-700 {
+      color: #cbd5e1 !important;
+    }
+    body:not(.theme-light) main .text-slate-600,
+    body:not(.theme-light) [id^="modal-"] .text-slate-600 {
+      color: #94a3b8 !important;
+    }
+    body:not(.theme-light) main .text-slate-500,
+    body:not(.theme-light) [id^="modal-"] .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    body:not(.theme-light) main .border-slate-200,
+    body:not(.theme-light) main .border-slate-300,
+    body:not(.theme-light) main .border-b,
+    body:not(.theme-light) main .border-t,
+    body:not(.theme-light) [id^="modal-"] .border,
+    body:not(.theme-light) [id^="modal-"] .border-b,
+    body:not(.theme-light) [id^="modal-"] .border-t {
+      border-color: #243830 !important;
+    }
+    body:not(.theme-light) main input:not([type="checkbox"]):not([type="file"]),
+    body:not(.theme-light) main select,
+    body:not(.theme-light) main textarea,
+    body:not(.theme-light) [id^="modal-"] input:not([type="checkbox"]):not([type="file"]),
+    body:not(.theme-light) [id^="modal-"] select,
+    body:not(.theme-light) [id^="modal-"] textarea {
+      background-color: #0b120f !important;
+      border-color: #2b4238 !important;
+      color: #f1f5f9 !important;
+      color-scheme: dark;
+    }
+    body:not(.theme-light) .kpi-filter-card {
+      background: #111a16;
+      border-color: #243830;
+    }
+    body:not(.theme-light) .kpi-filter-card .kpi-num {
+      color: #7AC143;
+    }
+    body:not(.theme-light) .kpi-filter-card .kpi-lbl {
+      color: #94a3b8;
+    }
+    body:not(.theme-light) .bg-emerald-50,
+    body:not(.theme-light) .bg-emerald-50\/60,
+    body:not(.theme-light) .bg-emerald-50\/70 {
+      background-color: rgba(0, 168, 89, 0.14) !important;
+      border-color: rgba(0, 168, 89, 0.35) !important;
+    }
+    body:not(.theme-light) .bg-amber-50,
+    body:not(.theme-light) .bg-amber-50\/60 {
+      background-color: rgba(245, 158, 11, 0.14) !important;
+      border-color: rgba(245, 158, 11, 0.35) !important;
+    }
+    body:not(.theme-light) .text-amber-800,
+    body:not(.theme-light) .text-amber-900 {
+      color: #fcd34d !important;
+    }
+    body:not(.theme-light) .bg-red-50,
+    body:not(.theme-light) .bg-red-50\/30 {
+      background-color: rgba(239, 68, 68, 0.14) !important;
+      border-color: rgba(239, 68, 68, 0.35) !important;
+    }
+    body:not(.theme-light) .text-red-700,
+    body:not(.theme-light) .text-red-800 {
+      color: #fca5a5 !important;
+    }
+    body:not(.theme-light) .text-conecta-emerald {
+      color: #4ade80 !important;
+    }
+    body:not(.theme-light) tr.hover\:bg-slate-50:hover,
+    body:not(.theme-light) .hover\:bg-slate-50\/70:hover {
+      background-color: rgba(255, 255, 255, 0.04) !important;
+    }
+    body.theme-light {
+      color: #1e293b;
+    }
+
+    /* Toast Animations */
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .toast-item {
+      animation: toastIn 0.22s ease forwards;
+    }
+
+    /* Calendar Grid */
+    .cal-day-btn {
+      min-height: 58px;
+      border-radius: 0.75rem;
+      border: 1px solid #243830;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+    }
+    body.theme-light .cal-day-btn {
+      border-color: #e2e8f0;
+      background: #ffffff;
+    }
+    body:not(.theme-light) .cal-day-btn {
+      background: #0d1512;
+    }
+    .cal-day-btn:hover {
+      border-color: #00A859;
+    }
+    .cal-day-selected {
+      border-color: #00A859 !important;
+      box-shadow: 0 0 0 2px rgba(0, 168, 89, 0.35);
     }
     .safe-top {
       padding-top: env(safe-area-inset-top);
@@ -385,6 +521,23 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
 
+  <!-- TOASTS DE NOTIFICAÇÃO -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[80] flex flex-col gap-2 max-w-xs w-full pointer-events-none safe-top no-print"></div>
+
+  <!-- BANNER DE AVISO OFFLINE (PROTEÇÃO CONTRA PERDA DE DADOS) -->
+  <div id="offline-banner" class="hidden fixed bottom-20 md:bottom-4 left-1/2 -translate-x-1/2 z-[75] bg-amber-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xl border border-amber-400 flex items-center gap-2 no-print max-w-[92vw]">
+    <span>⚠️</span>
+    <span>Sem internet — Modo somente leitura. Reconecte-se para salvar com segurança.</span>
+  </div>
+
+  <!-- OVERLAY DE CARREGAMENTO (PDF / UPLOAD / CEP) -->
+  <div id="loading-overlay" class="fixed inset-0 bg-black/65 backdrop-blur-[2px] z-[85] hidden items-center justify-center p-4 no-print">
+    <div class="bg-[#111a16] border border-conecta-green/50 text-white px-6 py-5 rounded-2xl shadow-2xl flex items-center gap-3.5">
+      <div class="h-6 w-6 rounded-full border-2 border-conecta-green border-t-transparent animate-spin shrink-0"></div>
+      <span id="loading-text" class="text-sm font-semibold">Processando...</span>
+    </div>
+  </div>
+
   <!-- ==================== TELA DE LOGIN ==================== -->
   <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 safe-top no-print transition-colors">
     <div class="fixed top-4 right-4 safe-top z-50">
@@ -548,6 +701,30 @@
         </div>
       </div>
 
+      <!-- GRÁFICOS VISUAIS (CHART.JS) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div data-admin-only="true" class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 lg:col-span-2">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="font-bold text-slate-800 text-base">Receitas x Despesas (Últimos 6 Meses)</h2>
+              <p class="text-xs text-slate-500">Comparativo mensal de lançamentos realizados e previstos.</p>
+            </div>
+          </div>
+          <div class="h-56 relative">
+            <canvas id="chart-fin-6m"></canvas>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+          <div class="mb-3">
+            <h2 class="font-bold text-slate-800 text-base">OS por Área</h2>
+            <p class="text-xs text-slate-500">Segurança/CFTV vs. Climatização</p>
+          </div>
+          <div class="h-56 relative flex items-center justify-center">
+            <canvas id="chart-os-area"></canvas>
+          </div>
+        </div>
+      </div>
+
       <!-- ESTATÍSTICAS DE TEMPO E DESEMPENHO POR TÉCNICO -->
       <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -578,9 +755,31 @@
     <section id="tab-os" class="tab-content space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-xl font-bold text-slate-800">Agenda e Ordens de Serviço</h2>
-        <button onclick="abrirModalOS()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
-          + Nova OS
-        </button>
+        <div class="flex items-center gap-2">
+          <div class="inline-flex rounded-xl border border-slate-300 bg-white p-1 text-xs font-semibold">
+            <button type="button" id="btn-os-visao-lista" onclick="alternarVisaoOS('lista')" class="px-3 py-1.5 rounded-lg bg-conecta-green text-white">Lista</button>
+            <button type="button" id="btn-os-visao-cal" onclick="alternarVisaoOS('calendario')" class="px-3 py-1.5 rounded-lg text-slate-600">Calendário</button>
+          </div>
+          <button onclick="abrirModalOS()" class="bg-gradient-to-r from-conecta-green to-conecta-emerald hover:brightness-110 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-conecta-green/20 transition">
+            + Nova OS
+          </button>
+        </div>
+      </div>
+
+      <!-- VISÃO CALENDÁRIO MENSAL -->
+      <div id="os-calendario-box" class="hidden bg-white rounded-xl shadow-sm p-4 border border-slate-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <button type="button" onclick="mudarMesCalendario(-1)" class="px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-bold">← Anterior</button>
+          <div class="text-center">
+            <h3 id="cal-mes-titulo" class="font-bold text-slate-800 text-sm uppercase tracking-wide"></h3>
+            <button type="button" id="btn-cal-limpar-dia" onclick="selecionarDiaCalendario('')" class="hidden text-[11px] text-conecta-green font-semibold hover:underline">Mostrar mês inteiro</button>
+          </div>
+          <button type="button" onclick="mudarMesCalendario(1)" class="px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-bold">Próximo →</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-slate-500">
+          <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+        </div>
+        <div id="os-calendario-grid" class="grid grid-cols-7 gap-1.5"></div>
       </div>
 
       <div class="space-y-3">
@@ -733,6 +932,10 @@
               <label class="block text-slate-600 font-medium mb-1">Cidade / UF</label>
               <input id="cfg-cidade" type="text" value="Itaperuna - RJ" class="w-full border rounded-lg px-3 py-2" />
             </div>
+            <div class="md:col-span-2">
+              <label class="block text-slate-600 font-medium mb-1">Chave PIX da Empresa (para cobranças WhatsApp e Recibos)</label>
+              <input id="cfg-pix" type="text" placeholder="CNPJ, telefone, e-mail ou chave aleatória" class="w-full border rounded-lg px-3 py-2" />
+            </div>
           </div>
           <button onclick="salvarConfig()" class="bg-conecta-dark text-conecta-lime border border-conecta-green/40 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-black shadow-sm transition">
             Salvar Configurações
@@ -880,9 +1083,19 @@
           </div>
         </div>
 
-        <div>
-          <label class="block font-medium mb-1">Endereço</label>
-          <input id="usu-endereco" type="text" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium mb-1">CEP (ViaCEP)</label>
+            <div class="flex gap-1.5">
+              <input id="usu-cep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000"
+                oninput="aplicarMascaraCEP(this, 'usu-endereco')" class="w-full border rounded-lg px-3 py-2" />
+              <button type="button" onclick="buscarCEP('usu-cep', 'usu-endereco')" class="px-2.5 py-2 rounded-lg bg-slate-100 text-xs font-semibold shrink-0">Buscar</button>
+            </div>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-medium mb-1">Endereço</label>
+            <input id="usu-endereco" type="text" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+          </div>
         </div>
 
         <div class="border rounded-xl p-3 bg-amber-50/60 space-y-3">
@@ -950,9 +1163,19 @@
               oninput="aplicarMascaraTelefone(this)" class="w-full border rounded-lg px-3 py-2" />
           </div>
         </div>
-        <div>
-          <label class="block font-medium mb-1">Endereço Completo</label>
-          <input id="cli-endereco" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium mb-1">CEP (ViaCEP)</label>
+            <div class="flex gap-1.5">
+              <input id="cli-cep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000"
+                oninput="aplicarMascaraCEP(this, 'cli-endereco')" class="w-full border rounded-lg px-3 py-2" />
+              <button type="button" onclick="buscarCEP('cli-cep', 'cli-endereco')" class="px-2.5 py-2 rounded-lg bg-slate-100 text-xs font-semibold shrink-0">Buscar</button>
+            </div>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-medium mb-1">Endereço Completo</label>
+            <input id="cli-endereco" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+          </div>
         </div>
 
         <div class="border rounded-xl p-3 bg-emerald-50/60 space-y-2">
@@ -1056,9 +1279,19 @@
             <input id="forn-pix" placeholder="CNPJ, e-mail, telefone ou conta" class="w-full border rounded-lg px-3 py-2" />
           </div>
         </div>
-        <div>
-          <label class="block font-medium mb-1">Endereço Completo</label>
-          <input id="forn-endereco" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium mb-1">CEP (ViaCEP)</label>
+            <div class="flex gap-1.5">
+              <input id="forn-cep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000"
+                oninput="aplicarMascaraCEP(this, 'forn-endereco')" class="w-full border rounded-lg px-3 py-2" />
+              <button type="button" onclick="buscarCEP('forn-cep', 'forn-endereco')" class="px-2.5 py-2 rounded-lg bg-slate-100 text-xs font-semibold shrink-0">Buscar</button>
+            </div>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-medium mb-1">Endereço Completo</label>
+            <input id="forn-endereco" placeholder="Rua, nº, bairro, cidade" class="w-full border rounded-lg px-3 py-2" />
+          </div>
         </div>
         <div>
           <label class="block font-medium mb-1">Observações</label>
@@ -1230,6 +1463,13 @@
       <form id="form-os" onsubmit="salvarOS(event)" class="space-y-4 text-sm">
         <input type="hidden" id="os-id" />
         <div id="os-timeline-box" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-1"></div>
+        <div id="os-rota-box" class="hidden flex flex-wrap items-center justify-between gap-2 bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-xs">
+          <span id="os-rota-endereco" class="text-slate-700 font-medium truncate max-w-[65%]"></span>
+          <div class="flex gap-1.5">
+            <button type="button" onclick="abrirRotaModalOS('maps')" class="px-2.5 py-1 rounded-lg bg-conecta-green text-white font-semibold">📍 Maps</button>
+            <button type="button" onclick="abrirRotaModalOS('waze')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-semibold">🚗 Waze</button>
+          </div>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div class="md:col-span-2">
@@ -1398,12 +1638,51 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL CONFIRMAÇÃO CUSTOMIZADO ==================== -->
+  <div id="modal-confirm" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[70] p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <h3 id="confirm-titulo" class="font-bold text-lg text-slate-800">Confirmar Ação</h3>
+      <p id="confirm-mensagem" class="text-sm text-slate-600 whitespace-pre-line"></p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="confirm-btn-cancelar" class="px-4 py-2 rounded-xl border text-slate-600 text-sm font-semibold">Cancelar</button>
+        <button type="button" id="confirm-btn-ok" class="px-4 py-2 rounded-xl bg-conecta-green text-white text-sm font-semibold shadow-sm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL PROMPT CUSTOMIZADO (PARCELAS) ==================== -->
+  <div id="modal-prompt" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[70] p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <h3 id="prompt-titulo" class="font-bold text-lg text-slate-800">Informar Valor</h3>
+      <p id="prompt-mensagem" class="text-xs text-slate-600 whitespace-pre-line"></p>
+      <input id="prompt-input" type="number" min="1" max="36" value="1" class="w-full border rounded-xl px-3 py-2.5 text-sm font-bold" />
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="prompt-btn-cancelar" class="px-4 py-2 rounded-xl border text-slate-600 text-sm font-semibold">Cancelar</button>
+        <button type="button" id="prompt-btn-ok" class="px-4 py-2 rounded-xl bg-conecta-green text-white text-sm font-semibold shadow-sm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL HISTÓRICO COMPLETO DO CLIENTE ==================== -->
+  <div id="modal-historico-cliente" class="fixed inset-0 bg-black/65 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3">
+        <div>
+          <h3 id="hist-cli-nome" class="font-bold text-lg text-slate-800">Histórico do Cliente</h3>
+          <p id="hist-cli-sub" class="text-xs text-slate-500"></p>
+        </div>
+        <button onclick="fecharModal('modal-historico-cliente')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <div id="hist-cli-conteudo" class="space-y-4 text-sm"></div>
+    </div>
+  </div>
+
   <!-- ÁREA OCULTA DE IMPRESSÃO / PDF -->
   <div id="print-area" class="hidden"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
@@ -1424,6 +1703,8 @@
 
     let activeUnsubscribe = null;
     let timerInatividade = null;
+    let chartFin6m = null;
+    let chartOsArea = null;
 
     const state = {
       usuarioAtual: null,
@@ -1435,13 +1716,129 @@
       os: [],
       orcamentos: [],
       financeiro: [],
-      config: { nome: "CONECTA - Segurança e Climatização", cnpj: "", tel: "", cidade: "Itaperuna - RJ" },
+      config: { nome: "CONECTA - Segurança e Climatização", cnpj: "", tel: "", cidade: "Itaperuna - RJ", pix: "" },
       fotosOSAntes: [],
       fotosOSDepois: [],
       fotosOrcTemp: [],
-      itensOrcTemp: []
+      itensOrcTemp: [],
+      osVisao: 'lista',
+      calAno: new Date().getFullYear(),
+      calMes: new Date().getMonth(),
+      calDiaSelecionado: ''
     };
 
+    // =========================================================================
+    // 1. SERVICE WORKER SEGURO (APENAS SHELL ESTÁTICO — NUNCA INTERCEPTA BANCO)
+    // =========================================================================
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registro:', err));
+      });
+    }
+
+    function atualizarStatusConexao() {
+      const banner = document.getElementById('offline-banner');
+      const badge = document.getElementById('db-status');
+      if (!navigator.onLine) {
+        if (banner) banner.classList.remove('hidden');
+        if (badge) badge.textContent = "⚠ Offline";
+      } else {
+        if (banner) banner.classList.add('hidden');
+        if (badge && badge.textContent.includes('Offline')) badge.textContent = "● Tempo Real";
+      }
+    }
+    window.addEventListener('online', () => { atualizarStatusConexao(); showToast('Conexão restabelecida! Sistema online.', 'success'); });
+    window.addEventListener('offline', () => { atualizarStatusConexao(); showToast('Sem internet. Modo somente leitura ativado.', 'warning'); });
+    atualizarStatusConexao();
+
+    // =========================================================================
+    // 2. TOASTS, MODAIS CUSTOMIZADOS (CONFIRMAÇÃO/PROMPT) E LOADING
+    // =========================================================================
+    window.showToast = (mensagem, tipo = 'success') => {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const estilos = {
+        success: 'bg-[#0f291e] border-[#00A859] text-emerald-100',
+        error: 'bg-[#2a1215] border-red-500 text-red-100',
+        warning: 'bg-[#2b1f0b] border-amber-500 text-amber-100',
+        info: 'bg-[#0f1d2e] border-blue-500 text-blue-100'
+      };
+      const icones = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
+      const el = document.createElement('div');
+      el.className = `toast-item pointer-events-auto border-l-4 rounded-xl px-4 py-3 shadow-2xl text-xs font-semibold flex items-start gap-2.5 ${estilos[tipo] || estilos.info}`;
+      el.innerHTML = `<span class="text-sm leading-none mt-0.5">${icones[tipo] || 'ℹ'}</span><span class="flex-1 leading-snug">${mensagem}</span>`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-6px)';
+        el.style.transition = 'all 0.2s ease';
+        setTimeout(() => el.remove(), 220);
+      }, 3600);
+    };
+
+    window.setLoading = (ativo, texto = 'Processando...') => {
+      const ov = document.getElementById('loading-overlay');
+      const txt = document.getElementById('loading-text');
+      if (!ov) return;
+      if (txt) txt.textContent = texto;
+      if (ativo) { ov.classList.remove('hidden'); ov.classList.add('flex'); }
+      else { ov.classList.add('hidden'); ov.classList.remove('flex'); }
+    };
+
+    window.confirmarAcao = ({ titulo = 'Confirmar Ação', mensagem = '', textoConfirmar = 'Confirmar', perigoso = false } = {}) => {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('modal-confirm');
+        document.getElementById('confirm-titulo').textContent = titulo;
+        document.getElementById('confirm-mensagem').textContent = mensagem;
+        const btnOk = document.getElementById('confirm-btn-ok');
+        const btnCancel = document.getElementById('confirm-btn-cancelar');
+        btnOk.textContent = textoConfirmar;
+        btnOk.className = perigoso
+          ? 'px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold shadow-sm'
+          : 'px-4 py-2 rounded-xl bg-conecta-green hover:bg-conecta-emerald text-white text-sm font-semibold shadow-sm';
+
+        const limpar = (val) => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          btnOk.onclick = null;
+          btnCancel.onclick = null;
+          resolve(val);
+        };
+        btnOk.onclick = () => limpar(true);
+        btnCancel.onclick = () => limpar(false);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      });
+    };
+
+    window.pedirNumeroParcelas = (titulo, mensagem, valorPadrao = 1) => {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('modal-prompt');
+        const input = document.getElementById('prompt-input');
+        document.getElementById('prompt-titulo').textContent = titulo;
+        document.getElementById('prompt-mensagem').textContent = mensagem;
+        input.value = valorPadrao;
+        const btnOk = document.getElementById('prompt-btn-ok');
+        const btnCancel = document.getElementById('prompt-btn-cancelar');
+
+        const limpar = (val) => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          btnOk.onclick = null;
+          btnCancel.onclick = null;
+          resolve(val);
+        };
+        btnOk.onclick = () => limpar(Math.max(1, Number(input.value || 1)));
+        btnCancel.onclick = () => limpar(null);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => input.focus(), 60);
+      });
+    };
+
+    // =========================================================================
+    // 3. UTILITÁRIOS DE FORMATAÇÃO E MÁSCARAS
+    // =========================================================================
     const formatBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     function formatarDataBR(isoDate) {
@@ -1474,6 +1871,76 @@
       return `${dias}d ${hRest}h ${mins}m`;
     }
 
+    function formatarCPF(valor) {
+      const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
+      return v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    function formatarCNPJ(valor) {
+      const v = String(valor || '').replace(/\D/g, '').slice(0, 14);
+      return v.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
+    }
+    function formatarTelefone(valor) {
+      const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
+      if (v.length <= 2) return v.replace(/(\d{1,2})/, '($1');
+      if (v.length <= 7) return v.replace(/(\d{2})(\d{1,5})/, '($1) $2');
+      return v.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+    }
+    function formatarCEP(valor) {
+      const v = String(valor || '').replace(/\D/g, '').slice(0, 8);
+      return v.replace(/(\d{5})(\d)/, '$1-$2');
+    }
+
+    window.aplicarMascaraCPF = (el) => { el.value = formatarCPF(el.value); };
+    window.aplicarMascaraTelefone = (el) => { el.value = formatarTelefone(el.value); };
+    window.aplicarMascaraDoc = (el, tipo) => { el.value = tipo === 'PJ' ? formatarCNPJ(el.value) : formatarCPF(el.value); };
+    window.aplicarMascaraCEP = (el, endInputId) => {
+      el.value = formatarCEP(el.value);
+      if (el.value.replace(/\D/g, '').length === 8 && endInputId) {
+        buscarCEP(el.id, endInputId);
+      }
+    };
+
+    window.buscarCEP = async (cepInputId, endInputId) => {
+      const cep = (document.getElementById(cepInputId)?.value || '').replace(/\D/g, '');
+      if (cep.length !== 8) { showToast('Digite um CEP válido com 8 números.', 'warning'); return; }
+      if (!navigator.onLine) { showToast('Sem conexão para consultar o CEP.', 'warning'); return; }
+      setLoading(true, 'Consultando CEP...');
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await res.json();
+        if (data.erro) { showToast('CEP não encontrado.', 'warning'); return; }
+        const partes = [data.logradouro, data.bairro, data.localidade && data.uf ? `${data.localidade} - ${data.uf}` : data.localidade].filter(Boolean);
+        const endEl = document.getElementById(endInputId);
+        if (endEl) {
+          endEl.value = partes.join(', ');
+          endEl.focus();
+        }
+        showToast('Endereço preenchido pelo CEP!', 'success');
+      } catch (err) {
+        showToast('Não foi possível consultar o ViaCEP agora.', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    window.atualizarMascaraDocCliente = () => {
+      const tipo = document.getElementById('cli-tipo').value;
+      const input = document.getElementById('cli-doc');
+      const label = document.getElementById('cli-doc-label');
+      if (tipo === 'PJ') { label.textContent = 'CNPJ'; input.placeholder = '00.000.000/0001-00'; input.maxLength = 18; }
+      else { label.textContent = 'CPF'; input.placeholder = '000.000.000-00'; input.maxLength = 14; }
+      aplicarMascaraDoc(input, tipo);
+    };
+
+    window.atualizarMascaraDocFornecedor = () => {
+      const tipo = document.getElementById('forn-tipo').value;
+      const input = document.getElementById('forn-doc');
+      const label = document.getElementById('forn-doc-label');
+      if (tipo === 'PJ') { label.textContent = 'CNPJ'; input.placeholder = '00.000.000/0001-00'; input.maxLength = 18; }
+      else { label.textContent = 'CPF'; input.placeholder = '000.000.000-00'; input.maxLength = 14; }
+      aplicarMascaraDoc(input, tipo);
+    };
+
     const STATUS_ORDEM = [
       { chave: 'rascunho', label: 'Rascunho' },
       { chave: 'enviado', label: 'Enviado ao cliente' },
@@ -1481,6 +1948,9 @@
       { chave: 'recusado', label: 'Recusado' }
     ];
 
+    // =========================================================================
+    // 4. AUTO-HIDE DO DOCK DESKTOP, TEMAS E INATIVIDADE
+    // =========================================================================
     let ultimoScrollY = window.scrollY;
     let scrollTicking = false;
     window.addEventListener('scroll', () => {
@@ -1491,13 +1961,9 @@
         if (dock) {
           const atualY = Math.max(0, window.scrollY);
           const diff = atualY - ultimoScrollY;
-          if (atualY <= 24) {
-            dock.classList.remove('dock-hidden');
-          } else if (diff > 8 && atualY > 72) {
-            dock.classList.add('dock-hidden');
-          } else if (diff < -6) {
-            dock.classList.remove('dock-hidden');
-          }
+          if (atualY <= 24) dock.classList.remove('dock-hidden');
+          else if (diff > 8 && atualY > 72) dock.classList.add('dock-hidden');
+          else if (diff < -6) dock.classList.remove('dock-hidden');
           ultimoScrollY = atualY;
         }
         scrollTicking = false;
@@ -1512,6 +1978,9 @@
       if (metaTheme) metaTheme.setAttribute('content', claro ? '#ffffff' : '#0A0F0D');
       document.querySelectorAll('.tema-icone').forEach(el => el.textContent = claro ? '🌙' : '☀️');
       document.querySelectorAll('.tema-texto').forEach(el => el.textContent = claro ? 'Escuro' : 'Claro');
+      if (state.usuarioAtual && document.getElementById('tab-painel')?.classList.contains('active')) {
+        renderGraficosPainel();
+      }
     }
 
     window.alternarTema = () => {
@@ -1547,7 +2016,11 @@
       }
     }
 
+    // =========================================================================
+    // 5. CLOUDINARY E PERSISTÊNCIA SEGURA NO FIRESTORE (CLOUD-ONLY)
+    // =========================================================================
     async function uploadFotoCloudinary(file) {
+      if (!navigator.onLine) throw new Error('Sem conexão com a internet para enviar foto.');
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
@@ -1560,51 +2033,48 @@
       return data.secure_url;
     }
 
-    function formatarCPF(valor) {
-      const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
-      return v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    function garantirOnlineParaEscrita() {
+      if (!navigator.onLine) {
+        showToast('Sem conexão com a internet. Reconecte-se para gravar ou excluir dados com segurança.', 'error');
+        return false;
+      }
+      return true;
     }
-    function formatarCNPJ(valor) {
-      const v = String(valor || '').replace(/\D/g, '').slice(0, 14);
-      return v.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
-    }
-    function formatarTelefone(valor) {
-      const v = String(valor || '').replace(/\D/g, '').slice(0, 11);
-      if (v.length <= 2) return v.replace(/(\d{1,2})/, '($1');
-      if (v.length <= 7) return v.replace(/(\d{2})(\d{1,5})/, '($1) $2');
-      return v.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
-    }
-
-    window.aplicarMascaraCPF = (el) => { el.value = formatarCPF(el.value); };
-    window.aplicarMascaraTelefone = (el) => { el.value = formatarTelefone(el.value); };
-    window.aplicarMascaraDoc = (el, tipo) => { el.value = tipo === 'PJ' ? formatarCNPJ(el.value) : formatarCPF(el.value); };
-
-    window.atualizarMascaraDocCliente = () => {
-      const tipo = document.getElementById('cli-tipo').value;
-      const input = document.getElementById('cli-doc');
-      const label = document.getElementById('cli-doc-label');
-      if (tipo === 'PJ') { label.textContent = 'CNPJ'; input.placeholder = '00.000.000/0001-00'; input.maxLength = 18; }
-      else { label.textContent = 'CPF'; input.placeholder = '000.000.000-00'; input.maxLength = 14; }
-      aplicarMascaraDoc(input, tipo);
-    };
-
-    window.atualizarMascaraDocFornecedor = () => {
-      const tipo = document.getElementById('forn-tipo').value;
-      const input = document.getElementById('forn-doc');
-      const label = document.getElementById('forn-doc-label');
-      if (tipo === 'PJ') { label.textContent = 'CNPJ'; input.placeholder = '00.000.000/0001-00'; input.maxLength = 18; }
-      else { label.textContent = 'CPF'; input.placeholder = '000.000.000-00'; input.maxLength = 14; }
-      aplicarMascaraDoc(input, tipo);
-    };
 
     async function carregarColecao(nome) {
       const snap = await getDocs(collection(db, nome));
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
+
     async function salvarDocumento(nome, id, dados) {
+      if (!garantirOnlineParaEscrita()) throw new Error('OFFLINE_BLOCKED');
       await setDoc(doc(db, nome, id), dados, { merge: true });
     }
+
+    async function excluirDocumento(nome, id) {
+      if (!garantirOnlineParaEscrita()) throw new Error('OFFLINE_BLOCKED');
+      await deleteDoc(doc(db, nome, id));
+    }
+
+    window.excluirRegistro = async (colecao, id, descricao) => {
+      if (state.perfil !== 'admin') { showToast('Apenas administradores podem excluir registros.', 'warning'); return; }
+      const ok = await confirmarAcao({
+        titulo: 'Excluir Registro',
+        mensagem: `Tem certeza que deseja excluir permanentemente:\n"${descricao}"?\n\nEsta ação não pode ser desfeita.`,
+        textoConfirmar: 'Sim, Excluir',
+        perigoso: true
+      });
+      if (!ok) return;
+      try {
+        await excluirDocumento(colecao, id);
+        showToast('Registro excluído com sucesso.', 'success');
+      } catch (err) {
+        if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao excluir: ' + err.message, 'error');
+      }
+    };
+
     async function proximoNumero(chave, prefixo) {
+      if (!garantirOnlineParaEscrita()) throw new Error('OFFLINE_BLOCKED');
       const ano = new Date().getFullYear();
       const ref = doc(db, "configuracoes", "contadores");
       const novo = await runTransaction(db, async (tx) => {
@@ -1634,13 +2104,13 @@
         usuarios: { colecao: 'usuarios', chave: 'usuarios', render: renderUsuarios }
       };
       if (tabName === 'painel') {
-        badge.textContent = "Painel Atualizado";
+        badge.textContent = navigator.onLine ? "Painel Atualizado" : "⚠ Offline";
         carregarPainelSobDemanda();
         return;
       }
       const alvo = mapa[tabName];
-      if (!alvo) { badge.textContent = "Firebase Online"; return; }
-      badge.textContent = "● Tempo Real";
+      if (!alvo) { badge.textContent = navigator.onLine ? "Firebase Online" : "⚠ Offline"; return; }
+      badge.textContent = navigator.onLine ? "● Tempo Real" : "⚠ Offline";
       activeUnsubscribe = onSnapshot(collection(db, alvo.colecao), (snap) => {
         state[alvo.chave] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         alvo.render();
@@ -1648,13 +2118,35 @@
     }
 
     async function carregarPainelSobDemanda() {
-      const [usuarios, clientes, produtos, os, orcamentos, financeiro] = await Promise.all([
-        carregarColecao('usuarios'), carregarColecao('clientes'), carregarColecao('produtos_kits'),
-        carregarColecao('ordens_servico'), carregarColecao('orcamentos'), carregarColecao('financeiro')
-      ]);
-      state.usuarios = usuarios; state.clientes = clientes; state.produtos = produtos;
-      state.os = os; state.orcamentos = orcamentos; state.financeiro = financeiro;
-      atualizarPainel();
+      try {
+        const [usuarios, clientes, produtos, os, orcamentos, financeiro] = await Promise.all([
+          carregarColecao('usuarios'), carregarColecao('clientes'), carregarColecao('produtos_kits'),
+          carregarColecao('ordens_servico'), carregarColecao('orcamentos'), carregarColecao('financeiro')
+        ]);
+        state.usuarios = usuarios; state.clientes = clientes; state.produtos = produtos;
+        state.os = os; state.orcamentos = orcamentos; state.financeiro = financeiro;
+        atualizarPainel();
+      } catch (err) {
+        console.error(err);
+        atualizarPainel();
+      }
+    }
+
+    async function carregarConfigEmpresa() {
+      const cfgLocal = localStorage.getItem('conecta_config');
+      if (cfgLocal) state.config = { ...state.config, ...JSON.parse(cfgLocal) };
+      try {
+        const snap = await getDoc(doc(db, 'configuracoes', 'empresa'));
+        if (snap.exists()) {
+          state.config = { ...state.config, ...snap.data() };
+          localStorage.setItem('conecta_config', JSON.stringify(state.config));
+        }
+      } catch (e) {}
+      document.getElementById('cfg-nome').value = state.config.nome || '';
+      document.getElementById('cfg-cnpj').value = state.config.cnpj || '';
+      document.getElementById('cfg-tel').value = state.config.tel || '';
+      document.getElementById('cfg-cidade').value = state.config.cidade || '';
+      document.getElementById('cfg-pix').value = state.config.pix || '';
     }
 
     function popularSelectTecnicos(selectId, valorSelecionado = '') {
@@ -1665,12 +2157,15 @@
       if (valorSelecionado) el.value = valorSelecionado;
     }
 
+    // =========================================================================
+    // 6. AUTENTICAÇÃO
+    // =========================================================================
     async function garantirAdminPadrao() {
       state.usuarios = await carregarColecao('usuarios');
       if (state.usuarios.length === 0) {
         const adminPadrao = {
           nome: "ADMIN", nomeCompleto: "Administrador do Sistema", cpf: "", telefone: "",
-          endereco: "", contatoEmergencia: "", telefoneEmergencia: "", senha: "123456",
+          cep: "", endereco: "", contatoEmergencia: "", telefoneEmergencia: "", senha: "123456",
           isAdmin: true, ativo: true, criadoEm: new Date().toISOString()
         };
         await salvarDocumento('usuarios', 'usu_admin_inicial', adminPadrao);
@@ -1678,21 +2173,14 @@
       }
     }
 
-    function aplicarSessao(usuario) {
+    async function aplicarSessao(usuario) {
       state.usuarioAtual = usuario;
       state.perfil = usuario.isAdmin ? 'admin' : 'tecnico';
       sessionStorage.setItem('conecta_user_id', usuario.id);
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('usuario-logado').textContent = `Bem-vindo, ${usuario.nome}! (${usuario.isAdmin ? 'Admin' : 'Técnico'})`;
       document.querySelectorAll('[data-admin-only="true"]').forEach(el => el.style.display = usuario.isAdmin ? '' : 'none');
-      const cfg = localStorage.getItem('conecta_config');
-      if (cfg) {
-        state.config = JSON.parse(cfg);
-        document.getElementById('cfg-nome').value = state.config.nome || '';
-        document.getElementById('cfg-cnpj').value = state.config.cnpj || '';
-        document.getElementById('cfg-tel').value = state.config.tel || '';
-        document.getElementById('cfg-cidade').value = state.config.cidade || '';
-      }
+      await carregarConfigEmpresa();
       reiniciarTimerInatividade();
       switchTab('painel');
     }
@@ -1708,13 +2196,17 @@
         const encontrado = state.usuarios.find(u => String(u.senha) === senha);
         if (!encontrado) { erroEl.textContent = "Senha inválida. Verifique e tente novamente."; erroEl.classList.remove('hidden'); return; }
         if (encontrado.ativo === false) { erroEl.textContent = "Usuário desativado. Contate o administrador."; erroEl.classList.remove('hidden'); return; }
-        aplicarSessao(encontrado);
+        await aplicarSessao(encontrado);
+        showToast(`Bem-vindo, ${encontrado.nome}!`, 'success');
       } catch (err) {
-        console.error(err); erroEl.textContent = "Erro ao conectar ao banco. Verifique as regras do Firestore."; erroEl.classList.remove('hidden');
+        console.error(err); erroEl.textContent = "Erro ao conectar ao banco. Verifique sua conexão."; erroEl.classList.remove('hidden');
       } finally { btn.disabled = false; btn.textContent = "Entrar no Sistema"; }
     };
 
-    window.fazerLogout = () => { if (confirm("Deseja sair do sistema?")) encerrarSessao(false); };
+    window.fazerLogout = async () => {
+      const ok = await confirmarAcao({ titulo: 'Sair do Sistema', mensagem: 'Deseja encerrar sua sessão agora?', textoConfirmar: 'Sair' });
+      if (ok) encerrarSessao(false);
+    };
 
     async function verificarSessaoInicial() {
       try {
@@ -1722,11 +2214,14 @@
         const savedId = sessionStorage.getItem('conecta_user_id');
         if (savedId) {
           const user = state.usuarios.find(u => u.id === savedId && u.ativo !== false);
-          if (user) aplicarSessao(user);
+          if (user) await aplicarSessao(user);
         }
       } catch (e) { console.error("Erro ao verificar sessão:", e); }
     }
 
+    // =========================================================================
+    // 7. MÓDULO USUÁRIOS (COM CEP / VIACEP)
+    // =========================================================================
     window.abrirModalUsuario = (id = null) => {
       document.getElementById('form-usuario').reset();
       document.getElementById('usu-id').value = id || '';
@@ -1739,6 +2234,7 @@
           document.getElementById('usu-nome-completo').value = u.nomeCompleto || '';
           document.getElementById('usu-cpf').value = formatarCPF(u.cpf || '');
           document.getElementById('usu-telefone').value = formatarTelefone(u.telefone || '');
+          document.getElementById('usu-cep').value = formatarCEP(u.cep || '');
           document.getElementById('usu-endereco').value = u.endereco || '';
           document.getElementById('usu-emerg-nome').value = u.contatoEmergencia || '';
           document.getElementById('usu-emerg-tel').value = formatarTelefone(u.telefoneEmergencia || '');
@@ -1756,28 +2252,43 @@
       const nomeCompleto = document.getElementById('usu-nome-completo').value.trim();
       const cpf = document.getElementById('usu-cpf').value.replace(/\D/g, '').slice(0, 11);
       const telefone = document.getElementById('usu-telefone').value.replace(/\D/g, '').slice(0, 11);
+      const cep = document.getElementById('usu-cep').value.replace(/\D/g, '').slice(0, 8);
       const endereco = document.getElementById('usu-endereco').value.trim();
       const contatoEmergencia = document.getElementById('usu-emerg-nome').value.trim();
       const telefoneEmergencia = document.getElementById('usu-emerg-tel').value.replace(/\D/g, '').slice(0, 11);
       const isAdmin = document.getElementById('usu-admin').checked;
-      if (!nome || !senha) { alert("Informe um nome curto e uma senha numérica."); return; }
+      if (!nome || !senha) { showToast("Informe um nome curto e uma senha numérica.", 'warning'); return; }
       const duplicado = state.usuarios.find(u => u.senha === senha && u.id !== id);
-      if (duplicado) { alert(`A senha "${senha}" já está em uso pelo usuário ${duplicado.nome}.`); return; }
+      if (duplicado) { showToast(`A senha "${senha}" já está em uso pelo usuário ${duplicado.nome}.`, 'error'); return; }
       const antigo = state.usuarios.find(x => x.id === id);
-      await salvarDocumento('usuarios', id, {
-        nome, senha, nomeCompleto, cpf, telefone, endereco, contatoEmergencia, telefoneEmergencia,
-        isAdmin, ativo: antigo ? (antigo.ativo !== false) : true, atualizadoEm: new Date().toISOString()
-      });
-      fecharModal('modal-usuario');
+      try {
+        await salvarDocumento('usuarios', id, {
+          nome, senha, nomeCompleto, cpf, telefone, cep, endereco, contatoEmergencia, telefoneEmergencia,
+          isAdmin, ativo: antigo ? (antigo.ativo !== false) : true,
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          atualizadoEm: new Date().toISOString()
+        });
+        fecharModal('modal-usuario');
+        showToast('Usuário salvo com sucesso!', 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar usuário.', 'error'); }
     };
 
     window.alternarStatusUsuario = async (id) => {
-      if (state.usuarioAtual && state.usuarioAtual.id === id) { alert("Você não pode desativar o seu próprio usuário."); return; }
+      if (state.usuarioAtual && state.usuarioAtual.id === id) { showToast("Você não pode desativar o seu próprio usuário.", 'warning'); return; }
       const u = state.usuarios.find(x => x.id === id);
       if (!u) return;
       const novoStatus = u.ativo === false ? true : false;
-      if (!confirm(`Deseja ${novoStatus ? "reativar" : "desativar"} o usuário ${u.nome}?`)) return;
-      await salvarDocumento('usuarios', id, { ativo: novoStatus });
+      const ok = await confirmarAcao({
+        titulo: novoStatus ? 'Reativar Usuário' : 'Desativar Usuário',
+        mensagem: `Deseja ${novoStatus ? "reativar" : "desativar"} o acesso de ${u.nome}?`,
+        textoConfirmar: novoStatus ? 'Reativar' : 'Desativar',
+        perigoso: !novoStatus
+      });
+      if (!ok) return;
+      try {
+        await salvarDocumento('usuarios', id, { ativo: novoStatus });
+        showToast(`Usuário ${novoStatus ? 'reativado' : 'desativado'}.`, 'success');
+      } catch (err) {}
     };
 
     function renderUsuarios() {
@@ -1785,27 +2296,31 @@
         const ativo = u.ativo !== false;
         const souEu = state.usuarioAtual && state.usuarioAtual.id === u.id;
         return `
-        <div class="bg-white p-4 rounded-xl shadow-sm border ${ativo ? 'border-slate-200' : 'border-red-200 bg-red-50/30'} flex flex-col justify-between gap-3">
+        <div class="bg-white p-4 rounded-xl shadow-sm border ${ativo ? 'border-slate-200' : 'border-red-300 bg-red-50/30'} flex flex-col justify-between gap-3">
           <div class="space-y-1">
             <div class="flex justify-between items-center">
               <h3 class="font-extrabold text-slate-800 text-base">${u.nome} ${souEu ? '<span class="text-xs text-conecta-green">(Você)</span>' : ''}</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${u.isAdmin ? 'bg-conecta-dark text-conecta-lime' : 'bg-slate-100 text-slate-700'}">${u.isAdmin ? 'ADMIN' : 'TÉCNICO'}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${u.isAdmin ? 'bg-conecta-dark text-conecta-lime border border-conecta-green/40' : 'bg-slate-100 text-slate-700'}">${u.isAdmin ? 'ADMIN' : 'TÉCNICO'}</span>
             </div>
             ${u.nomeCompleto ? `<p class="text-xs font-semibold text-slate-700">${u.nomeCompleto}</p>` : ''}
             <p class="text-xs text-slate-500">Senha: <strong class="tracking-widest text-slate-800">${u.senha}</strong></p>
             ${u.cpf ? `<p class="text-xs text-slate-500">CPF: ${formatarCPF(u.cpf)}</p>` : ''}
             ${u.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(u.telefone)}</p>` : ''}
+            ${u.endereco ? `<p class="text-xs text-slate-500">${u.endereco}</p>` : ''}
             ${u.contatoEmergencia ? `<p class="text-xs text-amber-800 bg-amber-50 p-1.5 rounded mt-1"><strong>Emergência:</strong> ${u.contatoEmergencia} ${u.telefoneEmergencia ? '(' + formatarTelefone(u.telefoneEmergencia) + ')' : ''}</p>` : ''}
-            <p class="text-xs pt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-600'}">${ativo ? '● Ativo' : '● Desativado'}</p>
+            <p class="text-xs pt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-500'}">${ativo ? '● Ativo' : '● Desativado'}</p>
           </div>
           <div class="flex items-center justify-between pt-2 border-t text-xs">
-            ${!souEu ? `<button onclick="alternarStatusUsuario('${u.id}')" class="font-semibold ${ativo ? 'text-red-600 hover:underline' : 'text-conecta-green hover:underline'}">${ativo ? 'Desativar' : 'Reativar'}</button>` : '<span></span>'}
-            <button onclick="abrirModalUsuario('${u.id}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700">Editar</button>
+            ${!souEu ? `<button onclick="alternarStatusUsuario('${u.id}')" class="font-semibold ${ativo ? 'text-red-500 hover:underline' : 'text-conecta-green hover:underline'}">${ativo ? 'Desativar' : 'Reativar'}</button>` : '<span></span>'}
+            <button onclick="abrirModalUsuario('${u.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700">Editar</button>
           </div>
         </div>`;
       }).join('');
     }
 
+    // =========================================================================
+    // 8. NAVEGAÇÃO, PAINEL, GRÁFICOS CHART.JS E ESTATÍSTICAS
+    // =========================================================================
     const ABAS_MENU_MAIS = ['fornecedores', 'produtos', 'financeiro', 'usuarios', 'config'];
 
     window.abrirMenuMais = () => {
@@ -1820,35 +2335,22 @@
       const backdrop = document.getElementById('mobile-more-backdrop');
       const sheet = document.getElementById('mobile-more-sheet');
       sheet.classList.remove('sheet-open');
-      setTimeout(() => {
-        backdrop.classList.add('hidden');
-        sheet.classList.add('hidden');
-      }, 260);
+      setTimeout(() => { backdrop.classList.add('hidden'); sheet.classList.add('hidden'); }, 260);
     };
 
     window.switchTab = (tabName) => {
       fecharMenuMais();
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabName}`).classList.add('active');
-
-      // Atualiza Desktop Glassmorphism Dock
       document.querySelectorAll('.dock-btn').forEach(btn => {
         const active = btn.dataset.tab === tabName;
         btn.classList.toggle('dock-btn-active', active);
         btn.classList.toggle('dock-btn-inactive', !active);
       });
-
-      // Atualiza Smartphone Barra Inferior + Menu "Mais"
-      document.querySelectorAll('.mob-tab-btn[data-tab]').forEach(btn => {
-        btn.classList.toggle('mob-active', btn.dataset.tab === tabName);
-      });
+      document.querySelectorAll('.mob-tab-btn[data-tab]').forEach(btn => btn.classList.toggle('mob-active', btn.dataset.tab === tabName));
       const btnMais = document.getElementById('mob-btn-mais');
       if (btnMais) btnMais.classList.toggle('mob-active', ABAS_MENU_MAIS.includes(tabName));
-
-      document.querySelectorAll('.more-item-btn[data-tab]').forEach(btn => {
-        btn.classList.toggle('more-active', btn.dataset.tab === tabName);
-      });
-
+      document.querySelectorAll('.more-item-btn[data-tab]').forEach(btn => btn.classList.toggle('more-active', btn.dataset.tab === tabName));
       const dock = document.getElementById('desktop-dock-wrapper');
       if (dock) dock.classList.remove('dock-hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1858,14 +2360,102 @@
     window.fecharModal = (id) => { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); };
     function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
 
+    window.abrirRotaEndereco = (endereco, appTipo = 'maps') => {
+      if (!endereco || !endereco.trim()) { showToast('Endereço do cliente não cadastrado.', 'warning'); return; }
+      const q = encodeURIComponent(endereco.trim());
+      const url = appTipo === 'waze'
+        ? `https://waze.com/ul?q=${q}&navigate=yes`
+        : `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+      window.open(url, '_blank');
+    };
+
     window.iniciarOSRapido = async (osId) => {
       const o = state.os.find(x => x.id === osId);
       if (!o) return;
       const agora = new Date().toISOString();
-      await salvarDocumento('ordens_servico', osId, { status: 'em_andamento', iniciadaEm: o.iniciadaEm || agora, atualizadoEm: agora });
-      await carregarPainelSobDemanda();
-      editarOS(osId);
+      try {
+        await salvarDocumento('ordens_servico', osId, {
+          status: 'em_andamento',
+          iniciadaEm: o.iniciadaEm || agora,
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          atualizadoEm: agora
+        });
+        showToast(`${o.numero} iniciada! Cronômetro em campo ativo.`, 'info');
+        await carregarPainelSobDemanda();
+        editarOS(osId);
+      } catch (err) {}
     };
+
+    function renderGraficosPainel() {
+      if (typeof Chart === 'undefined') return;
+      const isLight = document.body.classList.contains('theme-light');
+      const textColor = isLight ? '#334155' : '#cbd5e1';
+      const gridColor = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+
+      // 1. Gráfico Receitas x Despesas (Últimos 6 meses)
+      const canvasFin = document.getElementById('chart-fin-6m');
+      if (canvasFin && state.perfil === 'admin') {
+        const labels = [];
+        const receitas = [];
+        const despesas = [];
+        const hoje = new Date();
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+          const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          const mesLabel = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }).replace('.', '');
+          labels.push(mesLabel.toUpperCase());
+          const doMes = state.financeiro.filter(f => (f.vencimento || '').startsWith(ym));
+          receitas.push(doMes.filter(f => f.tipo === 'receita').reduce((a, b) => a + Number(b.valor || 0), 0));
+          despesas.push(doMes.filter(f => f.tipo === 'despesa').reduce((a, b) => a + Number(b.valor || 0), 0));
+        }
+        if (chartFin6m) chartFin6m.destroy();
+        chartFin6m = new Chart(canvasFin, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Receitas', data: receitas, backgroundColor: '#00A859', borderRadius: 6 },
+              { label: 'Despesas', data: despesas, backgroundColor: '#ef4444', borderRadius: 6 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: textColor, font: { size: 11 } } } },
+            scales: {
+              x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } },
+              y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } }
+            }
+          }
+        });
+      }
+
+      // 2. Gráfico OS por Área (Segurança x Climatização)
+      const canvasOs = document.getElementById('chart-os-area');
+      if (canvasOs) {
+        const qtdSeg = state.os.filter(o => o.categoria === 'seguranca').length;
+        const qtdClim = state.os.filter(o => o.categoria === 'climatizacao').length;
+        if (chartOsArea) chartOsArea.destroy();
+        chartOsArea = new Chart(canvasOs, {
+          type: 'doughnut',
+          data: {
+            labels: ['Segurança / CFTV', 'Climatização'],
+            datasets: [{
+              data: [qtdSeg, qtdClim],
+              backgroundColor: ['#00A859', '#3b82f6'],
+              borderColor: isLight ? '#ffffff' : '#111a16',
+              borderWidth: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '64%',
+            plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { size: 11 } } } }
+          }
+        });
+      }
+    }
 
     function atualizarPainel() {
       document.getElementById('kpi-clientes').textContent = state.clientes.length;
@@ -1885,18 +2475,23 @@
       });
 
       document.getElementById('painel-os-lista').innerHTML = abertas.length
-        ? abertas.slice(0, 8).map(o => `
+        ? abertas.slice(0, 8).map(o => {
+            const end = o.clienteEndereco || state.clientes.find(c => c.id === o.clienteId)?.endereco || '';
+            const endEsc = end.replace(/'/g, "\\'");
+            return `
             <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
               <div>
                 <span class="font-bold text-conecta-emerald">${o.numero}</span> • <span class="font-semibold text-slate-800">${o.clienteNome}</span>
                 <p class="text-xs text-slate-500">Agendada: <strong>${formatarDataBR(o.dataAgendamento)}</strong> • Técnico: <strong>${o.tecnico || 'Não atribuído'}</strong></p>
-                <p class="text-[11px] text-slate-500">Status: <strong class="${o.status === 'em_andamento' ? 'text-amber-600' : 'text-blue-600'}">${o.status.replace('_', ' ').toUpperCase()}</strong>${o.iniciadaEm ? ` • Iniciada: ${formatarDataHoraBR(o.iniciadaEm)}` : ''}</p>
+                <p class="text-[11px] text-slate-500">Status: <strong class="${o.status === 'em_andamento' ? 'text-amber-500' : 'text-blue-500'}">${o.status.replace('_', ' ').toUpperCase()}</strong>${o.iniciadaEm ? ` • Iniciada: ${formatarDataHoraBR(o.iniciadaEm)}` : ''}</p>
               </div>
-              <div class="flex gap-1.5">
+              <div class="flex flex-wrap gap-1.5">
+                ${end ? `<button onclick="abrirRotaEndereco('${endEsc}', 'maps')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg font-semibold" title="Abrir rota no Google Maps">📍 Rota</button>` : ''}
                 ${o.status === 'agendada' ? `<button onclick="iniciarOSRapido('${o.id}')" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold">▶ Iniciar</button>` : ''}
                 <button onclick="editarOS('${o.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-lg font-semibold">${o.status === 'em_andamento' ? 'Finalizar / Abrir' : 'Abrir'}</button>
               </div>
-            </div>`).join('')
+            </div>`;
+          }).join('')
         : '<p class="text-xs text-slate-400">Nenhuma OS pendente.</p>';
 
       const limite = new Date(); limite.setDate(limite.getDate() + 30);
@@ -1914,6 +2509,7 @@
         ? baixo.map(p => `<div class="p-2 bg-red-50 text-red-700 rounded border border-red-200"><strong>${p.nome}:</strong> ${p.estoqueAtual} un. (mínimo: ${p.estoqueMinimo})</div>`).join('')
         : '<p class="text-slate-400">Estoque dentro dos níveis normais.</p>';
 
+      renderGraficosPainel();
       renderEstatisticasTecnicos();
     }
 
@@ -1940,10 +2536,13 @@
       document.getElementById('painel-stats-tecnicos').innerHTML = entradas.length ? `
         <table class="w-full text-xs text-left border-collapse">
           <thead><tr class="border-b bg-slate-50 text-slate-600 uppercase"><th class="py-2 px-3">Técnico</th><th class="py-2 px-3 text-center">Concluídas</th><th class="py-2 px-3 text-center">Em Aberto</th><th class="py-2 px-3 text-right">Média Execução (Campo)</th><th class="py-2 px-3 text-right">Média Ciclo (Orç. → Fim)</th></tr></thead>
-          <tbody>${entradas.map(([nome, d]) => `<tr class="border-b hover:bg-slate-50"><td class="py-2 px-3 font-bold text-slate-800">${nome}</td><td class="py-2 px-3 text-center font-semibold text-conecta-green">${d.concluidas}</td><td class="py-2 px-3 text-center text-amber-600 font-semibold">${d.abertas}</td><td class="py-2 px-3 text-right font-medium text-blue-700">${d.qtdCampo ? formatarDuracaoMs(d.somaCampo / d.qtdCampo) : '--'}</td><td class="py-2 px-3 text-right font-medium text-slate-700">${d.qtdCiclo ? formatarDuracaoMs(d.somaCiclo / d.qtdCiclo) : '--'}</td></tr>`).join('')}</tbody>
+          <tbody>${entradas.map(([nome, d]) => `<tr class="border-b hover:bg-slate-50"><td class="py-2 px-3 font-bold text-slate-800">${nome}</td><td class="py-2 px-3 text-center font-semibold text-conecta-green">${d.concluidas}</td><td class="py-2 px-3 text-center text-amber-500 font-semibold">${d.abertas}</td><td class="py-2 px-3 text-right font-medium text-blue-500">${d.qtdCampo ? formatarDuracaoMs(d.somaCampo / d.qtdCampo) : '--'}</td><td class="py-2 px-3 text-right font-medium text-slate-700">${d.qtdCiclo ? formatarDuracaoMs(d.somaCiclo / d.qtdCiclo) : '--'}</td></tr>`).join('')}</tbody>
         </table>` : '<p class="text-xs text-slate-400">Nenhuma OS registrada para gerar estatísticas.</p>';
     }
 
+    // =========================================================================
+    // 9. MÓDULO CLIENTES (CEP/VIACEP + HISTÓRICO COMPLETO + EXCLUIR)
+    // =========================================================================
     window.abrirModalCliente = (id = null) => {
       document.getElementById('form-cliente').reset();
       document.getElementById('cli-id').value = id || '';
@@ -1954,6 +2553,7 @@
           document.getElementById('cli-nome').value = c.nome || '';
           document.getElementById('cli-doc').value = c.tipo === 'PJ' ? formatarCNPJ(c.documento || '') : formatarCPF(c.documento || '');
           document.getElementById('cli-tel').value = formatarTelefone(c.telefone || '');
+          document.getElementById('cli-cep').value = formatarCEP(c.cep || '');
           document.getElementById('cli-endereco').value = c.endereco || '';
           document.getElementById('cli-equipamentos').value = c.equipamentos || '';
           document.getElementById('cli-ultima-prev').value = c.ultimaPreventiva || '';
@@ -1971,26 +2571,94 @@
       e.preventDefault();
       const id = document.getElementById('cli-id').value || `cli_${Date.now()}`;
       const tipo = document.getElementById('cli-tipo').value;
-      await salvarDocumento('clientes', id, {
-        tipo, nome: document.getElementById('cli-nome').value.trim(),
-        documento: document.getElementById('cli-doc').value.replace(/\D/g, ''),
-        telefone: document.getElementById('cli-tel').value.replace(/\D/g, '').slice(0, 11),
-        endereco: document.getElementById('cli-endereco').value.trim(),
-        equipamentos: document.getElementById('cli-equipamentos').value.trim(),
-        ultimaPreventiva: document.getElementById('cli-ultima-prev').value,
-        proximaPreventiva: document.getElementById('cli-proxima-prev').value,
-        monitoramentoAtivo: document.getElementById('cli-monit-ativo').checked,
-        monitoramentoValor: Number(document.getElementById('cli-monit-valor').value || 0),
-        monitoramentoDia: Number(document.getElementById('cli-monit-dia').value || 10),
-        atualizadoEm: new Date().toISOString()
-      });
-      fecharModal('modal-cliente');
+      try {
+        await salvarDocumento('clientes', id, {
+          tipo, nome: document.getElementById('cli-nome').value.trim(),
+          documento: document.getElementById('cli-doc').value.replace(/\D/g, ''),
+          telefone: document.getElementById('cli-tel').value.replace(/\D/g, '').slice(0, 11),
+          cep: document.getElementById('cli-cep').value.replace(/\D/g, '').slice(0, 8),
+          endereco: document.getElementById('cli-endereco').value.trim(),
+          equipamentos: document.getElementById('cli-equipamentos').value.trim(),
+          ultimaPreventiva: document.getElementById('cli-ultima-prev').value,
+          proximaPreventiva: document.getElementById('cli-proxima-prev').value,
+          monitoramentoAtivo: document.getElementById('cli-monit-ativo').checked,
+          monitoramentoValor: Number(document.getElementById('cli-monit-valor').value || 0),
+          monitoramentoDia: Number(document.getElementById('cli-monit-dia').value || 10),
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          atualizadoEm: new Date().toISOString()
+        });
+        fecharModal('modal-cliente');
+        showToast('Cliente salvo com sucesso!', 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar cliente.', 'error'); }
+    };
+
+    window.abrirHistoricoCliente = async (cliId) => {
+      const c = state.clientes.find(x => x.id === cliId);
+      if (!c) return;
+      setLoading(true, 'Carregando histórico do cliente...');
+      try {
+        const [osAll, orcAll, finAll] = await Promise.all([
+          carregarColecao('ordens_servico'),
+          carregarColecao('orcamentos'),
+          carregarColecao('financeiro')
+        ]);
+        const osCli = osAll.filter(o => o.clienteId === cliId).sort((a, b) => (b.dataAgendamento || '').localeCompare(a.dataAgendamento || ''));
+        const orcCli = orcAll.filter(o => o.clienteId === cliId).sort((a, b) => (b.criadoEm || '').localeCompare(a.criadoEm || ''));
+        const finCli = finAll.filter(f => (f.descricao || '').toLowerCase().includes((c.nome || '').toLowerCase()) || osCli.some(o => o.id === f.origemId))
+          .sort((a, b) => (b.vencimento || '').localeCompare(a.vencimento || ''));
+
+        document.getElementById('hist-cli-nome').textContent = c.nome;
+        document.getElementById('hist-cli-sub').textContent = `${c.telefone ? formatarTelefone(c.telefone) : ''} ${c.endereco ? '• ' + c.endereco : ''}`;
+
+        document.getElementById('hist-cli-conteudo').innerHTML = `
+          ${c.equipamentos ? `<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs"><strong>Base Instalada:</strong> ${c.equipamentos}</div>` : ''}
+          <div class="grid grid-cols-3 gap-2.5 text-center">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><p class="text-lg font-extrabold text-conecta-green">${osCli.length}</p><p class="text-[10px] uppercase font-bold text-slate-500">Ordens de Serviço</p></div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><p class="text-lg font-extrabold text-blue-500">${orcCli.length}</p><p class="text-[10px] uppercase font-bold text-slate-500">Orçamentos</p></div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><p class="text-lg font-extrabold text-amber-500">${finCli.length}</p><p class="text-[10px] uppercase font-bold text-slate-500">Faturas</p></div>
+          </div>
+
+          <div class="space-y-1.5">
+            <h4 class="font-bold text-xs uppercase text-conecta-emerald">Ordens de Serviço (${osCli.length})</h4>
+            ${osCli.length ? osCli.map(o => `
+              <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex justify-between items-center text-xs">
+                <div><strong>${o.numero}</strong> • ${formatarDataBR(o.dataAgendamento)} • Técnico: ${o.tecnico || '-'}<p class="text-[11px] text-slate-500">${(o.relato || '').slice(0, 80)}</p></div>
+                <div class="text-right shrink-0"><span class="font-bold">${formatBRL(o.valorTotal)}</span><p class="text-[10px] uppercase font-semibold">${o.status.replace('_', ' ')}</p></div>
+              </div>`).join('') : '<p class="text-xs text-slate-400">Nenhuma OS registrada.</p>'}
+          </div>
+
+          <div class="space-y-1.5">
+            <h4 class="font-bold text-xs uppercase text-blue-500">Orçamentos (${orcCli.length})</h4>
+            ${orcCli.length ? orcCli.map(o => `
+              <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex justify-between items-center text-xs">
+                <div><strong>${o.numero}</strong> • Validade: ${formatarDataBR(o.validade)}</div>
+                <div class="text-right shrink-0"><span class="font-bold">${formatBRL(o.valorTotal)}</span> • <span class="uppercase font-semibold">${o.status || 'rascunho'}</span></div>
+              </div>`).join('') : '<p class="text-xs text-slate-400">Nenhum orçamento registrado.</p>'}
+          </div>
+
+          <div class="space-y-1.5">
+            <h4 class="font-bold text-xs uppercase text-amber-500">Financeiro / Faturas (${finCli.length})</h4>
+            ${finCli.length ? finCli.map(f => `
+              <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex justify-between items-center text-xs">
+                <div><strong>${f.descricao}</strong> • Venc: ${formatarDataBR(f.vencimento)}</div>
+                <div class="text-right shrink-0"><span class="font-bold ${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-500'}">${formatBRL(f.valor)}</span> • ${(f.status || 'pendente').toUpperCase()}</div>
+              </div>`).join('') : '<p class="text-xs text-slate-400">Nenhuma fatura vinculada.</p>'}
+          </div>
+        `;
+        abrirModal('modal-historico-cliente');
+      } catch (err) {
+        showToast('Erro ao carregar histórico.', 'error');
+      } finally {
+        setLoading(false);
+      }
     };
 
     window.renderClientes = () => {
       const q = (document.getElementById('busca-cliente').value || '').toLowerCase();
       const filtrados = state.clientes.filter(c => c.nome.toLowerCase().includes(q) || (c.documento || '').includes(q) || (c.equipamentos || '').toLowerCase().includes(q));
-      document.getElementById('lista-clientes').innerHTML = filtrados.map(c => `
+      document.getElementById('lista-clientes').innerHTML = filtrados.map(c => {
+        const nomeEsc = (c.nome || '').replace(/'/g, "\\'");
+        return `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between gap-3">
           <div>
             <div class="flex justify-between items-start"><h3 class="font-bold text-slate-800">${c.nome}</h3><span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold">${c.tipo}</span></div>
@@ -1999,15 +2667,26 @@
             <p class="text-xs text-slate-500 mt-1">${c.endereco || 'Endereço não informado'}</p>
             ${c.monitoramentoAtivo ? `<p class="text-xs text-conecta-green font-semibold mt-1">★ Monitoramento: ${formatBRL(c.monitoramentoValor)}/mês (dia ${c.monitoramentoDia})</p>` : ''}
             ${c.equipamentos ? `<p class="text-xs bg-emerald-50 text-conecta-emerald p-2 rounded mt-2"><strong>Base Instalada:</strong> ${c.equipamentos}</p>` : ''}
-            ${c.proximaPreventiva ? `<p class="text-xs text-amber-700 mt-1">Próxima preventiva: <strong>${formatarDataBR(c.proximaPreventiva)}</strong></p>` : ''}
+            ${c.proximaPreventiva ? `<p class="text-xs text-amber-500 mt-1">Próxima preventiva: <strong>${formatarDataBR(c.proximaPreventiva)}</strong></p>` : ''}
           </div>
-          <div class="flex items-center justify-between pt-2 border-t text-xs">
-            <a href="https://wa.me/55${c.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
-            ${state.perfil === 'admin' ? `<button onclick="abrirModalCliente('${c.id}')" class="text-slate-600 font-semibold hover:text-black">Editar</button>` : ''}
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
+            <div class="flex items-center gap-2.5">
+              <a href="https://wa.me/55${c.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
+              <button onclick="abrirHistoricoCliente('${c.id}')" class="text-blue-500 font-semibold hover:underline">Histórico</button>
+            </div>
+            ${state.perfil === 'admin' ? `
+              <div class="flex items-center gap-2">
+                <button onclick="abrirModalCliente('${c.id}')" class="px-2.5 py-1 rounded bg-slate-100 font-semibold text-slate-700">Editar</button>
+                <button onclick="excluirRegistro('clientes', '${c.id}', '${nomeEsc}')" class="px-2 py-1 rounded bg-red-500/15 text-red-500 font-semibold" title="Excluir cliente">🗑</button>
+              </div>` : ''}
           </div>
-        </div>`).join('') || '<p class="text-sm text-slate-500">Nenhum cliente cadastrado.</p>';
+        </div>`;
+      }).join('') || '<p class="text-sm text-slate-500">Nenhum cliente cadastrado.</p>';
     };
 
+    // =========================================================================
+    // 10. MÓDULO FORNECEDORES (CEP/VIACEP + EXCLUIR)
+    // =========================================================================
     window.abrirModalFornecedor = (id = null) => {
       document.getElementById('form-fornecedor').reset();
       document.getElementById('forn-id').value = id || '';
@@ -2023,6 +2702,7 @@
           document.getElementById('forn-contato').value = f.contato || '';
           document.getElementById('forn-email').value = f.email || '';
           document.getElementById('forn-pix').value = f.pix || '';
+          document.getElementById('forn-cep').value = formatarCEP(f.cep || '');
           document.getElementById('forn-endereco').value = f.endereco || '';
           document.getElementById('forn-obs').value = f.obs || '';
         }
@@ -2035,19 +2715,24 @@
       e.preventDefault();
       const id = document.getElementById('forn-id').value || `forn_${Date.now()}`;
       const tipo = document.getElementById('forn-tipo').value;
-      await salvarDocumento('fornecedores', id, {
-        tipo, nome: document.getElementById('forn-nome').value.trim(),
-        documento: document.getElementById('forn-doc').value.replace(/\D/g, ''),
-        telefone: document.getElementById('forn-tel').value.replace(/\D/g, '').slice(0, 11),
-        categoria: document.getElementById('forn-categoria').value,
-        contato: document.getElementById('forn-contato').value.trim(),
-        email: document.getElementById('forn-email').value.trim(),
-        pix: document.getElementById('forn-pix').value.trim(),
-        endereco: document.getElementById('forn-endereco').value.trim(),
-        obs: document.getElementById('forn-obs').value.trim(),
-        atualizadoEm: new Date().toISOString()
-      });
-      fecharModal('modal-fornecedor');
+      try {
+        await salvarDocumento('fornecedores', id, {
+          tipo, nome: document.getElementById('forn-nome').value.trim(),
+          documento: document.getElementById('forn-doc').value.replace(/\D/g, ''),
+          telefone: document.getElementById('forn-tel').value.replace(/\D/g, '').slice(0, 11),
+          categoria: document.getElementById('forn-categoria').value,
+          contato: document.getElementById('forn-contato').value.trim(),
+          email: document.getElementById('forn-email').value.trim(),
+          pix: document.getElementById('forn-pix').value.trim(),
+          cep: document.getElementById('forn-cep').value.replace(/\D/g, '').slice(0, 8),
+          endereco: document.getElementById('forn-endereco').value.trim(),
+          obs: document.getElementById('forn-obs').value.trim(),
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          atualizadoEm: new Date().toISOString()
+        });
+        fecharModal('modal-fornecedor');
+        showToast('Fornecedor salvo com sucesso!', 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar fornecedor.', 'error'); }
     };
 
     window.renderFornecedores = () => {
@@ -2056,7 +2741,9 @@
         (f.nome || '').toLowerCase().includes(q) || (f.documento || '').includes(q) ||
         (f.categoria || '').toLowerCase().includes(q) || (f.telefone || '').includes(q)
       );
-      document.getElementById('lista-fornecedores').innerHTML = filtrados.map(f => `
+      document.getElementById('lista-fornecedores').innerHTML = filtrados.map(f => {
+        const nomeEsc = (f.nome || '').replace(/'/g, "\\'");
+        return `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between gap-3">
           <div class="space-y-1">
             <div class="flex justify-between items-start gap-2"><h3 class="font-bold text-slate-800">${f.nome}</h3><span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold shrink-0">${f.tipo || 'PJ'}</span></div>
@@ -2069,11 +2756,18 @@
           </div>
           <div class="flex items-center justify-between pt-2 border-t text-xs">
             <a href="https://wa.me/55${f.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
-            <button onclick="abrirModalFornecedor('${f.id}')" class="text-slate-600 font-semibold hover:text-black">Editar</button>
+            <div class="flex items-center gap-2">
+              <button onclick="abrirModalFornecedor('${f.id}')" class="px-2.5 py-1 rounded bg-slate-100 font-semibold text-slate-700">Editar</button>
+              <button onclick="excluirRegistro('fornecedores', '${f.id}', '${nomeEsc}')" class="px-2 py-1 rounded bg-red-500/15 text-red-500 font-semibold" title="Excluir fornecedor">🗑</button>
+            </div>
           </div>
-        </div>`).join('') || '<p class="text-sm text-slate-500">Nenhum fornecedor cadastrado.</p>';
+        </div>`;
+      }).join('') || '<p class="text-sm text-slate-500">Nenhum fornecedor cadastrado.</p>';
     };
 
+    // =========================================================================
+    // 11. MÓDULO PRODUTOS & KITS
+    // =========================================================================
     window.abrirModalProduto = (id = null) => {
       document.getElementById('form-produto').reset();
       document.getElementById('prod-id').value = id || '';
@@ -2095,32 +2789,44 @@
     window.salvarProduto = async (e) => {
       e.preventDefault();
       const id = document.getElementById('prod-id').value || `prod_${Date.now()}`;
-      await salvarDocumento('produtos_kits', id, {
-        tipo: document.getElementById('prod-tipo').value, categoria: document.getElementById('prod-cat').value,
-        nome: document.getElementById('prod-nome').value.trim(),
-        precoCusto: Number(document.getElementById('prod-custo').value || 0),
-        precoVenda: Number(document.getElementById('prod-venda').value || 0),
-        estoqueAtual: Number(document.getElementById('prod-estoque').value || 0),
-        estoqueMinimo: Number(document.getElementById('prod-minimo').value || 0)
-      });
-      fecharModal('modal-produto');
+      try {
+        await salvarDocumento('produtos_kits', id, {
+          tipo: document.getElementById('prod-tipo').value, categoria: document.getElementById('prod-cat').value,
+          nome: document.getElementById('prod-nome').value.trim(),
+          precoCusto: Number(document.getElementById('prod-custo').value || 0),
+          precoVenda: Number(document.getElementById('prod-venda').value || 0),
+          estoqueAtual: Number(document.getElementById('prod-estoque').value || 0),
+          estoqueMinimo: Number(document.getElementById('prod-minimo').value || 0),
+          atualizadoPor: state.usuarioAtual?.nome || ''
+        });
+        fecharModal('modal-produto');
+        showToast('Item salvo no catálogo!', 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar item.', 'error'); }
     };
 
     function renderProdutos() {
       document.getElementById('lista-produtos').innerHTML = state.produtos.map(p => {
         const margem = p.precoVenda - p.precoCusto;
+        const nomeEsc = (p.nome || '').replace(/'/g, "\\'");
         return `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
           <div class="flex justify-between items-start"><h3 class="font-bold text-slate-800 text-sm">${p.nome}</h3><span class="text-xs px-2 py-0.5 rounded bg-slate-100 uppercase font-semibold">${p.tipo}</span></div>
           <p class="text-xs text-slate-500">Custo: ${formatBRL(p.precoCusto)} • Lucro unit.: <strong class="text-conecta-green">${formatBRL(margem)}</strong></p>
           <div class="flex justify-between items-center pt-2 border-t text-xs">
             <span class="font-extrabold text-base text-slate-800">${formatBRL(p.precoVenda)}</span>
-            <div class="flex items-center gap-3">${p.tipo === 'produto' ? `<span class="${p.estoqueAtual <= p.estoqueMinimo ? 'text-red-600 font-bold' : 'text-slate-500'}">Est: ${p.estoqueAtual}</span>` : ''}<button onclick="abrirModalProduto('${p.id}')" class="text-conecta-green font-semibold">Editar</button></div>
+            <div class="flex items-center gap-2">
+              ${p.tipo === 'produto' ? `<span class="${p.estoqueAtual <= p.estoqueMinimo ? 'text-red-500 font-bold' : 'text-slate-500'}">Est: ${p.estoqueAtual}</span>` : ''}
+              <button onclick="abrirModalProduto('${p.id}')" class="px-2.5 py-1 rounded bg-slate-100 text-conecta-green font-semibold">Editar</button>
+              <button onclick="excluirRegistro('produtos_kits', '${p.id}', '${nomeEsc}')" class="px-2 py-1 rounded bg-red-500/15 text-red-500 font-semibold" title="Excluir item">🗑</button>
+            </div>
           </div>
         </div>`;
       }).join('') || '<p class="text-sm text-slate-500">Nenhum produto ou kit cadastrado.</p>';
     }
 
+    // =========================================================================
+    // 12. MÓDULO ORÇAMENTOS (VÍNCULO PRODUTO->ESTOQUE, AUDITORIA, EXCLUIR)
+    // =========================================================================
     window.alternarCampoRecusa = () => {
       const status = document.getElementById('orc-status').value;
       const box = document.getElementById('orc-recusa-box');
@@ -2132,7 +2838,7 @@
     window.abrirModalOrcamento = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
       if (!state.produtos.length) state.produtos = await carregarColecao('produtos_kits');
-      if (!state.clientes.length) { alert("Cadastre pelo menos um cliente antes de criar um orçamento."); switchTab('clientes'); return; }
+      if (!state.clientes.length) { showToast("Cadastre pelo menos um cliente antes de criar um orçamento.", 'warning'); switchTab('clientes'); return; }
       document.getElementById('orc-cliente').innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
       document.getElementById('orc-catalogo-select').innerHTML = state.produtos.length ? state.produtos.map(p => `<option value="${p.id}">${p.nome} (${formatBRL(p.precoVenda)})</option>`).join('') : '<option value="">Sem catálogo</option>';
       document.getElementById('form-orcamento').reset();
@@ -2140,7 +2846,7 @@
       const validadePadrao = new Date(); validadePadrao.setDate(validadePadrao.getDate() + 15);
       document.getElementById('orc-validade').value = validadePadrao.toISOString().split('T')[0];
       state.fotosOrcTemp = [];
-      state.itensOrcTemp = [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }];
+      state.itensOrcTemp = [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0, produtoId: null }];
       if (id) {
         const o = state.orcamentos.find(x => x.id === id);
         if (o) {
@@ -2152,7 +2858,7 @@
           document.getElementById('orc-motivo-recusa').value = o.motivoRecusa || '';
           document.getElementById('orc-desconto').value = o.desconto || 0;
           document.getElementById('orc-obs').value = o.obs || '';
-          state.itensOrcTemp = (o.itens && o.itens.length) ? o.itens.map(i => ({ ...i })) : [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }];
+          state.itensOrcTemp = (o.itens && o.itens.length) ? o.itens.map(i => ({ ...i })) : [{ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0, produtoId: null }];
           state.fotosOrcTemp = [...(o.fotos || [])];
         }
       } else { document.getElementById('modal-orc-titulo').textContent = "Novo Orçamento"; }
@@ -2164,11 +2870,11 @@
       const p = state.produtos.find(x => x.id === prodId);
       if (!p) return;
       if (state.itensOrcTemp.length === 1 && !state.itensOrcTemp[0].descricao) state.itensOrcTemp = [];
-      state.itensOrcTemp.push({ descricao: p.nome, qtd: 1, custoUnit: p.precoCusto || 0, valorUnit: p.precoVenda || 0 });
+      state.itensOrcTemp.push({ descricao: p.nome, qtd: 1, custoUnit: p.precoCusto || 0, valorUnit: p.precoVenda || 0, produtoId: p.id });
       renderItensOrcamento();
     };
-    window.adicionarItemOrcamento = () => { state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }); renderItensOrcamento(); };
-    window.removerItemOrcamento = (idx) => { state.itensOrcTemp.splice(idx, 1); if (!state.itensOrcTemp.length) state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0 }); renderItensOrcamento(); };
+    window.adicionarItemOrcamento = () => { state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0, produtoId: null }); renderItensOrcamento(); };
+    window.removerItemOrcamento = (idx) => { state.itensOrcTemp.splice(idx, 1); if (!state.itensOrcTemp.length) state.itensOrcTemp.push({ descricao: '', qtd: 1, custoUnit: 0, valorUnit: 0, produtoId: null }); renderItensOrcamento(); };
     window.atualizarItemOrcamento = (idx, campo, valor) => { state.itensOrcTemp[idx][campo] = campo === 'descricao' ? valor : Number(valor || 0); recalcularTotalOrcamento(); };
 
     function renderItensOrcamento() {
@@ -2203,7 +2909,8 @@
       try {
         for (const file of files) { const url = await uploadFotoCloudinary(file); state.fotosOrcTemp.push(url); renderFotosOrcPreview(); }
         statusEl.textContent = "Upload concluído!"; setTimeout(() => statusEl.classList.add('hidden'), 2500);
-      } catch (err) { alert("Erro ao enviar foto: " + err.message); statusEl.classList.add('hidden'); }
+        showToast('Fotos enviadas em qualidade original!', 'success');
+      } catch (err) { showToast("Erro ao enviar foto: " + err.message, 'error'); statusEl.classList.add('hidden'); }
       finally { btnSalvar.disabled = false; event.target.value = ''; }
     };
 
@@ -2219,26 +2926,33 @@
       const idExistente = document.getElementById('orc-id').value;
       const id = idExistente || `orc_${Date.now()}`;
       const antigo = state.orcamentos.find(x => x.id === idExistente);
-      const numero = antigo ? antigo.numero : await proximoNumero('ultimoOrcamento', 'ORC');
       const clienteId = document.getElementById('orc-cliente').value;
       const cliente = state.clientes.find(c => c.id === clienteId);
       const { total, lucro } = recalcularTotalOrcamento();
       const novoStatus = document.getElementById('orc-status').value;
       const motivoRecusa = novoStatus === 'recusado' ? document.getElementById('orc-motivo-recusa').value.trim() : (antigo?.motivoRecusa || '');
-      if (novoStatus === 'recusado' && !motivoRecusa) { alert("Informe o motivo da recusa do orçamento."); return; }
+      if (novoStatus === 'recusado' && !motivoRecusa) { showToast("Informe o motivo da recusa do orçamento.", 'warning'); return; }
       const historicoStatus = { ...(antigo?.historicoStatus || {}) };
       if (!antigo || antigo.status !== novoStatus || !historicoStatus[novoStatus]) historicoStatus[novoStatus] = formatarDataHoraBR(new Date());
       const agoraISO = new Date().toISOString();
-      await salvarDocumento('orcamentos', id, {
-        numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente', clienteTelefone: cliente ? (cliente.telefone || '') : '',
-        categoria: document.getElementById('orc-categoria').value, validade: document.getElementById('orc-validade').value,
-        status: novoStatus, historicoStatus, motivoRecusa, itens: state.itensOrcTemp.filter(i => i.descricao.trim() !== ''),
-        desconto: Number(document.getElementById('orc-desconto').value || 0), valorTotal: total, lucroEstimado: lucro,
-        obs: document.getElementById('orc-obs').value.trim(), fotos: state.fotosOrcTemp,
-        osGeradaId: antigo ? (antigo.osGeradaId || null) : null, osGeradaNumero: antigo ? (antigo.osGeradaNumero || null) : null,
-        criadoEm: antigo?.criadoEm || agoraISO, atualizadoEm: agoraISO
-      });
-      fecharModal('modal-orcamento');
+      try {
+        const numero = antigo ? antigo.numero : await proximoNumero('ultimoOrcamento', 'ORC');
+        await salvarDocumento('orcamentos', id, {
+          numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente',
+          clienteTelefone: cliente ? (cliente.telefone || '') : '',
+          clienteEndereco: cliente ? (cliente.endereco || '') : '',
+          categoria: document.getElementById('orc-categoria').value, validade: document.getElementById('orc-validade').value,
+          status: novoStatus, historicoStatus, motivoRecusa, itens: state.itensOrcTemp.filter(i => i.descricao.trim() !== ''),
+          desconto: Number(document.getElementById('orc-desconto').value || 0), valorTotal: total, lucroEstimado: lucro,
+          obs: document.getElementById('orc-obs').value.trim(), fotos: state.fotosOrcTemp,
+          osGeradaId: antigo ? (antigo.osGeradaId || null) : null, osGeradaNumero: antigo ? (antigo.osGeradaNumero || null) : null,
+          criadoPor: antigo?.criadoPor || (state.usuarioAtual?.nome || ''),
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          criadoEm: antigo?.criadoEm || agoraISO, atualizadoEm: agoraISO
+        });
+        fecharModal('modal-orcamento');
+        showToast(`Orçamento ${numero} salvo!`, 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar orçamento.', 'error'); }
     };
 
     window.aprovarEGerarOS = async (orcId) => {
@@ -2259,24 +2973,34 @@
       const tecnico = document.getElementById('ag-tecnico').value;
       const orc = state.orcamentos.find(x => x.id === orcId);
       if (!orc || !dataAg || !tecnico) return;
-      const osId = `os_${Date.now()}`;
-      const osNumero = await proximoNumero('ultimaOS', 'OS');
-      const resumoItens = (orc.itens || []).map(i => `• ${i.qtd}x ${i.descricao} (${formatBRL(i.valorUnit)})`).join('\n');
-      const agoraISO = new Date().toISOString();
-      const dGarantia = new Date(dataAg + 'T12:00:00'); dGarantia.setDate(dGarantia.getDate() + 90);
-      await salvarDocumento('ordens_servico', osId, {
-        numero: osNumero, orcamentoId: orc.id, orcamentoNumero: orc.numero, orcamentoCriadoEm: orc.criadoEm || agoraISO,
-        criadaEm: agoraISO, iniciadaEm: null, concluidaEm: null, clienteId: orc.clienteId, clienteNome: orc.clienteNome,
-        categoria: orc.categoria || 'seguranca', dataAgendamento: dataAg, status: 'agendada', garantiaDias: 90,
-        garantiaAte: dGarantia.toISOString().split('T')[0], tecnico, valorTotal: orc.valorTotal || 0,
-        relato: `Aprovado via ${orc.numero}:\n${resumoItens}${orc.obs ? '\nObs: ' + orc.obs : ''}`,
-        laudo: '', checklist: [], fotosAntes: [...(orc.fotos || [])], fotosDepois: [], assinatura: '', lancadoFinanceiro: false, atualizadoEm: agoraISO
-      });
-      const historicoStatus = { ...(orc.historicoStatus || {}), aprovado: formatarDataHoraBR(new Date()) };
-      await salvarDocumento('orcamentos', orc.id, { status: 'aprovado', historicoStatus, osGeradaId: osId, osGeradaNumero: osNumero });
-      fecharModal('modal-agendar-os');
-      alert(`${osNumero} agendada para ${formatarDataBR(dataAg)} e direcionada para ${tecnico}!`);
-      switchTab('os');
+      try {
+        const osId = `os_${Date.now()}`;
+        const osNumero = await proximoNumero('ultimaOS', 'OS');
+        const resumoItens = (orc.itens || []).map(i => `• ${i.qtd}x ${i.descricao} (${formatBRL(i.valorUnit)})`).join('\n');
+        const agoraISO = new Date().toISOString();
+        const dGarantia = new Date(dataAg + 'T12:00:00'); dGarantia.setDate(dGarantia.getDate() + 90);
+        const cliEnd = orc.clienteEndereco || state.clientes.find(c => c.id === orc.clienteId)?.endereco || '';
+
+        await salvarDocumento('ordens_servico', osId, {
+          numero: osNumero, orcamentoId: orc.id, orcamentoNumero: orc.numero, orcamentoCriadoEm: orc.criadoEm || agoraISO,
+          criadaEm: agoraISO, iniciadaEm: null, concluidaEm: null, clienteId: orc.clienteId, clienteNome: orc.clienteNome,
+          clienteEndereco: cliEnd,
+          categoria: orc.categoria || 'seguranca', dataAgendamento: dataAg, status: 'agendada', garantiaDias: 90,
+          garantiaAte: dGarantia.toISOString().split('T')[0], tecnico, valorTotal: orc.valorTotal || 0,
+          relato: `Aprovado via ${orc.numero}:\n${resumoItens}${orc.obs ? '\nObs: ' + orc.obs : ''}`,
+          itens: orc.itens || [], estoqueBaixado: false,
+          laudo: '', checklist: [], fotosAntes: [...(orc.fotos || [])], fotosDepois: [], assinatura: '', lancadoFinanceiro: false,
+          criadoPor: state.usuarioAtual?.nome || '', atualizadoPor: state.usuarioAtual?.nome || '', atualizadoEm: agoraISO
+        });
+        const historicoStatus = { ...(orc.historicoStatus || {}), aprovado: formatarDataHoraBR(new Date()) };
+        await salvarDocumento('orcamentos', orc.id, {
+          status: 'aprovado', historicoStatus, osGeradaId: osId, osGeradaNumero: osNumero,
+          aprovadoPor: state.usuarioAtual?.nome || ''
+        });
+        fecharModal('modal-agendar-os');
+        showToast(`${osNumero} agendada para ${formatarDataBR(dataAg)} (${tecnico})!`, 'success');
+        switchTab('os');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao gerar OS.', 'error'); }
     };
 
     function montarHtmlPDFOrcamento(o) {
@@ -2321,23 +3045,30 @@
     window.baixarPDFOrcamento = async (id) => {
       const o = state.orcamentos.find(x => x.id === id);
       if (!o) return;
+      setLoading(true, `Gerando ${o.numero}.pdf...`);
       try {
         const blob = await gerarPDFOrcamentoBlob(o);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = `${o.numero}.pdf`; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 5000);
-      } catch (err) { alert("Erro ao gerar PDF: " + err.message); }
+        showToast(`${o.numero}.pdf gerado!`, 'success');
+      } catch (err) { showToast("Erro ao gerar PDF: " + err.message, 'error'); }
+      finally { setLoading(false); }
     };
 
     window.enviarOrcamentoWhatsApp = async (id) => {
       const o = state.orcamentos.find(x => x.id === id);
       if (!o) return;
       const texto = `Olá ${o.clienteNome}, segue o orçamento ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal)}. Validade: ${formatarDataBR(o.validade)}.`;
+      setLoading(true, `Preparando ${o.numero}.pdf para WhatsApp...`);
       try {
         const blob = await gerarPDFOrcamentoBlob(o);
         const file = new File([blob], `${o.numero}.pdf`, { type: 'application/pdf' });
         const historicoStatus = { ...(o.historicoStatus || {}), enviado: formatarDataHoraBR(new Date()) };
-        await salvarDocumento('orcamentos', o.id, { status: 'enviado', historicoStatus });
+        if (navigator.onLine) {
+          await salvarDocumento('orcamentos', o.id, { status: 'enviado', historicoStatus, atualizadoPor: state.usuarioAtual?.nome || '' });
+        }
+        setLoading(false);
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({ files: [file], title: `Orçamento ${o.numero}`, text: texto });
         } else {
@@ -2347,7 +3078,11 @@
           const tel = (o.clienteTelefone || '').replace(/\D/g, '');
           window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(texto)}`, '_blank');
         }
-      } catch (err) { if (err.name !== 'AbortError') alert("Erro ao preparar envio: " + err.message); }
+        showToast('Orçamento marcado como Enviado ao cliente!', 'success');
+      } catch (err) {
+        setLoading(false);
+        if (err.name !== 'AbortError') showToast("Erro ao preparar envio: " + err.message, 'error');
+      }
     };
 
     function cardFiltroHtml(ativo, numero, titulo, onclickStr) {
@@ -2386,37 +3121,132 @@
       document.getElementById('lista-orcamentos').innerHTML = lista.map(o => {
         const hist = o.historicoStatus || {};
         const linhasHistorico = STATUS_ORDEM.filter(s => hist[s.chave]).map(s => `<div class="text-[11px] text-slate-600"><strong>${s.label}</strong> – ${hist[s.chave]}</div>`).join('');
-        const badgeCor = o.status === 'aprovado' ? 'bg-emerald-100 text-emerald-800' : o.status === 'recusado' ? 'bg-red-100 text-red-700' : o.status === 'enviado' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700';
+        const badgeCor = o.status === 'aprovado' ? 'bg-emerald-500/20 text-emerald-400' : o.status === 'recusado' ? 'bg-red-500/20 text-red-400' : o.status === 'enviado' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-500/20 text-slate-400';
         const statusLabel = (STATUS_ORDEM.find(s => s.chave === o.status)?.label || 'Rascunho').toUpperCase();
+        const audit = [o.criadoPor ? `Criado: ${o.criadoPor}` : '', o.aprovadoPor ? `Aprovado: ${o.aprovadoPor}` : ''].filter(Boolean).join(' • ');
         return `
-        <div class="bg-white p-4 rounded-xl shadow-sm border ${o.status === 'recusado' ? 'border-red-200' : 'border-slate-200'} space-y-2.5">
+        <div class="bg-white p-4 rounded-xl shadow-sm border ${o.status === 'recusado' ? 'border-red-300' : 'border-slate-200'} space-y-2.5">
           <div class="flex justify-between items-center"><span class="font-bold text-conecta-emerald">${o.numero}</span><span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${badgeCor}">${statusLabel}</span></div>
           <h3 class="font-bold text-slate-800">${o.clienteNome}</h3>
           <p class="text-xs text-slate-500">${(o.itens || []).length} item(ns) • ${(o.fotos || []).length} foto(s) • Lucro est.: <strong class="text-conecta-green">${formatBRL(o.lucroEstimado)}</strong></p>
+          ${audit ? `<p class="text-[10px] text-slate-500 uppercase tracking-wide">${audit}</p>` : ''}
           ${linhasHistorico ? `<div class="bg-slate-50 border border-slate-200 rounded-lg p-2 space-y-0.5">${linhasHistorico}</div>` : ''}
           ${o.status === 'recusado' && o.motivoRecusa ? `<div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-2 text-xs"><strong>Motivo da recusa:</strong> ${o.motivoRecusa}</div>` : ''}
           ${o.osGeradaNumero ? `<p class="text-xs text-conecta-green font-semibold">✓ Convertido em ${o.osGeradaNumero}</p>` : ''}
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
             <span class="text-base font-extrabold">${formatBRL(o.valorTotal)}</span>
             <div class="flex flex-wrap gap-1.5">
-              ${!o.osGeradaId && o.status !== 'recusado' ? `<button onclick="aprovarEGerarOS('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-dark text-conecta-lime font-semibold">Aprovar e Gerar OS</button>` : ''}
-              <button onclick="enviarOrcamentoWhatsApp('${o.id}')" class="px-2.5 py-1.5 rounded bg-emerald-50 text-conecta-emerald hover:bg-emerald-100 font-semibold">WhatsApp</button>
-              <button onclick="baixarPDFOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-slate-100 hover:bg-slate-200 font-semibold">PDF</button>
+              ${!o.osGeradaId && o.status !== 'recusado' ? `<button onclick="aprovarEGerarOS('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-dark text-conecta-lime border border-conecta-green/40 font-semibold">Aprovar e Gerar OS</button>` : ''}
+              <button onclick="enviarOrcamentoWhatsApp('${o.id}')" class="px-2.5 py-1.5 rounded bg-emerald-50 text-conecta-emerald font-semibold">WhatsApp</button>
+              <button onclick="baixarPDFOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-slate-100 font-semibold">PDF</button>
               <button onclick="abrirModalOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-green text-white font-semibold">Editar</button>
+              <button onclick="excluirRegistro('orcamentos', '${o.id}', '${o.numero}')" class="px-2 py-1.5 rounded bg-red-500/15 text-red-500 font-semibold" title="Excluir orçamento">🗑</button>
             </div>
           </div>
         </div>`;
       }).join('') || '<p class="text-sm text-slate-500">Nenhum orçamento encontrado.</p>';
     };
 
+    // =========================================================================
+    // 13. MÓDULO AGENDA & OS (CALENDÁRIO, ROTA, BAIXA DE ESTOQUE, AUDITORIA)
+    // =========================================================================
+    window.alternarVisaoOS = (visao) => {
+      state.osVisao = visao;
+      const boxCal = document.getElementById('os-calendario-box');
+      const btnLista = document.getElementById('btn-os-visao-lista');
+      const btnCal = document.getElementById('btn-os-visao-cal');
+      if (visao === 'calendario') {
+        boxCal.classList.remove('hidden');
+        btnCal.className = 'px-3 py-1.5 rounded-lg bg-conecta-green text-white';
+        btnLista.className = 'px-3 py-1.5 rounded-lg text-slate-600';
+      } else {
+        boxCal.classList.add('hidden');
+        state.calDiaSelecionado = '';
+        btnLista.className = 'px-3 py-1.5 rounded-lg bg-conecta-green text-white';
+        btnCal.className = 'px-3 py-1.5 rounded-lg text-slate-600';
+      }
+      renderOS();
+    };
+
+    window.mudarMesCalendario = (delta) => {
+      const d = new Date(state.calAno, state.calMes + delta, 1);
+      state.calAno = d.getFullYear();
+      state.calMes = d.getMonth();
+      state.calDiaSelecionado = '';
+      renderOS();
+    };
+
+    window.selecionarDiaCalendario = (isoDay) => {
+      state.calDiaSelecionado = (state.calDiaSelecionado === isoDay) ? '' : isoDay;
+      renderOS();
+    };
+
+    function renderCalendarioOS(listaBase) {
+      const grid = document.getElementById('os-calendario-grid');
+      const titulo = document.getElementById('cal-mes-titulo');
+      const btnLimpar = document.getElementById('btn-cal-limpar-dia');
+      if (!grid || !titulo) return;
+
+      const dRef = new Date(state.calAno, state.calMes, 1);
+      titulo.textContent = dRef.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      btnLimpar.classList.toggle('hidden', !state.calDiaSelecionado);
+
+      const primeiroDiaSemana = dRef.getDay();
+      const diasNoMes = new Date(state.calAno, state.calMes + 1, 0).getDate();
+      const hojeStr = new Date().toISOString().split('T')[0];
+
+      let cells = '';
+      for (let i = 0; i < primeiroDiaSemana; i++) cells += '<div></div>';
+
+      for (let dia = 1; dia <= diasNoMes; dia++) {
+        const iso = `${state.calAno}-${String(state.calMes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        const doDia = listaBase.filter(o => o.dataAgendamento === iso);
+        const selecionado = state.calDiaSelecionado === iso;
+        const ehHoje = iso === hojeStr;
+        const abertasDia = doDia.filter(o => o.status !== 'concluida').length;
+        const concluidasDia = doDia.filter(o => o.status === 'concluida').length;
+
+        cells += `
+          <button type="button" onclick="selecionarDiaCalendario('${iso}')" class="cal-day-btn ${selecionado ? 'cal-day-selected' : ''}">
+            <span class="text-xs font-bold ${ehHoje ? 'text-conecta-green' : 'text-slate-700'}">${dia}</span>
+            <div class="flex flex-wrap gap-1 mt-1">
+              ${abertasDia ? `<span class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500 text-white font-bold">${abertasDia}</span>` : ''}
+              ${concluidasDia ? `<span class="text-[9px] px-1.5 py-0.5 rounded-full bg-conecta-green text-white font-bold">${concluidasDia}</span>` : ''}
+            </div>
+          </button>`;
+      }
+      grid.innerHTML = cells;
+    }
+
+    function atualizarRotaModalOS() {
+      const cliId = document.getElementById('os-cliente').value;
+      const cli = state.clientes.find(c => c.id === cliId);
+      const box = document.getElementById('os-rota-box');
+      const lbl = document.getElementById('os-rota-endereco');
+      if (cli && cli.endereco) {
+        lbl.textContent = cli.endereco;
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    window.abrirRotaModalOS = (appTipo) => {
+      const end = document.getElementById('os-rota-endereco')?.textContent || '';
+      abrirRotaEndereco(end, appTipo);
+    };
+
     window.abrirModalOS = async (id = null) => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
       if (!state.usuarios.length) state.usuarios = await carregarColecao('usuarios');
-      if (!state.clientes.length) { alert("Cadastre um cliente primeiro."); switchTab('clientes'); return; }
-      document.getElementById('os-cliente').innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+      if (!state.clientes.length) { showToast("Cadastre um cliente primeiro.", 'warning'); switchTab('clientes'); return; }
+      const selCli = document.getElementById('os-cliente');
+      selCli.innerHTML = state.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+      selCli.onchange = atualizarRotaModalOS;
+
       document.getElementById('form-os').reset();
       document.getElementById('os-id').value = id || '';
-      document.getElementById('os-data').value = new Date().toISOString().split('T')[0];
+      document.getElementById('os-data').value = state.calDiaSelecionado || new Date().toISOString().split('T')[0];
       document.getElementById('os-garantia-dias').value = 90;
       popularSelectTecnicos('os-tecnico', state.usuarioAtual ? state.usuarioAtual.nome : '');
       document.querySelectorAll('.os-chk').forEach(c => c.checked = false);
@@ -2430,7 +3260,7 @@
         const o = state.os.find(x => x.id === id);
         if (o) {
           document.getElementById('modal-os-titulo').textContent = `Editar ${o.numero}`;
-          document.getElementById('os-cliente').value = o.clienteId;
+          selCli.value = o.clienteId;
           document.getElementById('os-categoria').value = o.categoria;
           document.getElementById('os-data').value = o.dataAgendamento;
           document.getElementById('os-status').value = o.status;
@@ -2445,12 +3275,14 @@
           if (o.status !== 'concluida') btnFim.classList.remove('hidden');
           const eventos = [];
           if (o.orcamentoCriadoEm) eventos.push(`<strong>Orçamento Gerado:</strong> ${formatarDataHoraBR(o.orcamentoCriadoEm)}`);
-          if (o.criadaEm) eventos.push(`<strong>OS Criada:</strong> ${formatarDataHoraBR(o.criadaEm)}`);
+          if (o.criadaEm) eventos.push(`<strong>OS Criada:</strong> ${formatarDataHoraBR(o.criadaEm)}${o.criadoPor ? ' (' + o.criadoPor + ')' : ''}`);
           if (o.iniciadaEm) eventos.push(`<strong>Início em Campo:</strong> ${formatarDataHoraBR(o.iniciadaEm)}`);
-          if (o.concluidaEm) eventos.push(`<strong>OS Finalizada:</strong> ${formatarDataHoraBR(o.concluidaEm)}`);
+          if (o.concluidaEm) eventos.push(`<strong>OS Finalizada:</strong> ${formatarDataHoraBR(o.concluidaEm)}${o.concluidoPor ? ' (' + o.concluidoPor + ')' : ''}`);
+          if (o.estoqueBaixado) eventos.push(`<strong>Estoque:</strong> Baixa automática efetuada`);
           if (eventos.length) { timelineBox.innerHTML = eventos.map(e => `<div>• ${e}</div>`).join(''); timelineBox.classList.remove('hidden'); }
         }
       } else { document.getElementById('modal-os-titulo').textContent = "Nova Ordem de Serviço"; }
+      atualizarRotaModalOS();
       renderFotosOSPreview(); abrirModal('modal-os');
     };
     window.editarOS = (id) => abrirModalOS(id);
@@ -2467,7 +3299,8 @@
       try {
         for (const file of files) { const url = await uploadFotoCloudinary(file); if (tipo === 'antes') state.fotosOSAntes.push(url); else state.fotosOSDepois.push(url); renderFotosOSPreview(); }
         statusEl.textContent = "Upload concluído!"; setTimeout(() => statusEl.classList.add('hidden'), 2500);
-      } catch (err) { alert("Erro ao enviar foto: " + err.message); statusEl.classList.add('hidden'); }
+        showToast('Fotos enviadas em qualidade original!', 'success');
+      } catch (err) { showToast("Erro ao enviar foto: " + err.message, 'error'); statusEl.classList.add('hidden'); }
       finally { btnSalvar.disabled = false; event.target.value = ''; }
     };
 
@@ -2495,12 +3328,31 @@
     window.addEventListener('touchend', () => desenhando = false);
     window.limparAssinatura = () => { sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); assinaturaAlterada = false; };
 
+    async function baixarEstoqueItensOS(itens) {
+      const alertasMinimo = [];
+      for (const item of itens) {
+        if (!item.produtoId || !item.qtd) continue;
+        const ref = doc(db, 'produtos_kits', item.produtoId);
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(ref);
+          if (!snap.exists()) return;
+          const p = snap.data();
+          if (p.tipo !== 'produto') return;
+          const novoEst = Math.max(0, Number(p.estoqueAtual || 0) - Number(item.qtd || 0));
+          tx.set(ref, { estoqueAtual: novoEst }, { merge: true });
+          if (novoEst <= Number(p.estoqueMinimo || 0)) {
+            alertasMinimo.push(`${p.nome} (${novoEst} un.)`);
+          }
+        });
+      }
+      return alertasMinimo;
+    }
+
     window.salvarOS = async (e) => {
       e.preventDefault();
       const idExistente = document.getElementById('os-id').value;
       const id = idExistente || `os_${Date.now()}`;
       const antiga = state.os.find(x => x.id === idExistente);
-      const numero = antiga ? antiga.numero : await proximoNumero('ultimaOS', 'OS');
       const clienteId = document.getElementById('os-cliente').value;
       const cliente = state.clientes.find(c => c.id === clienteId);
       const dataAg = document.getElementById('os-data').value;
@@ -2512,46 +3364,74 @@
       const criadaEm = antiga?.criadaEm || agoraISO;
       let iniciadaEm = antiga?.iniciadaEm || null;
       let concluidaEm = antiga?.concluidaEm || null;
+      let concluidoPor = antiga?.concluidoPor || '';
       if (statusNovo === 'em_andamento' && !iniciadaEm) iniciadaEm = agoraISO;
-      if (statusNovo === 'concluida') { if (!iniciadaEm) iniciadaEm = criadaEm; if (!concluidaEm) concluidaEm = agoraISO; }
+      if (statusNovo === 'concluida') {
+        if (!iniciadaEm) iniciadaEm = criadaEm;
+        if (!concluidaEm) { concluidaEm = agoraISO; concluidoPor = state.usuarioAtual?.nome || ''; }
+      }
       const assinaturaFinal = assinaturaAlterada ? sigCanvas.toDataURL('image/png') : (antiga?.assinatura || '');
 
-      await salvarDocumento('ordens_servico', id, {
-        numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente', categoria: document.getElementById('os-categoria').value,
-        dataAgendamento: dataAg, status: statusNovo, garantiaDias, garantiaAte: dGarantia.toISOString().split('T')[0],
-        tecnico: document.getElementById('os-tecnico').value, valorTotal: Number(document.getElementById('os-valor').value || 0),
-        relato: document.getElementById('os-relato').value.trim(), laudo: document.getElementById('os-laudo').value.trim(),
-        checklist, fotosAntes: state.fotosOSAntes, fotosDepois: state.fotosOSDepois, assinatura: assinaturaFinal,
-        lancadoFinanceiro: antiga ? !!antiga.lancadoFinanceiro : false, criadaEm, iniciadaEm, concluidaEm, atualizadoEm: agoraISO
-      });
-      fecharModal('modal-os');
-      if (document.getElementById('tab-painel').classList.contains('active')) carregarPainelSobDemanda();
+      try {
+        const numero = antiga ? antiga.numero : await proximoNumero('ultimaOS', 'OS');
+        let estoqueBaixado = !!antiga?.estoqueBaixado;
+        let alertasEstoque = [];
+        if (statusNovo === 'concluida' && !estoqueBaixado && (antiga?.itens || []).some(i => i.produtoId)) {
+          alertasEstoque = await baixarEstoqueItensOS(antiga.itens);
+          estoqueBaixado = true;
+        }
+
+        await salvarDocumento('ordens_servico', id, {
+          numero, clienteId, clienteNome: cliente ? cliente.nome : 'Cliente',
+          clienteEndereco: cliente ? (cliente.endereco || '') : (antiga?.clienteEndereco || ''),
+          categoria: document.getElementById('os-categoria').value,
+          dataAgendamento: dataAg, status: statusNovo, garantiaDias, garantiaAte: dGarantia.toISOString().split('T')[0],
+          tecnico: document.getElementById('os-tecnico').value, valorTotal: Number(document.getElementById('os-valor').value || 0),
+          relato: document.getElementById('os-relato').value.trim(), laudo: document.getElementById('os-laudo').value.trim(),
+          checklist, fotosAntes: state.fotosOSAntes, fotosDepois: state.fotosOSDepois, assinatura: assinaturaFinal,
+          lancadoFinanceiro: antiga ? !!antiga.lancadoFinanceiro : false,
+          estoqueBaixado,
+          criadoPor: antiga?.criadoPor || (state.usuarioAtual?.nome || ''),
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          concluidoPor,
+          criadaEm, iniciadaEm, concluidaEm, atualizadoEm: agoraISO
+        });
+        fecharModal('modal-os');
+        showToast(`${numero} salva com sucesso!`, 'success');
+        if (alertasEstoque.length) {
+          showToast(`Estoque baixo após baixa automática: ${alertasEstoque.join(', ')}`, 'warning');
+        }
+        if (document.getElementById('tab-painel').classList.contains('active')) carregarPainelSobDemanda();
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar OS: ' + err.message, 'error'); }
     };
 
     window.lancarOSNoFinanceiro = async (osId) => {
       const o = state.os.find(x => x.id === osId);
       if (!o || o.lancadoFinanceiro) return;
-      const parcelas = Math.max(1, Number(prompt(`Lançar ${o.numero} (${formatBRL(o.valorTotal)}) no Contas a Receber.\nQuantas parcelas?`, "1") || 1));
+      const parcelas = await pedirNumeroParcelas(
+        'Lançar OS no Financeiro',
+        `Lançar ${o.numero} (${formatBRL(o.valorTotal)}) no Contas a Receber.\nQuantas parcelas deseja gerar?`,
+        1
+      );
+      if (!parcelas) return;
       const valorParcela = Number((o.valorTotal / parcelas).toFixed(2));
-      for (let i = 1; i <= parcelas; i++) {
-        const d = new Date(); d.setMonth(d.getMonth() + (i - 1));
-        await salvarDocumento('financeiro', `fin_${Date.now()}_${i}`, {
-          descricao: `${o.numero} - ${o.clienteNome} (${i}/${parcelas})`, tipo: 'receita', valor: valorParcela,
-          vencimento: d.toISOString().split('T')[0], status: 'pendente', origemId: o.id
-        });
-      }
-      await salvarDocumento('ordens_servico', o.id, { lancadoFinanceiro: true });
-      alert(`${parcelas} parcela(s) lançada(s) no Financeiro!`);
+      const cliTel = state.clientes.find(c => c.id === o.clienteId)?.telefone || '';
+      try {
+        for (let i = 1; i <= parcelas; i++) {
+          const d = new Date(); d.setMonth(d.getMonth() + (i - 1));
+          await salvarDocumento('financeiro', `fin_${Date.now()}_${i}`, {
+            descricao: `${o.numero} - ${o.clienteNome} (${i}/${parcelas})`, tipo: 'receita', valor: valorParcela,
+            vencimento: d.toISOString().split('T')[0], status: 'pendente', origemId: o.id,
+            clienteTelefone: cliTel, criadoPor: state.usuarioAtual?.nome || ''
+          });
+        }
+        await salvarDocumento('ordens_servico', o.id, { lancadoFinanceiro: true });
+        showToast(`${parcelas} parcela(s) lançada(s) no Financeiro!`, 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao lançar no financeiro.', 'error'); }
     };
 
-    window.setFiltroOSStatus = (val) => {
-      document.getElementById('filtro-os-status').value = val;
-      renderOS();
-    };
-    window.setFiltroOSCategoria = (val) => {
-      document.getElementById('filtro-os-categoria').value = val;
-      renderOS();
-    };
+    window.setFiltroOSStatus = (val) => { document.getElementById('filtro-os-status').value = val; renderOS(); };
+    window.setFiltroOSCategoria = (val) => { document.getElementById('filtro-os-categoria').value = val; renderOS(); };
 
     window.renderOS = () => {
       const fStatus = document.getElementById('filtro-os-status').value;
@@ -2578,22 +3458,34 @@
         ].join('');
       }
 
-      const lista = state.os.filter(o => (fStatus === 'todos' || o.status === fStatus) && (fCat === 'todos' || o.categoria === fCat));
+      const filtradasBase = state.os.filter(o => (fStatus === 'todos' || o.status === fStatus) && (fCat === 'todos' || o.categoria === fCat));
+      if (state.osVisao === 'calendario') {
+        renderCalendarioOS(filtradasBase);
+      }
+
+      const lista = state.calDiaSelecionado
+        ? filtradasBase.filter(o => o.dataAgendamento === state.calDiaSelecionado)
+        : filtradasBase;
+
       document.getElementById('lista-os').innerHTML = lista.map(o => {
         const tempoCampo = (o.iniciadaEm && o.concluidaEm) ? formatarDuracaoMs(new Date(o.concluidaEm) - new Date(o.iniciadaEm)) : null;
+        const end = o.clienteEndereco || state.clientes.find(c => c.id === o.clienteId)?.endereco || '';
+        const endEsc = end.replace(/'/g, "\\'");
         return `
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2">
-          <div class="flex justify-between items-center"><span class="font-bold text-conecta-emerald">${o.numero}</span><span class="text-xs px-2 py-0.5 rounded-full font-semibold ${o.status === 'concluida' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${o.status.replace('_', ' ').toUpperCase()}</span></div>
+          <div class="flex justify-between items-center"><span class="font-bold text-conecta-emerald">${o.numero}</span><span class="text-xs px-2 py-0.5 rounded-full font-semibold ${o.status === 'concluida' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${o.status.replace('_', ' ').toUpperCase()}</span></div>
           <h3 class="font-bold text-slate-800">${o.clienteNome}</h3>
           <p class="text-xs text-slate-500">${o.categoria === 'seguranca' ? 'Segurança/CFTV' : 'Climatização'} • Data: <strong>${formatarDataBR(o.dataAgendamento)}</strong> • Garantia até: <strong>${formatarDataBR(o.garantiaAte)}</strong></p>
-          <p class="text-xs text-slate-600">Técnico: <strong>${o.tecnico || 'Não atribuído'}</strong>${tempoCampo ? ` • Tempo execução: <strong class="text-blue-700">${tempoCampo}</strong>` : ''}</p>
+          <p class="text-xs text-slate-600">Técnico: <strong>${o.tecnico || 'Não atribuído'}</strong>${tempoCampo ? ` • Tempo execução: <strong class="text-blue-500">${tempoCampo}</strong>` : ''}</p>
           <p class="text-xs text-slate-700 whitespace-pre-line">${o.relato || ''}</p>
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
             <span class="font-extrabold text-slate-800">${formatBRL(o.valorTotal)}</span>
             <div class="flex flex-wrap gap-1.5">
-              ${state.perfil === 'admin' && !o.lancadoFinanceiro && o.valorTotal > 0 ? `<button onclick="lancarOSNoFinanceiro('${o.id}')" class="px-2.5 py-1 rounded bg-conecta-dark text-conecta-lime font-semibold">Lançar Financeiro</button>` : ''}
-              <button onclick="imprimirOS('${o.id}')" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 font-semibold">PDF</button>
+              ${end ? `<button onclick="abrirRotaEndereco('${endEsc}', 'maps')" class="px-2.5 py-1 rounded bg-slate-100 font-semibold" title="Abrir rota no Google Maps">📍 Rota</button>` : ''}
+              ${state.perfil === 'admin' && !o.lancadoFinanceiro && o.valorTotal > 0 ? `<button onclick="lancarOSNoFinanceiro('${o.id}')" class="px-2.5 py-1 rounded bg-conecta-dark text-conecta-lime border border-conecta-green/40 font-semibold">Lançar Financeiro</button>` : ''}
+              <button onclick="imprimirOS('${o.id}')" class="px-2.5 py-1 rounded bg-slate-100 font-semibold">PDF</button>
               <button onclick="editarOS('${o.id}')" class="px-2.5 py-1 rounded bg-conecta-green text-white font-semibold">Editar</button>
+              ${state.perfil === 'admin' ? `<button onclick="excluirRegistro('ordens_servico', '${o.id}', '${o.numero}')" class="px-2 py-1 rounded bg-red-500/15 text-red-500 font-semibold" title="Excluir OS">🗑</button>` : ''}
             </div>
           </div>
         </div>`;
@@ -2603,6 +3495,7 @@
     window.imprimirOS = async (id) => {
       const o = state.os.find(x => x.id === id);
       if (!o) return;
+      setLoading(true, `Gerando ${o.numero}.pdf...`);
       const fotosBloco = (titulo, lista) => (lista && lista.length) ? `
         <div style="margin-top: 14px;">
           <p style="font-weight: 700; font-size: 11px; color: #006837; margin-bottom: 6px;">${titulo}</p>
@@ -2641,9 +3534,14 @@
           margin: 10, filename: `${o.numero}.pdf`, image: { type: 'jpeg', quality: 0.92 },
           html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         }).from(container).save();
-      } catch (err) { alert("Erro ao gerar PDF da OS: " + err.message); }
+        showToast(`${o.numero}.pdf gerado!`, 'success');
+      } catch (err) { showToast("Erro ao gerar PDF da OS: " + err.message, 'error'); }
+      finally { setLoading(false); }
     };
 
+    // =========================================================================
+    // 14. MÓDULO FINANCEIRO (COBRANÇA WHATSAPP PIX, RECIBO PDF, AUDITORIA, EXCLUIR)
+    // =========================================================================
     window.alternarFornecedorFinanceiro = () => {
       const tipo = document.getElementById('fin-tipo').value;
       const box = document.getElementById('fin-fornecedor-box');
@@ -2663,12 +3561,19 @@
       const tipo = document.getElementById('fin-tipo').value;
       const fornId = tipo === 'despesa' ? document.getElementById('fin-fornecedor').value : '';
       const forn = state.fornecedores.find(f => f.id === fornId);
-      await salvarDocumento('financeiro', `fin_${Date.now()}`, {
-        descricao: document.getElementById('fin-desc').value.trim(), tipo, fornecedorId: fornId || null,
-        fornecedorNome: forn ? forn.nome : '', valor: Number(document.getElementById('fin-valor').value || 0),
-        vencimento: document.getElementById('fin-vencimento').value, status: document.getElementById('fin-status').value
-      });
-      fecharModal('modal-financeiro');
+      const status = document.getElementById('fin-status').value;
+      try {
+        await salvarDocumento('financeiro', `fin_${Date.now()}`, {
+          descricao: document.getElementById('fin-desc').value.trim(), tipo, fornecedorId: fornId || null,
+          fornecedorNome: forn ? forn.nome : '', valor: Number(document.getElementById('fin-valor').value || 0),
+          vencimento: document.getElementById('fin-vencimento').value, status,
+          dataPagamento: status === 'pago' ? new Date().toISOString().split('T')[0] : null,
+          criadoPor: state.usuarioAtual?.nome || '',
+          baixadoPor: status === 'pago' ? (state.usuarioAtual?.nome || '') : ''
+        });
+        fecharModal('modal-financeiro');
+        showToast('Lançamento financeiro salvo!', 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar lançamento.', 'error'); }
     };
 
     function obterIntervaloMesAtual() {
@@ -2713,15 +3618,8 @@
       renderFinanceiro();
     };
 
-    window.setFiltroFinTipo = (val) => {
-      document.getElementById('filtro-fin-tipo').value = val;
-      renderFinanceiro();
-    };
-
-    window.setFiltroFinStatus = (val) => {
-      document.getElementById('filtro-fin-status').value = val;
-      renderFinanceiro();
-    };
+    window.setFiltroFinTipo = (val) => { document.getElementById('filtro-fin-tipo').value = val; renderFinanceiro(); };
+    window.setFiltroFinStatus = (val) => { document.getElementById('filtro-fin-status').value = val; renderFinanceiro(); };
 
     window.darBaixaFinanceiro = (id) => {
       const f = state.financeiro.find(x => x.id === id);
@@ -2742,33 +3640,99 @@
       e.preventDefault();
       const id = document.getElementById('baixa-fin-id').value;
       const dataBaixa = document.getElementById('baixa-fin-data').value;
-      if (!id || !dataBaixa) {
-        alert("Informe a data da baixa.");
-        return;
-      }
-      await salvarDocumento('financeiro', id, {
-        status: 'pago',
-        dataPagamento: dataBaixa,
-        dataBaixa: dataBaixa
-      });
-      fecharModal('modal-baixa-financeiro');
+      if (!id || !dataBaixa) { showToast("Informe a data da baixa.", 'warning'); return; }
+      try {
+        await salvarDocumento('financeiro', id, {
+          status: 'pago',
+          dataPagamento: dataBaixa,
+          dataBaixa: dataBaixa,
+          baixadoPor: state.usuarioAtual?.nome || ''
+        });
+        fecharModal('modal-baixa-financeiro');
+        showToast(`Baixa registrada em ${formatarDataBR(dataBaixa)}!`, 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao registrar baixa.', 'error'); }
+    };
+
+    window.cobrarFinanceiroWhatsApp = (id) => {
+      const f = state.financeiro.find(x => x.id === id);
+      if (!f) return;
+      const tel = (f.clienteTelefone || '').replace(/\D/g, '');
+      const pixInfo = state.config.pix ? `\n\nChave PIX: ${state.config.pix}` : '';
+      const msg = `Olá! Aqui é da ${state.config.nome}.\n\nLembrete de vencimento:\n• Referente: ${f.descricao}\n• Vencimento: ${formatarDataBR(f.vencimento)}\n• Valor: ${formatBRL(f.valor)}${pixInfo}\n\nQualquer dúvida, estamos à disposição!`;
+      window.open(`https://wa.me/${tel ? '55' + tel : ''}?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    window.gerarReciboPDF = async (id) => {
+      const f = state.financeiro.find(x => x.id === id);
+      if (!f) return;
+      setLoading(true, 'Gerando Recibo PDF...');
+      const codigoRecibo = `REC-${String(id).slice(-6).toUpperCase()}`;
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <div style="font-family: Inter, Arial, sans-serif; color: #0f172a; background: #ffffff; padding: 14px; border: 2px solid #00A859; border-radius: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A859; padding-bottom: 12px; margin-bottom: 18px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img src="./somentelogo.png" crossorigin="anonymous" style="height: 52px; width: 52px; object-fit: contain; background: #000; padding: 4px; border-radius: 8px;" />
+              <div>
+                <h1 style="font-size: 17px; font-weight: 800; color: #006837; margin: 0;">${state.config.nome}</h1>
+                <p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">${state.config.cnpj || ''} ${state.config.tel ? '• ' + state.config.tel : ''} • ${state.config.cidade || ''}</p>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <p style="font-weight: 800; font-size: 15px; color: #006837; margin: 0;">RECIBO DE PAGAMENTO</p>
+              <p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">Nº ${codigoRecibo}</p>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin-bottom: 18px; font-size: 13px; line-height: 1.6;">
+            Declaramos para os devidos fins que recebemos/quitamos a importância de <strong style="color: #006837; font-size: 15px;">${formatBRL(f.valor)}</strong>, referente a:
+            <div style="margin-top: 8px; font-weight: 700; color: #0f172a;">${f.descricao}${f.fornecedorNome ? ' (' + f.fornecedorNome + ')' : ''}</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 12px; margin-bottom: 26px;">
+            <div style="padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 6px;"><strong>Data de Vencimento:</strong> ${formatarDataBR(f.vencimento)}</div>
+            <div style="padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 6px;"><strong>Data da Quitação:</strong> ${formatarDataBR(f.dataPagamento || f.dataBaixa)}</div>
+          </div>
+
+          <div style="margin-top: 36px; text-align: center;">
+            <div style="border-bottom: 1px solid #0f172a; width: 260px; margin: 0 auto 6px;"></div>
+            <p style="font-size: 12px; font-weight: 700; margin: 0;">${state.config.nome}</p>
+            <p style="font-size: 10px; color: #64748b; margin-top: 4px;">${state.config.cidade || ''} • Emitido em ${formatarDataBR(new Date().toISOString())}${f.baixadoPor ? ' • Registrado por ' + f.baixadoPor : ''}</p>
+          </div>
+        </div>`;
+      try {
+        await html2pdf().set({
+          margin: 12, filename: `${codigoRecibo}.pdf`, image: { type: 'jpeg', quality: 0.92 },
+          html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(container).save();
+        showToast(`${codigoRecibo}.pdf gerado!`, 'success');
+      } catch (err) { showToast('Erro ao gerar recibo PDF.', 'error'); }
+      finally { setLoading(false); }
     };
 
     window.gerarMensalidadesLote = async () => {
       if (!state.clientes.length) state.clientes = await carregarColecao('clientes');
       const ativos = state.clientes.filter(c => c.monitoramentoAtivo && c.monitoramentoValor > 0);
-      if (!ativos.length) { alert("Nenhum cliente com contrato de monitoramento ativo."); return; }
+      if (!ativos.length) { showToast("Nenhum cliente com contrato de monitoramento ativo.", 'warning'); return; }
       const hoje = new Date();
       const mesRef = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-      if (!confirm(`Gerar mensalidades de monitoramento (${mesRef}) para ${ativos.length} cliente(s)?`)) return;
-      for (const c of ativos) {
-        const dia = String(c.monitoramentoDia || 10).padStart(2, '0');
-        await salvarDocumento('financeiro', `mens_${mesRef}_${c.id}`, {
-          descricao: `Monitoramento ${mesRef} - ${c.nome}`, tipo: 'receita', valor: c.monitoramentoValor,
-          vencimento: `${mesRef}-${dia}`, status: 'pendente', clienteTelefone: c.telefone || ''
-        });
-      }
-      alert("Mensalidades geradas com sucesso!");
+      const ok = await confirmarAcao({
+        titulo: 'Gerar Mensalidades',
+        mensagem: `Gerar mensalidades de monitoramento (${mesRef}) para ${ativos.length} cliente(s)?`,
+        textoConfirmar: 'Gerar Lote'
+      });
+      if (!ok) return;
+      try {
+        for (const c of ativos) {
+          const dia = String(c.monitoramentoDia || 10).padStart(2, '0');
+          await salvarDocumento('financeiro', `mens_${mesRef}_${c.id}`, {
+            descricao: `Monitoramento ${mesRef} - ${c.nome}`, tipo: 'receita', valor: c.monitoramentoValor,
+            vencimento: `${mesRef}-${dia}`, status: 'pendente', clienteTelefone: c.telefone || '',
+            criadoPor: state.usuarioAtual?.nome || ''
+          });
+        }
+        showToast("Mensalidades geradas com sucesso!", 'success');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao gerar mensalidades.', 'error'); }
     };
 
     window.renderFinanceiro = () => {
@@ -2823,40 +3787,60 @@
         .sort((a, b) => (a.vencimento || '').localeCompare(b.vencimento || ''));
 
       document.getElementById('lista-financeiro').innerHTML = lista.length
-        ? lista.map(f => `
+        ? lista.map(f => {
+            const descEsc = (f.descricao || '').replace(/'/g, "\\'");
+            return `
             <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3.5 border-b text-sm hover:bg-slate-50/70 transition">
               <div>
                 <span class="font-semibold text-slate-800">${f.descricao}</span>
                 ${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}
                 <p class="text-xs text-slate-400 mt-0.5">
-                  Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong> • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-600'}">${(f.status || 'pendente').toUpperCase()}</strong>
-                  ${f.status === 'pago' && f.dataPagamento ? ` • Baixa em: <strong class="text-slate-600">${formatarDataBR(f.dataPagamento)}</strong>` : ''}
+                  Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong> • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-500'}">${(f.status || 'pendente').toUpperCase()}</strong>
+                  ${f.status === 'pago' && f.dataPagamento ? ` • Baixa: <strong class="text-slate-600">${formatarDataBR(f.dataPagamento)}</strong>` : ''}
+                  ${f.baixadoPor ? ` (${f.baixadoPor})` : (f.criadoPor ? ` • Lançado por: ${f.criadoPor}` : '')}
                 </p>
               </div>
-              <div class="flex items-center gap-3">
-                <span class="font-bold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-600'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
-                ${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">Baixar</button>` : ''}
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-bold mr-1 ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-500'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
+                ${f.status !== 'pago' && f.tipo === 'receita' ? `<button onclick="cobrarFinanceiroWhatsApp('${f.id}')" class="text-xs bg-emerald-50 text-conecta-emerald px-2.5 py-1.5 rounded-xl font-semibold">WhatsApp</button>` : ''}
+                ${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">Baixar</button>` : `<button onclick="gerarReciboPDF('${f.id}')" class="text-xs bg-slate-100 font-semibold px-2.5 py-1.5 rounded-xl">Recibo PDF</button>`}
+                <button onclick="excluirRegistro('financeiro', '${f.id}', '${descEsc}')" class="text-xs bg-red-500/15 text-red-500 px-2 py-1.5 rounded-xl font-semibold" title="Excluir lançamento">🗑</button>
               </div>
-            </div>`).join('')
+            </div>`;
+          }).join('')
         : '<p class="p-4 text-sm text-slate-500">Nenhum lançamento encontrado para o filtro selecionado.</p>';
     };
 
-    window.salvarConfig = () => {
+    // =========================================================================
+    // 15. CONFIGURAÇÕES E BACKUP JSON
+    // =========================================================================
+    window.salvarConfig = async () => {
       state.config = {
         nome: document.getElementById('cfg-nome').value, cnpj: document.getElementById('cfg-cnpj').value,
-        tel: document.getElementById('cfg-tel').value, cidade: document.getElementById('cfg-cidade').value
+        tel: document.getElementById('cfg-tel').value, cidade: document.getElementById('cfg-cidade').value,
+        pix: document.getElementById('cfg-pix').value.trim()
       };
       localStorage.setItem('conecta_config', JSON.stringify(state.config));
-      alert("Configurações salvas!");
+      try {
+        if (navigator.onLine) await salvarDocumento('configuracoes', 'empresa', state.config);
+        showToast("Configurações salvas com sucesso!", 'success');
+      } catch (err) {
+        showToast("Configurações salvas localmente.", 'info');
+      }
     };
 
     window.exportarBackup = async () => {
-      const [usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro] = await Promise.all([
-        carregarColecao('usuarios'), carregarColecao('clientes'), carregarColecao('fornecedores'),
-        carregarColecao('produtos_kits'), carregarColecao('orcamentos'), carregarColecao('ordens_servico'), carregarColecao('financeiro')
-      ]);
-      const blob = new Blob([JSON.stringify({ usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro, config: state.config }, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_conecta_${new Date().toISOString().split('T')[0]}.json`; a.click();
+      setLoading(true, 'Gerando arquivo de backup...');
+      try {
+        const [usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro] = await Promise.all([
+          carregarColecao('usuarios'), carregarColecao('clientes'), carregarColecao('fornecedores'),
+          carregarColecao('produtos_kits'), carregarColecao('orcamentos'), carregarColecao('ordens_servico'), carregarColecao('financeiro')
+        ]);
+        const blob = new Blob([JSON.stringify({ usuarios, clientes, fornecedores, produtos, orcamentos, os, financeiro, config: state.config }, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_conecta_${new Date().toISOString().split('T')[0]}.json`; a.click();
+        showToast('Backup JSON baixado com sucesso!', 'success');
+      } catch (err) { showToast('Erro ao gerar backup.', 'error'); }
+      finally { setLoading(false); }
     };
 
     window.restaurarBackup = (event) => {
@@ -2864,6 +3848,8 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = async (e) => {
+        if (!garantirOnlineParaEscrita()) return;
+        setLoading(true, 'Restaurando backup na nuvem...');
         try {
           const data = JSON.parse(e.target.result);
           if (data.usuarios) for (const x of data.usuarios) await salvarDocumento('usuarios', x.id, x);
@@ -2873,9 +3859,10 @@
           if (data.orcamentos) for (const x of data.orcamentos) await salvarDocumento('orcamentos', x.id, x);
           if (data.os) for (const x of data.os) await salvarDocumento('ordens_servico', x.id, x);
           if (data.financeiro) for (const x of data.financeiro) await salvarDocumento('financeiro', x.id, x);
-          alert("Backup restaurado com sucesso!");
+          showToast("Backup restaurado com sucesso!", 'success');
           switchTab('painel');
-        } catch (err) { alert("Arquivo JSON inválido."); }
+        } catch (err) { showToast("Arquivo JSON inválido.", 'error'); }
+        finally { setLoading(false); event.target.value = ''; }
       };
       reader.readAsText(file);
     };
