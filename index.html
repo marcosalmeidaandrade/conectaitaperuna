@@ -508,6 +508,78 @@
       color: #ecfdf5;
     }
 
+    /* Cards de Resumo Financeiro (Realizado e Previsto — estilo referência) */
+    .fin-summary-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-left-width: 4px;
+      border-radius: 0.9rem;
+      padding: 0.9rem 1.05rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.25rem;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+    body:not(.theme-light) .fin-summary-card {
+      background: #111a16 !important;
+      border-color: #243830 !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+    }
+    .fin-summary-card-clickable {
+      cursor: pointer;
+      text-align: left;
+    }
+    .fin-summary-card-clickable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0, 168, 89, 0.14);
+    }
+    .fin-summary-card-active {
+      box-shadow: 0 0 0 2px rgba(0, 168, 89, 0.45);
+    }
+    .fin-card-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #475569;
+    }
+    body:not(.theme-light) .fin-card-title {
+      color: #cbd5e1 !important;
+    }
+    .fin-card-amount {
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0.15rem 0;
+    }
+    .fin-card-sub {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: #64748b;
+    }
+    body:not(.theme-light) .fin-card-sub {
+      color: #94a3b8 !important;
+    }
+
+    /* Linha de Cards EM ATRASO (visualmente distinta dos cards de composição de Caixa) */
+    .fin-atraso-box {
+      border-radius: 1rem;
+      border: 1.5px dashed rgba(244, 63, 94, 0.45);
+      background: rgba(244, 63, 94, 0.04);
+      padding: 0.75rem 0.85rem;
+    }
+    body:not(.theme-light) .fin-atraso-box {
+      background: rgba(244, 63, 94, 0.07);
+      border-color: rgba(251, 113, 133, 0.42);
+    }
+    .fin-atraso-card {
+      border-style: dashed !important;
+      border-width: 1px 1px 1px 4px !important;
+    }
+
     /* Grupo compacto de Período (MÊS ATUAL / TODOS + Início / Fim) */
     .period-group-box {
       border-radius: 1rem;
@@ -946,11 +1018,32 @@
           </div>
         </div>
 
-        <!-- Linha 2: Tipo (Receitas e Despesas / Apenas Receitas / Apenas Despesas) -->
-        <div id="fin-cards-tipo" class="grid grid-cols-3 gap-2.5"></div>
+        <!-- Linha 2: Realizado (RECEITAS, DESPESAS, SALDO LÍQUIDO CAIXA) -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between px-0.5">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-conecta-emerald">Realizado no Período</span>
+            <span class="text-[10px] text-slate-400">Clique para filtrar tipo</span>
+          </div>
+          <div id="fin-cards-realizado" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+        </div>
 
-        <!-- Linha 3: Status (Todos / Pendente / Pago ou Recebido) -->
-        <div id="fin-cards-status" class="grid grid-cols-3 gap-2.5"></div>
+        <!-- Linha 3: Previsto (RECEITAS PREVISTAS e DESPESAS PREVISTAS) -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between px-0.5">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-500">Previsto no Período</span>
+            <span class="text-[10px] text-slate-400">Lançamentos pendentes / futuros</span>
+          </div>
+          <div id="fin-cards-previsto" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- Linha 4: EM ATRASO (Visual apenas — não compõe o Saldo Líquido de Caixa) -->
+        <div class="fin-atraso-box space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2 px-0.5">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-500">Em Atraso (Apenas Visualização — Não Compõe o Caixa)</span>
+            <span class="text-[10px] text-slate-400">Vencidos e não pagos no período</span>
+          </div>
+          <div id="fin-cards-atraso" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+        </div>
       </div>
 
       <div id="lista-financeiro" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"></div>
@@ -1656,15 +1749,19 @@
           <label class="block font-medium mb-1">Fornecedor (Opcional)</label>
           <select id="fin-fornecedor" class="w-full border rounded-lg px-3 py-2"></select>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-medium mb-1">Vencimento</label>
+            <label class="block font-medium mb-1">Vencimento *</label>
             <input id="fin-vencimento" type="date" required class="w-full border rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-medium mb-1">Data Prevista Pagto.</label>
+            <input id="fin-data-prevista" type="date" class="w-full border rounded-lg px-3 py-2" />
           </div>
           <div>
             <label class="block font-medium mb-1">Status</label>
             <select id="fin-status" class="w-full border rounded-lg px-3 py-2">
-              <option value="pendente">Pendente</option>
+              <option value="pendente">Pendente / Previsto</option>
               <option value="pago">Pago / Recebido</option>
             </select>
           </div>
@@ -1694,6 +1791,28 @@
         <div class="flex justify-end gap-2 pt-1">
           <button type="button" onclick="fecharModal('modal-baixa-financeiro')" class="px-4 py-2 rounded-xl border text-slate-600 font-semibold">Cancelar</button>
           <button type="submit" class="px-4 py-2 rounded-xl bg-conecta-green hover:bg-conecta-emerald text-white font-semibold shadow-sm">Confirmar Baixa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL EXCLUIR BAIXA (JUSTIFICATIVA OBRIGATÓRIA) ==================== -->
+  <div id="modal-excluir-baixa" class="fixed inset-0 bg-black/65 hidden items-center justify-center z-[72] p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-lg text-slate-800">Excluir Baixa do Lançamento</h3>
+        <button onclick="fecharModal('modal-excluir-baixa')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+      </div>
+      <form id="form-excluir-baixa" onsubmit="confirmarExcluirBaixa(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="exc-baixa-fin-id" />
+        <div id="exc-baixa-resumo" class="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl text-xs space-y-1"></div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Justificativa para remoção da baixa *</label>
+          <textarea id="exc-baixa-justificativa" rows="3" required placeholder="Ex: Lançamento baixado por engano, pagamento estornado ou data incorreta..." class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="fecharModal('modal-excluir-baixa')" class="px-4 py-2 rounded-xl border text-slate-600 font-semibold">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold shadow-sm">Remover Baixa</button>
         </div>
       </form>
     </div>
@@ -3651,11 +3770,14 @@
       if (tipo === 'despesa') box.classList.remove('hidden'); else box.classList.add('hidden');
     };
 
-    window.abrirModalFinanceiro = async () => {
+    window.abrirModalFinanceiro = async (tipoPadrao = null) => {
       if (!state.fornecedores.length) state.fornecedores = await carregarColecao('fornecedores');
       document.getElementById('fin-fornecedor').innerHTML = '<option value="">Nenhum fornecedor vinculado</option>' + state.fornecedores.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
       document.getElementById('form-financeiro').reset();
-      document.getElementById('fin-vencimento').value = new Date().toISOString().split('T')[0];
+      const hoje = new Date().toISOString().split('T')[0];
+      document.getElementById('fin-vencimento').value = hoje;
+      document.getElementById('fin-data-prevista').value = hoje;
+      if (tipoPadrao) document.getElementById('fin-tipo').value = tipoPadrao;
       alternarFornecedorFinanceiro(); abrirModal('modal-financeiro');
     };
 
@@ -3665,11 +3787,13 @@
       const fornId = tipo === 'despesa' ? document.getElementById('fin-fornecedor').value : '';
       const forn = state.fornecedores.find(f => f.id === fornId);
       const status = document.getElementById('fin-status').value;
+      const vencimento = document.getElementById('fin-vencimento').value;
+      const dataPrevistaPagamento = document.getElementById('fin-data-prevista').value || vencimento;
       try {
         await salvarDocumento('financeiro', `fin_${Date.now()}`, {
           descricao: document.getElementById('fin-desc').value.trim(), tipo, fornecedorId: fornId || null,
           fornecedorNome: forn ? forn.nome : '', valor: Number(document.getElementById('fin-valor').value || 0),
-          vencimento: document.getElementById('fin-vencimento').value, status,
+          vencimento, dataPrevistaPagamento, status,
           dataPagamento: status === 'pago' ? new Date().toISOString().split('T')[0] : null,
           criadoPor: state.usuarioAtual?.nome || '',
           baixadoPor: status === 'pago' ? (state.usuarioAtual?.nome || '') : ''
@@ -3728,14 +3852,14 @@
       const f = state.financeiro.find(x => x.id === id);
       if (!f) return;
       document.getElementById('baixa-fin-id').value = id;
-      const tipoLabel = f.tipo === 'receita' ? 'Recebimento (Contas a Receber)' : 'Pagamento (Contas a Pagar)';
-      document.getElementById('baixa-fin-data-label').textContent = f.tipo === 'receita' ? 'Data do Recebimento *' : 'Data do Pagamento *';
+      const tipoLabel = f.tipo === 'receita' ? 'Recebimento (A Receber)' : 'Pagamento (A Pagar)';
+      document.getElementById('baixa-fin-data-label').textContent = 'Data de Pagamento *';
       document.getElementById('baixa-fin-resumo').innerHTML = `
         <p class="font-bold text-slate-800">${f.descricao}</p>
         <p>${tipoLabel} • Valor: <strong>${formatBRL(f.valor)}</strong></p>
-        <p>Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong></p>
+        <p>Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong>${f.dataPrevistaPagamento ? ' • Previsto: <strong>' + formatarDataBR(f.dataPrevistaPagamento) + '</strong>' : ''}</p>
       `;
-      document.getElementById('baixa-fin-data').value = new Date().toISOString().split('T')[0];
+      document.getElementById('baixa-fin-data').value = f.dataPrevistaPagamento || new Date().toISOString().split('T')[0];
       abrirModal('modal-baixa-financeiro');
     };
 
@@ -3743,17 +3867,51 @@
       e.preventDefault();
       const id = document.getElementById('baixa-fin-id').value;
       const dataBaixa = document.getElementById('baixa-fin-data').value;
-      if (!id || !dataBaixa) { showToast("Informe a data da baixa.", 'warning'); return; }
+      if (!id || !dataBaixa) { showToast("Informe a data de pagamento.", 'warning'); return; }
       try {
         await salvarDocumento('financeiro', id, {
           status: 'pago',
           dataPagamento: dataBaixa,
           dataBaixa: dataBaixa,
-          baixadoPor: state.usuarioAtual?.nome || ''
+          baixadoPor: state.usuarioAtual?.nome || '',
+          baixaRemovidaEm: null,
+          baixaRemovidaPor: '',
+          justificativaExclusaoBaixa: ''
         });
         fecharModal('modal-baixa-financeiro');
         showToast(`Baixa registrada em ${formatarDataBR(dataBaixa)}!`, 'success');
       } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao registrar baixa.', 'error'); }
+    };
+
+    window.abrirExcluirBaixaFinanceiro = (id) => {
+      const f = state.financeiro.find(x => x.id === id);
+      if (!f) return;
+      document.getElementById('exc-baixa-fin-id').value = id;
+      document.getElementById('exc-baixa-resumo').innerHTML = `
+        <p class="font-bold text-slate-800">${f.descricao}</p>
+        <p>Valor: <strong>${formatBRL(f.valor)}</strong> • Baixa atual: <strong>${formatarDataBR(f.dataPagamento || f.dataBaixa)}</strong></p>
+      `;
+      document.getElementById('exc-baixa-justificativa').value = '';
+      abrirModal('modal-excluir-baixa');
+    };
+
+    window.confirmarExcluirBaixa = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('exc-baixa-fin-id').value;
+      const justificativa = document.getElementById('exc-baixa-justificativa').value.trim();
+      if (!id || !justificativa) { showToast("Informe a justificativa para remoção da baixa.", 'warning'); return; }
+      try {
+        await salvarDocumento('financeiro', id, {
+          status: 'pendente',
+          dataPagamento: null,
+          dataBaixa: null,
+          justificativaExclusaoBaixa: justificativa,
+          baixaRemovidaPor: state.usuarioAtual?.nome || '',
+          baixaRemovidaEm: new Date().toISOString()
+        });
+        fecharModal('modal-excluir-baixa');
+        showToast('Baixa removida e lançada de volta como pendente.', 'info');
+      } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao remover baixa.', 'error'); }
     };
 
     window.cobrarFinanceiroWhatsApp = (id) => {
@@ -3838,6 +3996,18 @@
       } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao gerar mensalidades.', 'error'); }
     };
 
+    function cardResumoFinanceiroHtml({ titulo, valorFmt, sublinha, corBorda, corValor, ativo = false, onclickStr = '' }) {
+      const clickAttr = onclickStr ? `onclick="${onclickStr}"` : '';
+      const clsClick = onclickStr ? 'fin-summary-card-clickable' : '';
+      const clsAtivo = ativo ? 'fin-summary-card-active' : '';
+      return `
+        <div ${clickAttr} class="fin-summary-card ${clsClick} ${clsAtivo}" style="border-left-color: ${corBorda};">
+          <div class="fin-card-title">${titulo}</div>
+          <div class="fin-card-amount" style="color: ${corValor};">${valorFmt}</div>
+          <div class="fin-card-sub">${sublinha}</div>
+        </div>`;
+    }
+
     window.renderFinanceiro = () => {
       const fPeriodo = document.getElementById('filtro-fin-periodo').value;
       if (fPeriodo === 'mes_atual') garantirDatasMesAtualFinanceiro();
@@ -3849,47 +4019,132 @@
 
       const somarDocs = (arr) => arr.reduce((acc, item) => acc + Number(item.valor || 0), 0);
       const mesAtual = obterIntervaloMesAtual();
-      const basePeriodo = state.financeiro.filter(f => (fTipo === 'todos' || f.tipo === fTipo) && (fStatus === 'todos' || f.status === fStatus));
-      const docsMesAtual = basePeriodo.filter(f => f.vencimento && f.vencimento >= mesAtual.ini && f.vencimento <= mesAtual.fim);
-      const docsTodosGeral = basePeriodo;
+      const docsMesAtual = state.financeiro.filter(f => f.vencimento && f.vencimento >= mesAtual.ini && f.vencimento <= mesAtual.fim);
+      const docsTodosGeral = state.financeiro;
 
       const cardsPeriodo = document.getElementById('fin-cards-periodo');
       if (cardsPeriodo) {
         cardsPeriodo.innerHTML = [
-          cardFiltroHtml(fPeriodo === 'mes_atual', docsMesAtual.length, 'Mês Atual', "setFiltroFinPeriodo('mes_atual')", formatBRL(somarDocs(docsMesAtual))).replace('kpi-filter-card', 'kpi-filter-card period-mini-card'),
-          cardFiltroHtml(fPeriodo === 'todos', docsTodosGeral.length, 'Todos', "setFiltroFinPeriodo('todos')", formatBRL(somarDocs(docsTodosGeral))).replace('kpi-filter-card', 'kpi-filter-card period-mini-card')
+          cardFiltroHtml(fPeriodo === 'mes_atual', docsMesAtual.length, 'Mês Atual', "setFiltroFinPeriodo('mes_atual')").replace('kpi-filter-card', 'kpi-filter-card period-mini-card'),
+          cardFiltroHtml(fPeriodo === 'todos', docsTodosGeral.length, 'Todos', "setFiltroFinPeriodo('todos')").replace('kpi-filter-card', 'kpi-filter-card period-mini-card')
         ].join('');
       }
 
+      // Filtra estritamente pelo período temporal selecionado (Mês Atual, Todos ou Datas Início/Fim)
       const porData = state.financeiro.filter(f => {
         if (dIni && (!f.vencimento || f.vencimento < dIni)) return false;
         if (dFim && (!f.vencimento || f.vencimento > dFim)) return false;
         return true;
       });
 
-      const baseTipo = porData.filter(f => fStatus === 'todos' || f.status === fStatus);
-      const docsTipoTodos = baseTipo;
-      const docsTipoRec = baseTipo.filter(f => f.tipo === 'receita');
-      const docsTipoDesp = baseTipo.filter(f => f.tipo === 'despesa');
-      const cardsTipo = document.getElementById('fin-cards-tipo');
-      if (cardsTipo) {
-        cardsTipo.innerHTML = [
-          cardFiltroHtml(fTipo === 'todos', docsTipoTodos.length, 'Receitas e Despesas', "setFiltroFinTipo('todos')", formatBRL(somarDocs(docsTipoTodos))),
-          cardFiltroHtml(fTipo === 'receita', docsTipoRec.length, 'Apenas Receitas (A Receber)', "setFiltroFinTipo('receita')", formatBRL(somarDocs(docsTipoRec))),
-          cardFiltroHtml(fTipo === 'despesa', docsTipoDesp.length, 'Apenas Despesas (A Pagar)', "setFiltroFinTipo('despesa')", formatBRL(somarDocs(docsTipoDesp)))
+      // REALIZADO no período: lançamentos pagos/recebidos
+      const realizadosPeriodo = porData.filter(f => f.status === 'pago');
+      const recRealizadas = realizadosPeriodo.filter(f => f.tipo === 'receita');
+      const despRealizadas = realizadosPeriodo.filter(f => f.tipo === 'despesa');
+      const totalRecReal = somarDocs(recRealizadas);
+      const totalDespReal = somarDocs(despRealizadas);
+      const saldoLiquidoCaixa = totalRecReal - totalDespReal;
+
+      const cardsRealizado = document.getElementById('fin-cards-realizado');
+      if (cardsRealizado) {
+        cardsRealizado.innerHTML = [
+          cardResumoFinanceiroHtml({
+            titulo: 'RECEITAS',
+            valorFmt: formatBRL(totalRecReal),
+            sublinha: `${recRealizadas.length} recebimento(s) no período`,
+            corBorda: '#00A859',
+            corValor: '#00A859',
+            ativo: fTipo === 'receita',
+            onclickStr: "setFiltroFinTipo(document.getElementById('filtro-fin-tipo').value === 'receita' ? 'todos' : 'receita')"
+          }),
+          cardResumoFinanceiroHtml({
+            titulo: 'DESPESAS',
+            valorFmt: formatBRL(totalDespReal),
+            sublinha: `${despRealizadas.length} pagamento(s) no período`,
+            corBorda: '#f97316',
+            corValor: '#f97316',
+            ativo: fTipo === 'despesa',
+            onclickStr: "setFiltroFinTipo(document.getElementById('filtro-fin-tipo').value === 'despesa' ? 'todos' : 'despesa')"
+          }),
+          cardResumoFinanceiroHtml({
+            titulo: 'SALDO LÍQUIDO (CAIXA)',
+            valorFmt: formatBRL(saldoLiquidoCaixa),
+            sublinha: 'Receitas − Despesas (Realizado)',
+            corBorda: saldoLiquidoCaixa >= 0 ? '#06b6d4' : '#ef4444',
+            corValor: saldoLiquidoCaixa >= 0 ? '#00A859' : '#ef4444',
+            ativo: false,
+            onclickStr: ''
+          })
         ].join('');
       }
 
-      const baseStatus = porData.filter(f => fTipo === 'todos' || f.tipo === fTipo);
-      const docsStTodos = baseStatus;
-      const docsStPend = baseStatus.filter(f => f.status === 'pendente');
-      const docsStPago = baseStatus.filter(f => f.status === 'pago');
-      const cardsStatus = document.getElementById('fin-cards-status');
-      if (cardsStatus) {
-        cardsStatus.innerHTML = [
-          cardFiltroHtml(fStatus === 'todos', docsStTodos.length, 'Todos os Status', "setFiltroFinStatus('todos')", formatBRL(somarDocs(docsStTodos))),
-          cardFiltroHtml(fStatus === 'pendente', docsStPend.length, 'Pendente', "setFiltroFinStatus('pendente')", formatBRL(somarDocs(docsStPend))),
-          cardFiltroHtml(fStatus === 'pago', docsStPago.length, 'Pago / Recebido', "setFiltroFinStatus('pago')", formatBRL(somarDocs(docsStPago)))
+      // PREVISTO no período: lançamentos pendentes dentro do período selecionado
+      const previstosPeriodo = porData.filter(f => f.status !== 'pago');
+      const recPrevistas = previstosPeriodo.filter(f => f.tipo === 'receita');
+      const despPrevistas = previstosPeriodo.filter(f => f.tipo === 'despesa');
+
+      const cardsPrevisto = document.getElementById('fin-cards-previsto');
+      if (cardsPrevisto) {
+        cardsPrevisto.innerHTML = [
+          cardResumoFinanceiroHtml({
+            titulo: 'RECEITAS PREVISTAS',
+            valorFmt: formatBRL(somarDocs(recPrevistas)),
+            sublinha: `${recPrevistas.length} lançamento(s) a receber no período`,
+            corBorda: '#eab308',
+            corValor: '#eab308',
+            ativo: fTipo === 'receita' && fStatus === 'pendente',
+            onclickStr: "setFiltroFinTipo('receita'); setFiltroFinStatus('pendente');"
+          }),
+          cardResumoFinanceiroHtml({
+            titulo: 'DESPESAS PREVISTAS',
+            valorFmt: formatBRL(somarDocs(despPrevistas)),
+            sublinha: `${despPrevistas.length} lançamento(s) a pagar no período`,
+            corBorda: '#ef4444',
+            corValor: '#ef4444',
+            ativo: fTipo === 'despesa' && fStatus === 'pendente',
+            onclickStr: "setFiltroFinTipo('despesa'); setFiltroFinStatus('pendente');"
+          })
+        ].join('');
+      }
+
+      const hojeISO = new Date().toISOString().split('T')[0];
+      const emAtrasoPeriodo = porData.filter(f => f.status !== 'pago' && f.vencimento && f.vencimento < hojeISO);
+      const recAtraso = emAtrasoPeriodo.filter(f => f.tipo === 'receita');
+      const despAtraso = emAtrasoPeriodo.filter(f => f.tipo === 'despesa');
+      const totalRecAtraso = somarDocs(recAtraso);
+      const totalDespAtraso = somarDocs(despAtraso);
+      const difAtraso = totalRecAtraso - totalDespAtraso;
+
+      const cardsAtraso = document.getElementById('fin-cards-atraso');
+      if (cardsAtraso) {
+        cardsAtraso.innerHTML = [
+          cardResumoFinanceiroHtml({
+            titulo: 'A RECEBER EM ATRASO',
+            valorFmt: formatBRL(totalRecAtraso),
+            sublinha: `${recAtraso.length} lançamento(s) vencido(s)`,
+            corBorda: '#e11d48',
+            corValor: '#fb7185',
+            ativo: false,
+            onclickStr: ''
+          }).replace('fin-summary-card', 'fin-summary-card fin-atraso-card'),
+          cardResumoFinanceiroHtml({
+            titulo: 'A PAGAR EM ATRASO',
+            valorFmt: formatBRL(totalDespAtraso),
+            sublinha: `${despAtraso.length} lançamento(s) vencido(s)`,
+            corBorda: '#be123c',
+            corValor: '#f43f5e',
+            ativo: false,
+            onclickStr: ''
+          }).replace('fin-summary-card', 'fin-summary-card fin-atraso-card'),
+          cardResumoFinanceiroHtml({
+            titulo: 'DIFERENÇA (A RECEBER − A PAGAR)',
+            valorFmt: formatBRL(difAtraso),
+            sublinha: 'Apenas visualização • Não compõe caixa',
+            corBorda: '#9f1239',
+            corValor: difAtraso >= 0 ? '#38bdf8' : '#fb7185',
+            ativo: false,
+            onclickStr: ''
+          }).replace('fin-summary-card', 'fin-summary-card fin-atraso-card')
         ].join('');
       }
 
@@ -3899,22 +4154,28 @@
 
       document.getElementById('lista-financeiro').innerHTML = lista.length
         ? lista.map(f => {
-            const descEsc = (f.descricao || '').replace(/'/g, "\\'");
+            const descEsc = (f.descricao || '').replace(/'/g, "\'");
+            const ehPago = f.status === 'pago';
+            const dataPrevTexto = (!ehPago && f.dataPrevistaPagamento) ? ` • Prev. Pagto: <strong>${formatarDataBR(f.dataPrevistaPagamento)}</strong>` : '';
+            const justTexto = (!ehPago && f.justificativaExclusaoBaixa) ? `<p class="text-[11px] text-amber-500 mt-0.5">Última remoção de baixa (${f.baixaRemovidaPor || 'Admin'}): "${f.justificativaExclusaoBaixa}"</p>` : '';
             return `
             <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3.5 border-b text-sm hover:bg-slate-50/70 transition">
               <div>
                 <span class="font-semibold text-slate-800">${f.descricao}</span>
                 ${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}
                 <p class="text-xs text-slate-400 mt-0.5">
-                  Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong> • Status: <strong class="${f.status === 'pago' ? 'text-conecta-green' : 'text-amber-500'}">${(f.status || 'pendente').toUpperCase()}</strong>
-                  ${f.status === 'pago' && f.dataPagamento ? ` • Baixa: <strong class="text-slate-600">${formatarDataBR(f.dataPagamento)}</strong>` : ''}
+                  Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong>${dataPrevTexto} • Status: <strong class="${ehPago ? 'text-conecta-green' : 'text-amber-500'}">${(f.status || 'pendente').toUpperCase()}</strong>
+                  ${ehPago && f.dataPagamento ? ` • Pago em: <strong class="text-slate-600">${formatarDataBR(f.dataPagamento)}</strong>` : ''}
                   ${f.baixadoPor ? ` (${f.baixadoPor})` : (f.criadoPor ? ` • Lançado por: ${f.criadoPor}` : '')}
                 </p>
+                ${justTexto}
               </div>
               <div class="flex flex-wrap items-center gap-2">
                 <span class="font-bold mr-1 ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-500'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
-                ${f.status !== 'pago' && f.tipo === 'receita' ? `<button onclick="cobrarFinanceiroWhatsApp('${f.id}')" class="text-xs bg-emerald-50 text-conecta-emerald px-2.5 py-1.5 rounded-xl font-semibold">WhatsApp</button>` : ''}
-                ${f.status !== 'pago' ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">Baixar</button>` : `<button onclick="gerarReciboPDF('${f.id}')" class="text-xs bg-slate-100 font-semibold px-2.5 py-1.5 rounded-xl">Recibo PDF</button>`}
+                ${!ehPago && f.tipo === 'receita' ? `<button onclick="cobrarFinanceiroWhatsApp('${f.id}')" class="text-xs bg-emerald-50 text-conecta-emerald px-2.5 py-1.5 rounded-xl font-semibold">WhatsApp</button>` : ''}
+                ${!ehPago
+                  ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">Baixar</button>`
+                  : `<button onclick="abrirExcluirBaixaFinanceiro('${f.id}')" class="text-xs bg-amber-500/15 hover:bg-amber-500/25 text-amber-500 px-2.5 py-1.5 rounded-xl font-semibold">Excluir Baixa</button><button onclick="gerarReciboPDF('${f.id}')" class="text-xs bg-slate-100 font-semibold px-2.5 py-1.5 rounded-xl">Recibo PDF</button>`}
                 <button onclick="excluirRegistro('financeiro', '${f.id}', '${descEsc}')" class="text-xs bg-red-500/15 text-red-500 px-2 py-1.5 rounded-xl font-semibold" title="Excluir lançamento">🗑</button>
               </div>
             </div>`;
