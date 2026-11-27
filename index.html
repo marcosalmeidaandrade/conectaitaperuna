@@ -461,13 +461,30 @@
       color: #006837;
       letter-spacing: -0.02em;
     }
+    .kpi-filter-card .kpi-val {
+      font-size: 0.88rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #00A859;
+      margin-top: 0.22rem;
+    }
     .kpi-filter-card .kpi-lbl {
       font-size: 0.68rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
       color: #64748b;
-      margin-top: 0.28rem;
+      margin-top: 0.24rem;
+    }
+    .kpi-filter-card.kpi-card-active .kpi-val {
+      color: #7AC143;
+    }
+    body.theme-light .kpi-filter-card.kpi-card-active .kpi-val {
+      color: #ecfdf5;
+    }
+    .kpi-filter-card.period-mini-card .kpi-val {
+      font-size: 0.76rem;
+      margin-top: 0.14rem;
     }
     .kpi-filter-card.kpi-card-active {
       background: linear-gradient(145deg, #162620 0%, #0f1b17 100%);
@@ -3170,10 +3187,11 @@
       }
     };
 
-    function cardFiltroHtml(ativo, numero, titulo, onclickStr) {
+    function cardFiltroHtml(ativo, numero, titulo, onclickStr, valorFmt = null) {
       return `
         <button type="button" onclick="${onclickStr}" class="kpi-filter-card ${ativo ? 'kpi-card-active' : ''}">
           <span class="kpi-num">${numero}</span>
+          ${valorFmt !== null ? `<span class="kpi-val">${valorFmt}</span>` : ''}
           <span class="kpi-lbl">${titulo}</span>
         </button>`;
     }
@@ -3829,15 +3847,17 @@
       const fTipo = document.getElementById('filtro-fin-tipo').value;
       const fStatus = document.getElementById('filtro-fin-status').value;
 
+      const somarDocs = (arr) => arr.reduce((acc, item) => acc + Number(item.valor || 0), 0);
       const mesAtual = obterIntervaloMesAtual();
-      const qtdMesAtual = state.financeiro.filter(f => f.vencimento && f.vencimento >= mesAtual.ini && f.vencimento <= mesAtual.fim).length;
-      const qtdTodosGeral = state.financeiro.length;
+      const basePeriodo = state.financeiro.filter(f => (fTipo === 'todos' || f.tipo === fTipo) && (fStatus === 'todos' || f.status === fStatus));
+      const docsMesAtual = basePeriodo.filter(f => f.vencimento && f.vencimento >= mesAtual.ini && f.vencimento <= mesAtual.fim);
+      const docsTodosGeral = basePeriodo;
 
       const cardsPeriodo = document.getElementById('fin-cards-periodo');
       if (cardsPeriodo) {
         cardsPeriodo.innerHTML = [
-          cardFiltroHtml(fPeriodo === 'mes_atual', qtdMesAtual, 'Mês Atual', "setFiltroFinPeriodo('mes_atual')").replace('kpi-filter-card', 'kpi-filter-card period-mini-card'),
-          cardFiltroHtml(fPeriodo === 'todos', qtdTodosGeral, 'Todos', "setFiltroFinPeriodo('todos')").replace('kpi-filter-card', 'kpi-filter-card period-mini-card')
+          cardFiltroHtml(fPeriodo === 'mes_atual', docsMesAtual.length, 'Mês Atual', "setFiltroFinPeriodo('mes_atual')", formatBRL(somarDocs(docsMesAtual))).replace('kpi-filter-card', 'kpi-filter-card period-mini-card'),
+          cardFiltroHtml(fPeriodo === 'todos', docsTodosGeral.length, 'Todos', "setFiltroFinPeriodo('todos')", formatBRL(somarDocs(docsTodosGeral))).replace('kpi-filter-card', 'kpi-filter-card period-mini-card')
         ].join('');
       }
 
@@ -3848,22 +3868,28 @@
       });
 
       const baseTipo = porData.filter(f => fStatus === 'todos' || f.status === fStatus);
+      const docsTipoTodos = baseTipo;
+      const docsTipoRec = baseTipo.filter(f => f.tipo === 'receita');
+      const docsTipoDesp = baseTipo.filter(f => f.tipo === 'despesa');
       const cardsTipo = document.getElementById('fin-cards-tipo');
       if (cardsTipo) {
         cardsTipo.innerHTML = [
-          cardFiltroHtml(fTipo === 'todos', baseTipo.length, 'Receitas e Despesas', "setFiltroFinTipo('todos')"),
-          cardFiltroHtml(fTipo === 'receita', baseTipo.filter(f => f.tipo === 'receita').length, 'Apenas Receitas (A Receber)', "setFiltroFinTipo('receita')"),
-          cardFiltroHtml(fTipo === 'despesa', baseTipo.filter(f => f.tipo === 'despesa').length, 'Apenas Despesas (A Pagar)', "setFiltroFinTipo('despesa')")
+          cardFiltroHtml(fTipo === 'todos', docsTipoTodos.length, 'Receitas e Despesas', "setFiltroFinTipo('todos')", formatBRL(somarDocs(docsTipoTodos))),
+          cardFiltroHtml(fTipo === 'receita', docsTipoRec.length, 'Apenas Receitas (A Receber)', "setFiltroFinTipo('receita')", formatBRL(somarDocs(docsTipoRec))),
+          cardFiltroHtml(fTipo === 'despesa', docsTipoDesp.length, 'Apenas Despesas (A Pagar)', "setFiltroFinTipo('despesa')", formatBRL(somarDocs(docsTipoDesp)))
         ].join('');
       }
 
       const baseStatus = porData.filter(f => fTipo === 'todos' || f.tipo === fTipo);
+      const docsStTodos = baseStatus;
+      const docsStPend = baseStatus.filter(f => f.status === 'pendente');
+      const docsStPago = baseStatus.filter(f => f.status === 'pago');
       const cardsStatus = document.getElementById('fin-cards-status');
       if (cardsStatus) {
         cardsStatus.innerHTML = [
-          cardFiltroHtml(fStatus === 'todos', baseStatus.length, 'Todos os Status', "setFiltroFinStatus('todos')"),
-          cardFiltroHtml(fStatus === 'pendente', baseStatus.filter(f => f.status === 'pendente').length, 'Pendente', "setFiltroFinStatus('pendente')"),
-          cardFiltroHtml(fStatus === 'pago', baseStatus.filter(f => f.status === 'pago').length, 'Pago / Recebido', "setFiltroFinStatus('pago')")
+          cardFiltroHtml(fStatus === 'todos', docsStTodos.length, 'Todos os Status', "setFiltroFinStatus('todos')", formatBRL(somarDocs(docsStTodos))),
+          cardFiltroHtml(fStatus === 'pendente', docsStPend.length, 'Pendente', "setFiltroFinStatus('pendente')", formatBRL(somarDocs(docsStPend))),
+          cardFiltroHtml(fStatus === 'pago', docsStPago.length, 'Pago / Recebido', "setFiltroFinStatus('pago')", formatBRL(somarDocs(docsStPago)))
         ].join('');
       }
 
