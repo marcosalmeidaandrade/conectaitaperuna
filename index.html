@@ -524,10 +524,23 @@
   <!-- TOASTS DE NOTIFICAÇÃO -->
   <div id="toast-container" class="fixed top-4 right-4 z-[80] flex flex-col gap-2 max-w-xs w-full pointer-events-none safe-top no-print"></div>
 
-  <!-- BANNER DE AVISO OFFLINE (PROTEÇÃO CONTRA PERDA DE DADOS) -->
-  <div id="offline-banner" class="hidden fixed bottom-20 md:bottom-4 left-1/2 -translate-x-1/2 z-[75] bg-amber-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xl border border-amber-400 flex items-center gap-2 no-print max-w-[92vw]">
-    <span>⚠️</span>
-    <span>Sem internet — Modo somente leitura. Reconecte-se para salvar com segurança.</span>
+  <!-- TELA DE BLOQUEIO ESTRITO SEM INTERNET (100% ONLINE) -->
+  <div id="offline-screen" class="hidden fixed inset-0 bg-[#0A0F0D]/95 backdrop-blur-md z-[95] flex items-center justify-center p-4 safe-top no-print">
+    <div class="bg-[#111916] border border-red-500/50 rounded-2xl max-w-sm w-full p-7 shadow-2xl text-center space-y-4">
+      <div class="h-14 w-14 mx-auto rounded-2xl bg-red-500/15 border border-red-500/40 flex items-center justify-center text-2xl">
+        📡
+      </div>
+      <h2 class="text-lg font-extrabold text-white">Sem conexão com a internet</h2>
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Não é possível conectar ao servidor da <strong class="text-conecta-green">CONECTA</strong>. Este sistema funciona <strong class="text-white">100% online</strong> para garantir a integridade das informações e evitar qualquer sobreposição de dados.
+      </p>
+      <p class="text-xs text-slate-400">
+        Verifique seu Wi-Fi ou dados móveis e tente novamente.
+      </p>
+      <button type="button" onclick="verificarConexaoManual()" class="w-full bg-conecta-green hover:bg-conecta-emerald text-white font-bold py-2.5 rounded-xl transition shadow-lg text-sm">
+        Tentar Conectar Novamente
+      </button>
+    </div>
   </div>
 
   <!-- OVERLAY DE CARREGAMENTO (PDF / UPLOAD / CEP) -->
@@ -1682,7 +1695,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeFirestore, memoryLocalCache, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAtb3TTCPmjC70xSRDG69m_99nwdjbt-2Q",
@@ -1699,7 +1712,7 @@
     const TEMPO_INATIVIDADE_MS = 3 * 60 * 1000;
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db = initializeFirestore(app, { localCache: memoryLocalCache() });
 
     let activeUnsubscribe = null;
     let timerInatividade = null;
@@ -1728,27 +1741,63 @@
     };
 
     // =========================================================================
-    // 1. SERVICE WORKER SEGURO (APENAS SHELL ESTÁTICO — NUNCA INTERCEPTA BANCO)
+    // 1. MODO 100% ONLINE (REMOVE QUALQUER SERVICE WORKER ANTIGO E BLOQUEIA OFFLINE)
     // =========================================================================
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registro:', err));
-      });
+      navigator.serviceWorker.getRegistrations()
+        .then(regs => regs.forEach(r => r.unregister()))
+        .catch(() => {});
+    }
+    if ('caches' in window) {
+      caches.keys()
+        .then(keys => keys.forEach(k => caches.delete(k)))
+        .catch(() => {});
     }
 
     function atualizarStatusConexao() {
-      const banner = document.getElementById('offline-banner');
+      const screen = document.getElementById('offline-screen');
       const badge = document.getElementById('db-status');
       if (!navigator.onLine) {
-        if (banner) banner.classList.remove('hidden');
-        if (badge) badge.textContent = "⚠ Offline";
+        desligarListenerAtivo();
+        if (screen) { screen.classList.remove('hidden'); screen.classList.add('flex'); }
+        if (badge) badge.textContent = "✕ Sem Conexão";
+        return false;
       } else {
-        if (banner) banner.classList.add('hidden');
-        if (badge && badge.textContent.includes('Offline')) badge.textContent = "● Tempo Real";
+        if (screen) { screen.classList.add('hidden'); screen.classList.remove('flex'); }
+        if (badge && badge.textContent.includes('Sem Conexão')) badge.textContent = "● Tempo Real";
+        return true;
       }
     }
-    window.addEventListener('online', () => { atualizarStatusConexao(); showToast('Conexão restabelecida! Sistema online.', 'success'); });
-    window.addEventListener('offline', () => { atualizarStatusConexao(); showToast('Sem internet. Modo somente leitura ativado.', 'warning'); });
+
+    window.verificarConexaoManual = async () => {
+      if (!navigator.onLine) {
+        showToast('Não é possível conectar. Verifique sua internet e tente novamente.', 'error');
+        return;
+      }
+      atualizarStatusConexao();
+      showToast('Conexão estabelecida com sucesso!', 'success');
+      if (state.usuarioAtual) {
+        const abaAtiva = document.querySelector('.tab-content.active')?.id?.replace('tab-', '') || 'painel';
+        ativarSincronizacaoAba(abaAtiva);
+      } else {
+        verificarSessaoInicial();
+      }
+    };
+
+    window.addEventListener('online', () => {
+      atualizarStatusConexao();
+      showToast('Conexão com a internet restabelecida!', 'success');
+      if (state.usuarioAtual) {
+        const abaAtiva = document.querySelector('.tab-content.active')?.id?.replace('tab-', '') || 'painel';
+        ativarSincronizacaoAba(abaAtiva);
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      atualizarStatusConexao();
+      showToast('Não é possível conectar. Sem acesso à internet.', 'error');
+    });
+
     atualizarStatusConexao();
 
     // =========================================================================
@@ -2035,13 +2084,15 @@
 
     function garantirOnlineParaEscrita() {
       if (!navigator.onLine) {
-        showToast('Sem conexão com a internet. Reconecte-se para gravar ou excluir dados com segurança.', 'error');
+        atualizarStatusConexao();
+        showToast('Não é possível conectar. Sem acesso à internet.', 'error');
         return false;
       }
       return true;
     }
 
     async function carregarColecao(nome) {
+      if (!garantirOnlineParaEscrita()) throw new Error('OFFLINE_BLOCKED');
       const snap = await getDocs(collection(db, nome));
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     }
@@ -2199,7 +2250,10 @@
         await aplicarSessao(encontrado);
         showToast(`Bem-vindo, ${encontrado.nome}!`, 'success');
       } catch (err) {
-        console.error(err); erroEl.textContent = "Erro ao conectar ao banco. Verifique sua conexão."; erroEl.classList.remove('hidden');
+        console.error(err);
+        erroEl.textContent = "Não é possível conectar. Verifique sua conexão com a internet.";
+        erroEl.classList.remove('hidden');
+        showToast("Não é possível conectar. Sem acesso à internet.", "error");
       } finally { btn.disabled = false; btn.textContent = "Entrar no Sistema"; }
     };
 
