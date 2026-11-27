@@ -617,6 +617,55 @@
       transform: scale(0.97);
     }
 
+    @media (max-width: 639px) {
+      .fin-summary-card {
+        padding: 0.52rem 0.55rem;
+        border-radius: 0.7rem;
+        border-left-width: 3px;
+        gap: 0.1rem;
+        min-width: 0;
+      }
+      .fin-atraso-box {
+        padding: 0.5rem 0.55rem;
+        border-radius: 0.8rem;
+      }
+      .fin-atraso-card {
+        border-left-width: 3px !important;
+      }
+      .fin-card-title {
+        font-size: 0.56rem;
+        letter-spacing: 0.01em;
+        line-height: 1.15;
+        word-break: break-word;
+      }
+      .fin-card-amount {
+        font-size: 0.84rem;
+        line-height: 1.15;
+        margin: 0.05rem 0;
+        letter-spacing: -0.03em;
+      }
+      .fin-card-sub {
+        font-size: 0.56rem;
+        line-height: 1.15;
+      }
+      .period-group-box {
+        padding: 0.55rem 0.65rem;
+      }
+      .kpi-filter-card.period-mini-card {
+        padding: 0.42rem 0.55rem;
+        min-width: 72px;
+      }
+      .kpi-filter-card.period-mini-card .kpi-num {
+        font-size: 0.95rem;
+      }
+      .kpi-filter-card.period-mini-card .kpi-lbl {
+        font-size: 0.56rem;
+      }
+      #lista-financeiro > div {
+        padding: 0.65rem 0.75rem;
+      }
+    }
+
     @media print {
       body * { visibility: hidden; }
       #print-area, #print-area * { visibility: visible; }
@@ -1024,7 +1073,7 @@
             <span class="text-[10px] font-extrabold uppercase tracking-wider text-conecta-emerald">Realizado no Período</span>
             <span class="text-[10px] text-slate-400">Clique para filtrar tipo</span>
           </div>
-          <div id="fin-cards-realizado" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+          <div id="fin-cards-realizado" class="grid grid-cols-3 gap-2 sm:gap-3"></div>
         </div>
 
         <!-- Linha 3: Previsto (RECEITAS PREVISTAS e DESPESAS PREVISTAS) -->
@@ -1033,7 +1082,7 @@
             <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-500">Previsto no Período</span>
             <span class="text-[10px] text-slate-400">Lançamentos pendentes / futuros</span>
           </div>
-          <div id="fin-cards-previsto" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+          <div id="fin-cards-previsto" class="grid grid-cols-2 gap-2 sm:gap-3"></div>
         </div>
 
         <!-- Linha 4: EM ATRASO (Visual apenas — não compõe o Saldo Líquido de Caixa) -->
@@ -1042,7 +1091,7 @@
             <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-500">Em Atraso (Apenas Visualização — Não Compõe o Caixa)</span>
             <span class="text-[10px] text-slate-400">Vencidos e não pagos no período</span>
           </div>
-          <div id="fin-cards-atraso" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+          <div id="fin-cards-atraso" class="grid grid-cols-3 gap-2 sm:gap-3"></div>
         </div>
       </div>
 
