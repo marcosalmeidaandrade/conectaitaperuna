@@ -1441,6 +1441,32 @@
           </div>
         </div>
 
+        <div class="border rounded-xl p-3 bg-emerald-50/70 space-y-3">
+          <label class="flex items-center gap-2 font-semibold text-conecta-emerald cursor-pointer">
+            <input type="checkbox" id="usu-comissao-ativo" onchange="alternarCamposComissaoUsuario()" class="rounded h-4 w-4" />
+            Possui Comissionamento em Serviços (OSs)
+          </label>
+          <p class="text-xs text-slate-500">Quando ativado, ao fechar/concluir uma OS na área configurada, o sistema provisiona automaticamente a despesa de comissão no Financeiro.</p>
+          <div id="usu-comissao-campos" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div>
+              <label class="block text-xs font-medium mb-1">Área de Atuação *</label>
+              <select id="usu-comissao-area" class="w-full border bg-white rounded-lg px-3 py-2 text-xs font-semibold">
+                <option value="todas">Todas (Climatização + Segurança/CFTV)</option>
+                <option value="climatizacao">CLIMATIZAÇÃO</option>
+                <option value="seguranca">Segurança/CFTV</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1">Percentual (%) *</label>
+              <input id="usu-comissao-perc" type="number" step="0.01" min="0" max="100" value="0" placeholder="Ex: 10" class="w-full border bg-white rounded-lg px-3 py-2 text-xs font-semibold" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1">Data Base Provisionamento *</label>
+              <input id="usu-comissao-data-base" type="date" class="w-full border bg-white rounded-lg px-3 py-2 text-xs font-semibold" />
+            </div>
+          </div>
+        </div>
+
         <div class="border rounded-xl p-3 bg-emerald-50/70">
           <label class="flex items-center gap-2 font-semibold text-conecta-emerald cursor-pointer">
             <input type="checkbox" id="usu-admin" class="rounded h-4 w-4" />
@@ -2654,9 +2680,29 @@
     // =========================================================================
     // 7. MÓDULO USUÁRIOS (COM CEP / VIACEP)
     // =========================================================================
+    function formatarAreaComissaoLabel(area) {
+      if (area === 'climatizacao') return 'CLIMATIZAÇÃO';
+      if (area === 'seguranca') return 'Segurança/CFTV';
+      return 'Todas (CLIMATIZAÇÃO + Segurança/CFTV)';
+    }
+
+    window.alternarCamposComissaoUsuario = () => {
+      const ativo = !!document.getElementById('usu-comissao-ativo')?.checked;
+      const box = document.getElementById('usu-comissao-campos');
+      const perc = document.getElementById('usu-comissao-perc');
+      const dtBase = document.getElementById('usu-comissao-data-base');
+      if (box) box.style.opacity = ativo ? '1' : '0.55';
+      if (perc) perc.required = ativo;
+      if (dtBase) dtBase.required = ativo;
+    };
+
     window.abrirModalUsuario = (id = null) => {
       document.getElementById('form-usuario').reset();
       document.getElementById('usu-id').value = id || '';
+      document.getElementById('usu-comissao-ativo').checked = false;
+      document.getElementById('usu-comissao-area').value = 'todas';
+      document.getElementById('usu-comissao-perc').value = 0;
+      document.getElementById('usu-comissao-data-base').value = new Date().toISOString().split('T')[0];
       if (id) {
         const u = state.usuarios.find(x => x.id === id);
         if (u) {
@@ -2670,9 +2716,14 @@
           document.getElementById('usu-endereco').value = u.endereco || '';
           document.getElementById('usu-emerg-nome').value = u.contatoEmergencia || '';
           document.getElementById('usu-emerg-tel').value = formatarTelefone(u.telefoneEmergencia || '');
+          document.getElementById('usu-comissao-ativo').checked = !!u.comissaoAtiva;
+          document.getElementById('usu-comissao-area').value = u.comissaoArea || 'todas';
+          document.getElementById('usu-comissao-perc').value = Number(u.comissaoPercentual || 0);
+          document.getElementById('usu-comissao-data-base').value = u.comissaoDataBase || new Date().toISOString().split('T')[0];
           document.getElementById('usu-admin').checked = !!u.isAdmin;
         }
       } else { document.getElementById('modal-usu-titulo').textContent = "Novo Usuário"; }
+      alternarCamposComissaoUsuario();
       abrirModal('modal-usuario');
     };
 
@@ -2688,14 +2739,23 @@
       const endereco = document.getElementById('usu-endereco').value.trim();
       const contatoEmergencia = document.getElementById('usu-emerg-nome').value.trim();
       const telefoneEmergencia = document.getElementById('usu-emerg-tel').value.replace(/\D/g, '').slice(0, 11);
+      const comissaoAtiva = document.getElementById('usu-comissao-ativo').checked;
+      const comissaoArea = document.getElementById('usu-comissao-area').value || 'todas';
+      const comissaoPercentual = Number(document.getElementById('usu-comissao-perc').value || 0);
+      const comissaoDataBase = document.getElementById('usu-comissao-data-base').value || new Date().toISOString().split('T')[0];
       const isAdmin = document.getElementById('usu-admin').checked;
       if (!nome || !senha) { showToast("Informe um nome curto e uma senha numérica.", 'warning'); return; }
+      if (comissaoAtiva && (comissaoPercentual <= 0 || !comissaoDataBase)) {
+        showToast("Informe o percentual maior que zero e a data base para o comissionamento.", 'warning');
+        return;
+      }
       const duplicado = state.usuarios.find(u => u.senha === senha && u.id !== id);
       if (duplicado) { showToast(`A senha "${senha}" já está em uso pelo usuário ${duplicado.nome}.`, 'error'); return; }
       const antigo = state.usuarios.find(x => x.id === id);
       try {
         await salvarDocumento('usuarios', id, {
           nome, senha, nomeCompleto, cpf, telefone, cep, endereco, contatoEmergencia, telefoneEmergencia,
+          comissaoAtiva, comissaoArea, comissaoPercentual, comissaoDataBase,
           isAdmin, ativo: antigo ? (antigo.ativo !== false) : true,
           atualizadoPor: state.usuarioAtual?.nome || '',
           atualizadoEm: new Date().toISOString()
@@ -2739,6 +2799,7 @@
             ${u.cpf ? `<p class="text-xs text-slate-500">CPF: ${formatarCPF(u.cpf)}</p>` : ''}
             ${u.telefone ? `<p class="text-xs text-slate-500">Tel: ${formatarTelefone(u.telefone)}</p>` : ''}
             ${u.endereco ? `<p class="text-xs text-slate-500">${u.endereco}</p>` : ''}
+            ${u.comissaoAtiva ? `<p class="text-xs text-conecta-green font-semibold mt-1">★ Comissão: ${Number(u.comissaoPercentual || 0)}% • Área: ${formatarAreaComissaoLabel(u.comissaoArea)} • Data Base: ${formatarDataBR(u.comissaoDataBase)}</p>` : ''}
             ${u.contatoEmergencia ? `<p class="text-xs text-amber-800 bg-amber-50 p-1.5 rounded mt-1"><strong>Emergência:</strong> ${u.contatoEmergencia} ${u.telefoneEmergencia ? '(' + formatarTelefone(u.telefoneEmergencia) + ')' : ''}</p>` : ''}
             <p class="text-xs pt-1 font-semibold ${ativo ? 'text-conecta-green' : 'text-red-500'}">${ativo ? '● Ativo' : '● Desativado'}</p>
           </div>
@@ -4303,6 +4364,60 @@
       return alertasMinimo;
     }
 
+    async function provisionarComissaoOSNoFinanceiro({ osId, osNumero, clienteNome, categoriaOS, tecnicoNome, valorOS }) {
+      const valorTotalOS = Number(valorOS || 0);
+      const tecLimpo = (tecnicoNome || '').trim().toUpperCase();
+      if (!tecLimpo || valorTotalOS <= 0) return null;
+
+      if (!state.usuarios.length) {
+        try { state.usuarios = await carregarColecao('usuarios'); } catch (e) {}
+      }
+
+      const usuarioComissionado = state.usuarios.find(u =>
+        u.ativo !== false &&
+        u.comissaoAtiva &&
+        Number(u.comissaoPercentual || 0) > 0 &&
+        String(u.nome || '').trim().toUpperCase() === tecLimpo
+      );
+
+      if (!usuarioComissionado) return null;
+
+      const areaConfigurada = usuarioComissionado.comissaoArea || 'todas';
+      const areaCompativel = (areaConfigurada === 'todas') || (areaConfigurada === categoriaOS);
+      if (!areaCompativel) return null;
+
+      const perc = Number(usuarioComissionado.comissaoPercentual || 0);
+      const valorComissao = Number(((valorTotalOS * perc) / 100).toFixed(2));
+      if (valorComissao <= 0) return null;
+
+      const dataBase = usuarioComissionado.comissaoDataBase || new Date().toISOString().split('T')[0];
+      const areaLabel = formatarAreaComissaoLabel(categoriaOS);
+      const contaDespesa = (state.planoContas || []).find(c => c.grupo === 'despesa' && /equipe|comiss|operac|servi/i.test(c.nome || ''))
+        || { id: 'pc_desp_fixa', nome: 'Despesas Fixas, Impostos e Equipe' };
+
+      const finDocId = `com_${osId}`;
+      await salvarDocumento('financeiro', finDocId, {
+        descricao: `Comissão (${perc}% - ${areaLabel}) ${osNumero} - ${clienteNome} (${usuarioComissionado.nome})`,
+        tipo: 'despesa',
+        planoContaId: contaDespesa.id,
+        planoContaNome: contaDespesa.nome,
+        valor: valorComissao,
+        vencimento: dataBase,
+        dataPrevistaPagamento: dataBase,
+        status: 'pendente',
+        origemTipo: 'comissao_os',
+        origemId: osId,
+        comissionadoId: usuarioComissionado.id,
+        comissionadoNome: usuarioComissionado.nome,
+        comissaoPercentual: perc,
+        comissaoArea: categoriaOS,
+        criadoPor: state.usuarioAtual?.nome || '',
+        atualizadoPor: state.usuarioAtual?.nome || ''
+      });
+
+      return { valorComissao, perc, dataBase };
+    }
+
     window.salvarOS = async (e) => {
       e.preventDefault();
       const idExistente = document.getElementById('os-id').value;
@@ -4357,8 +4472,24 @@
           concluidoPor,
           criadaEm, iniciadaEm, concluidaEm, atualizadoEm: agoraISO
         });
+        let comissaoProvisionadaInfo = null;
+        if (statusNovo === 'concluida') {
+          comissaoProvisionadaInfo = await provisionarComissaoOSNoFinanceiro({
+            osId: id,
+            osNumero: numero,
+            clienteNome: cliente ? cliente.nome : 'Cliente',
+            categoriaOS: document.getElementById('os-categoria').value,
+            tecnicoNome: document.getElementById('os-tecnico').value,
+            valorOS: Number(document.getElementById('os-valor').value || 0)
+          });
+        }
+
         fecharModal('modal-os');
-        showToast(`${numero} salva com sucesso!`, 'success');
+        if (comissaoProvisionadaInfo) {
+          showToast(`${numero} salva e comissão de ${formatBRL(comissaoProvisionadaInfo.valorComissao)} (${comissaoProvisionadaInfo.perc}%) provisionada para ${formatarDataBR(comissaoProvisionadaInfo.dataBase)}!`, 'success');
+        } else {
+          showToast(`${numero} salva com sucesso!`, 'success');
+        }
         if (alertasEstoque.length) {
           showToast(`Estoque baixo após baixa automática: ${alertasEstoque.join(', ')}`, 'warning');
         }
