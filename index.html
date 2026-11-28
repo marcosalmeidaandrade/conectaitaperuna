@@ -297,6 +297,83 @@
       border-color: #3a573b !important;
     }
 
+
+    /* ==================== TEMA CLARO NO PORTAL PÚBLICO ==================== */
+    body.theme-light #public-portal {
+      background-color: #f0faf4 !important;
+      color: #050806 !important;
+    }
+    body.theme-light #public-portal header {
+      background-color: rgba(240, 250, 244, 0.94) !important;
+      border-bottom-color: #a9d8ba !important;
+    }
+    body.theme-light #public-portal header nav a,
+    body.theme-light #public-portal header span.text-slate-300 {
+      color: #0f291e !important;
+    }
+    body.theme-light #public-portal #topo-portal {
+      background: linear-gradient(135deg, #e5f6ec 0%, #f5fcf8 55%, #dcf2e4 100%) !important;
+      border-bottom-color: #a9d8ba !important;
+    }
+    body.theme-light #public-portal h1,
+    body.theme-light #public-portal h2,
+    body.theme-light #public-portal h3 {
+      color: #050806 !important;
+    }
+    body.theme-light #public-portal h1 span.text-conecta-green {
+      color: #006837 !important;
+    }
+    body.theme-light #public-portal p,
+    body.theme-light #public-portal strong.text-white,
+    body.theme-light #public-portal span.text-slate-400,
+    body.theme-light #public-portal span.text-emerald-200,
+    body.theme-light #public-portal div.text-slate-300 {
+      color: #1e293b !important;
+    }
+    body.theme-light #public-portal #solucoes,
+    body.theme-light #public-portal #metodo {
+      background-color: #e4f5ea !important;
+      border-color: #a9d8ba !important;
+    }
+    body.theme-light #public-portal .bg-\[\#111916\],
+    body.theme-light #public-portal .bg-\[\#111916\]\/90,
+    body.theme-light #public-portal .bg-\[\#0A0F0D\],
+    body.theme-light #public-portal .bg-\[\#0A0F0D\]\/90 {
+      background-color: #ffffff !important;
+      border-color: #a9d8ba !important;
+      box-shadow: 0 8px 24px rgba(0, 104, 55, 0.08) !important;
+    }
+    body.theme-light #public-portal #climatizacao {
+      background: linear-gradient(135deg, #dcfce7 0%, #ffffff 100%) !important;
+      border-color: #00A859 !important;
+    }
+    body.theme-light #public-portal #contato > div {
+      background: linear-gradient(135deg, #dcfce7 0%, #f6fcf8 60%, #e2f4e9 100%) !important;
+      border-color: #00A859 !important;
+    }
+    body.theme-light #public-portal .portal-wa-btn-sec {
+      background-color: #ffffff !important;
+      color: #006837 !important;
+      border-color: #00A859 !important;
+    }
+    body.theme-light #public-portal .portal-wa-btn-sec:hover {
+      background-color: #ecfdf5 !important;
+    }
+    body.theme-light #public-portal .portal-pill {
+      background-color: #ffffff !important;
+      border-color: #8bc9a2 !important;
+      color: #006837 !important;
+    }
+    body.theme-light #public-portal .portal-tag {
+      background-color: #dcfce7 !important;
+      color: #065f46 !important;
+    }
+    body.theme-light #public-portal footer {
+      background-color: #dcf2e4 !important;
+      border-top-color: #a9d8ba !important;
+      color: #0f291e !important;
+    }
+
     /* Toast Animations */
     @keyframes toastIn {
       from { opacity: 0; transform: translateY(-10px) scale(0.96); }
@@ -761,13 +838,15 @@
         </nav>
 
         <div class="flex items-center gap-2.5">
-          <a
-            href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20a%20CONECTA%20(Atendimento%20ES)."
-            target="_blank"
-            class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-conecta-lime border border-conecta-green/40 text-xs font-bold transition"
+          <button
+            type="button"
+            onclick="alternarTema()"
+            class="btn-tema text-xs px-3 py-2 rounded-xl bg-[#111916] text-slate-100 border border-emerald-500/35 hover:border-conecta-green font-semibold transition flex items-center gap-1.5"
+            title="Alterar tema claro ou escuro"
           >
-            <span>WhatsApp ES</span>
-          </a>
+            <span class="tema-icone">☀️</span>
+            <span class="tema-texto hidden sm:inline">Claro</span>
+          </button>
           <button
             type="button"
             onclick="abrirLoginColaborador()"
@@ -784,11 +863,11 @@
       </div>
     </header>
 
-    <!-- HERO SECTION -->
+    <!-- HERO SECTION COM BANNER.PNG -->
     <section id="topo-portal" class="relative overflow-hidden border-b border-emerald-500/15 bg-gradient-to-br from-[#0A0F0D] via-[#0e1c16] to-[#08120e]">
-      <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#00A859 1px, transparent 1px); background-size: 28px 28px;"></div>
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-20 lg:py-24 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-        <div class="lg:col-span-7 space-y-6">
+      <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#00A859 1px, transparent 1px); background-size: 28px 28px;"></div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-6 space-y-6">
           <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-conecta-green/40 text-conecta-lime text-xs font-bold uppercase tracking-wider">
             <span>Base Itaperuna / RJ</span>
             <span>•</span>
@@ -796,7 +875,7 @@
           </div>
 
           <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
-            Segurança, Tecnologia e <span class="text-conecta-green">Climatização</span> Corporativa e Residencial.
+            Segurança, Tecnologia, <span class="text-conecta-green">Climatização Corporativa e Residencial.</span>
           </h1>
 
           <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
@@ -804,62 +883,56 @@
           </p>
 
           <div class="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-wider text-emerald-200">
-            <span class="px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Projeto Técnico</span>
-            <span class="px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Implantação</span>
-            <span class="px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Integração</span>
-            <span class="px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Manutenção</span>
+            <span class="portal-pill px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Projeto Técnico</span>
+            <span class="portal-pill px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Implantação</span>
+            <span class="portal-pill px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Integração</span>
+            <span class="portal-pill px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Manutenção</span>
           </div>
 
           <div class="flex flex-wrap items-center gap-3 pt-2">
             <a
               href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20levantamento%20t%C3%A9cnico%20com%20a%20CONECTA%20(Atendimento%20ES)."
               target="_blank"
-              class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-conecta-green hover:bg-conecta-emerald text-white font-extrabold text-sm shadow-lg shadow-conecta-green/25 transition"
+              class="portal-wa-btn-sec inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#111916] hover:bg-[#17241f] text-slate-100 border border-emerald-500/35 font-bold text-sm transition"
             >
-              <span>WhatsApp Corporativo ES: (27) 92002-7525</span>
+              <span>WhatsApp ES: (27) 92002-7525</span>
             </a>
             <a
               href="https://wa.me/5522998082991?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento%20com%20a%20CONECTA%20(Base%20RJ)."
               target="_blank"
-              class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#111916] hover:bg-[#17241f] text-slate-100 border border-emerald-500/35 font-bold text-sm transition"
+              class="portal-wa-btn-sec inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#111916] hover:bg-[#17241f] text-slate-100 border border-emerald-500/35 font-bold text-sm transition"
             >
               <span>WhatsApp Base RJ: (22) 99808-2991</span>
             </a>
           </div>
         </div>
 
-        <div class="lg:col-span-5">
-          <div class="bg-[#111916]/90 border border-conecta-green/35 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
-            <div class="flex items-center justify-between border-b border-emerald-500/20 pb-4">
-              <img src="./logo.png" alt="CONECTA" class="h-16 object-contain rounded-xl bg-black p-1.5 border border-conecta-green/40" onerror="this.style.display='none'" />
-              <div class="text-right">
-                <span class="text-[11px] uppercase font-bold tracking-widest text-conecta-lime block">Portfólio 2026</span>
-                <span class="text-xs text-slate-400">RJ + ES • B2B & Residencial</span>
-              </div>
-            </div>
+        <div class="lg:col-span-6 space-y-5">
+          <div class="rounded-3xl overflow-hidden border border-conecta-green/40 shadow-2xl bg-[#111916]">
+            <img
+              src="./banner.png"
+              alt="CONECTA - Segurança, Tecnologia, Climatização Corporativa e Residencial"
+              class="w-full h-auto object-cover block"
+              onerror="this.style.display='none'"
+            />
+          </div>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div class="p-4 rounded-2xl bg-[#0A0F0D] border border-emerald-500/20">
-                <p class="text-2xl font-extrabold text-conecta-green">Desde 2019</p>
-                <p class="text-xs text-slate-400 mt-1">Experiência Regional</p>
-              </div>
-              <div class="p-4 rounded-2xl bg-[#0A0F0D] border border-emerald-500/20">
-                <p class="text-2xl font-extrabold text-conecta-lime">500+</p>
-                <p class="text-xs text-slate-400 mt-1">Clientes Atendidos</p>
-              </div>
-              <div class="p-4 rounded-2xl bg-[#0A0F0D] border border-emerald-500/20">
-                <p class="text-lg font-extrabold text-white">RJ + ES</p>
-                <p class="text-xs text-slate-400 mt-1">Expansão de Atendimento</p>
-              </div>
-              <div class="p-4 rounded-2xl bg-[#0A0F0D] border border-emerald-500/20">
-                <p class="text-lg font-extrabold text-white">100% Integrado</p>
-                <p class="text-xs text-slate-400 mt-1">Do Projeto ao Pós-Venda</p>
-              </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3.5 rounded-2xl bg-[#111916] border border-emerald-500/20">
+              <p class="text-lg sm:text-xl font-extrabold text-conecta-green">Desde 2019</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Experiência Regional</p>
             </div>
-
-            <div class="p-4 rounded-2xl bg-emerald-500/10 border border-conecta-green/30 text-xs text-slate-200 leading-relaxed">
-              <strong class="text-conecta-lime block mb-1">Um único parceiro técnico:</strong>
-              Menos fornecedores dispersos e mais responsabilidade técnica sobre segurança eletrônica, redes, automação e climatização comercial ou residencial.
+            <div class="p-3.5 rounded-2xl bg-[#111916] border border-emerald-500/20">
+              <p class="text-lg sm:text-xl font-extrabold text-conecta-lime">500+</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Clientes Atendidos</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-[#111916] border border-emerald-500/20">
+              <p class="text-lg sm:text-xl font-extrabold text-white">RJ + ES</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Atuação Integrada</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-[#111916] border border-emerald-500/20">
+              <p class="text-lg sm:text-xl font-extrabold text-white">B2B & Casa</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Corporativo e Residencial</p>
             </div>
           </div>
         </div>
@@ -900,7 +973,7 @@
       </div>
     </section>
 
-    <!-- PORTFÓLIO INTEGRADO (6 ÁREAS DO PORTFÓLIO) -->
+    <!-- PORTFÓLIO INTEGRADO (COM ILUSTRAÇÕES / FOTOS DOS SERVIÇOS) -->
     <section id="solucoes" class="bg-[#0e1613] border-y border-emerald-500/15 py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 space-y-10">
         <div class="max-w-3xl space-y-2">
@@ -911,98 +984,167 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- 1. CFTV & Vídeo Inteligente -->
-          <div class="p-6 rounded-2xl bg-[#111916] border border-emerald-500/25 flex flex-col justify-between gap-4">
-            <div class="space-y-3">
-              <div class="h-11 w-11 rounded-xl bg-emerald-500/15 border border-conecta-green/40 flex items-center justify-center text-conecta-lime font-extrabold">CFTV</div>
-              <h3 class="text-lg font-bold text-white">CFTV & Vídeo Inteligente</h3>
-              <p class="text-xs text-slate-300 leading-relaxed">Monitoramento IP, gravação de alta disponibilidade, analíticos de intrusão, linha virtual, leitura de placas (LPR), reconhecimento facial e contagem de fluxo.</p>
-              <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
-                <span class="px-2 py-0.5 rounded bg-white/5">Perímetro</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Portarias & Docas</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">LPR / Facial</span>
+          <div class="rounded-2xl overflow-hidden bg-[#111916] border border-emerald-500/25 flex flex-col justify-between shadow-lg">
+            <div>
+              <div class="relative h-44 w-full overflow-hidden bg-black">
+                <img
+                  src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=900&q=80"
+                  alt="CFTV e Vídeo Inteligente"
+                  class="w-full h-full object-cover opacity-90 hover:scale-105 transition duration-500"
+                  loading="lazy"
+                />
+                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#0A0F0D]/85 backdrop-blur-sm border border-conecta-green/50 text-conecta-lime text-[11px] font-extrabold uppercase">CFTV & Vídeo IP</span>
+              </div>
+              <div class="p-6 space-y-3">
+                <h3 class="text-lg font-bold text-white">CFTV & Vídeo Inteligente</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">Monitoramento IP, gravação de alta disponibilidade, analíticos de intrusão, linha virtual, leitura de placas (LPR), reconhecimento facial e contagem de fluxo.</p>
+                <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Perímetro</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Portarias & Docas</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">LPR / Facial</span>
+                </div>
               </div>
             </div>
-            <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20CFTV%20e%20V%C3%ADdeo%20Inteligente%20da%20CONECTA." target="_blank" class="text-xs font-bold text-conecta-lime hover:underline">Solicitar projeto de CFTV →</a>
+            <div class="px-6 pb-5">
+              <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20CFTV%20e%20V%C3%ADdeo%20Inteligente%20da%20CONECTA." target="_blank" class="text-xs font-bold text-conecta-green hover:underline">Solicitar projeto de CFTV →</a>
+            </div>
           </div>
 
           <!-- 2. Controle de Acesso & Proteção Perimetral -->
-          <div class="p-6 rounded-2xl bg-[#111916] border border-emerald-500/25 flex flex-col justify-between gap-4">
-            <div class="space-y-3">
-              <div class="h-11 w-11 rounded-xl bg-emerald-500/15 border border-conecta-green/40 flex items-center justify-center text-conecta-lime font-extrabold">ACESSO</div>
-              <h3 class="text-lg font-bold text-white">Controle de Acesso & Perímetro</h3>
-              <p class="text-xs text-slate-300 leading-relaxed">Reconhecimento facial, biometria, RFID, QR Code, catracas, torniquetes, cancelas veiculares, controle de visitantes, cercas elétricas, concertinas e sensores.</p>
-              <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
-                <span class="px-2 py-0.5 rounded bg-white/5">Biometria & Facial</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Cancelas</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Cerca Elétrica</span>
+          <div class="rounded-2xl overflow-hidden bg-[#111916] border border-emerald-500/25 flex flex-col justify-between shadow-lg">
+            <div>
+              <div class="relative h-44 w-full overflow-hidden bg-black">
+                <img
+                  src="https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=900&q=80"
+                  alt="Controle de Acesso e Proteção Perimetral"
+                  class="w-full h-full object-cover opacity-90 hover:scale-105 transition duration-500"
+                  loading="lazy"
+                />
+                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#0A0F0D]/85 backdrop-blur-sm border border-conecta-green/50 text-conecta-lime text-[11px] font-extrabold uppercase">Acesso & Perímetro</span>
+              </div>
+              <div class="p-6 space-y-3">
+                <h3 class="text-lg font-bold text-white">Controle de Acesso & Perímetro</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">Reconhecimento facial, biometria, RFID, QR Code, catracas, torniquetes, cancelas veiculares, controle de visitantes, cercas elétricas, concertinas e sensores.</p>
+                <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Biometria & Facial</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Cancelas</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Cerca Elétrica</span>
+                </div>
               </div>
             </div>
-            <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20Controle%20de%20Acesso%20e%20Prote%C3%A7%C3%A3o%20Perimetral." target="_blank" class="text-xs font-bold text-conecta-lime hover:underline">Solicitar projeto de Acesso →</a>
+            <div class="px-6 pb-5">
+              <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20Controle%20de%20Acesso%20e%20Prote%C3%A7%C3%A3o%20Perimetral." target="_blank" class="text-xs font-bold text-conecta-green hover:underline">Solicitar projeto de Acesso →</a>
+            </div>
           </div>
 
           <!-- 3. Redes & Fibra Óptica -->
-          <div class="p-6 rounded-2xl bg-[#111916] border border-emerald-500/25 flex flex-col justify-between gap-4">
-            <div class="space-y-3">
-              <div class="h-11 w-11 rounded-xl bg-emerald-500/15 border border-conecta-green/40 flex items-center justify-center text-conecta-lime font-extrabold">REDE</div>
-              <h3 class="text-lg font-bold text-white">Redes & Fibra Óptica</h3>
-              <p class="text-xs text-slate-300 leading-relaxed">A rede nasce junto com o projeto: cabeamento estruturado, racks, switches, backbones de fibra óptica entre prédios e galpões, Wi-Fi corporativo e infraestrutura IP.</p>
-              <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
-                <span class="px-2 py-0.5 rounded bg-white/5">Cabeamento</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Fibra Óptica</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Wi-Fi Corporativo</span>
+          <div class="rounded-2xl overflow-hidden bg-[#111916] border border-emerald-500/25 flex flex-col justify-between shadow-lg">
+            <div>
+              <div class="relative h-44 w-full overflow-hidden bg-black">
+                <img
+                  src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=900&q=80"
+                  alt="Redes Estruturadas e Fibra Óptica"
+                  class="w-full h-full object-cover opacity-90 hover:scale-105 transition duration-500"
+                  loading="lazy"
+                />
+                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#0A0F0D]/85 backdrop-blur-sm border border-conecta-green/50 text-conecta-lime text-[11px] font-extrabold uppercase">Infraestrutura IP</span>
+              </div>
+              <div class="p-6 space-y-3">
+                <h3 class="text-lg font-bold text-white">Redes & Fibra Óptica</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">A rede nasce junto com o projeto: cabeamento estruturado, racks, switches, backbones de fibra óptica entre prédios e galpões, Wi-Fi corporativo e infraestrutura IP.</p>
+                <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Cabeamento</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Fibra Óptica</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Wi-Fi Corporativo</span>
+                </div>
               </div>
             </div>
-            <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20Infraestrutura%20de%20Redes%20e%20Fibra%20%C3%93ptica." target="_blank" class="text-xs font-bold text-conecta-lime hover:underline">Solicitar projeto de Rede →</a>
+            <div class="px-6 pb-5">
+              <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20Infraestrutura%20de%20Redes%20e%20Fibra%20%C3%93ptica." target="_blank" class="text-xs font-bold text-conecta-green hover:underline">Solicitar projeto de Rede →</a>
+            </div>
           </div>
 
           <!-- 4. SDAI & Sistemas de Proteção -->
-          <div class="p-6 rounded-2xl bg-[#111916] border border-emerald-500/25 flex flex-col justify-between gap-4">
-            <div class="space-y-3">
-              <div class="h-11 w-11 rounded-xl bg-emerald-500/15 border border-conecta-green/40 flex items-center justify-center text-conecta-lime font-extrabold">SDAI</div>
-              <h3 class="text-lg font-bold text-white">SDAI & Sistemas de Proteção</h3>
-              <p class="text-xs text-slate-300 leading-relaxed">Sistema de Detecção e Alarme de Incêndio (SDAI), centrais de alarme, detecção, sinalização e integração de eventos com CFTV, acesso e rotinas de resposta.</p>
-              <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
-                <span class="px-2 py-0.5 rounded bg-white/5">Detecção de Incêndio</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Alarmes</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Sinalização</span>
+          <div class="rounded-2xl overflow-hidden bg-[#111916] border border-emerald-500/25 flex flex-col justify-between shadow-lg">
+            <div>
+              <div class="relative h-44 w-full overflow-hidden bg-black">
+                <img
+                  src="https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=900&q=80"
+                  alt="SDAI Detecção e Alarme de Incêndio"
+                  class="w-full h-full object-cover opacity-90 hover:scale-105 transition duration-500"
+                  loading="lazy"
+                />
+                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#0A0F0D]/85 backdrop-blur-sm border border-conecta-green/50 text-conecta-lime text-[11px] font-extrabold uppercase">SDAI & Proteção</span>
+              </div>
+              <div class="p-6 space-y-3">
+                <h3 class="text-lg font-bold text-white">SDAI & Sistemas de Proteção</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">Sistema de Detecção e Alarme de Incêndio (SDAI), centrais de alarme, detecção, sinalização e integração de eventos com CFTV, acesso e rotinas de resposta.</p>
+                <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Detecção de Incêndio</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Alarmes</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Sinalização</span>
+                </div>
               </div>
             </div>
-            <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20SDAI%20e%20Sistemas%20de%20Prote%C3%A7%C3%A3o." target="_blank" class="text-xs font-bold text-conecta-lime hover:underline">Solicitar projeto SDAI →</a>
+            <div class="px-6 pb-5">
+              <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20SDAI%20e%20Sistemas%20de%20Prote%C3%A7%C3%A3o." target="_blank" class="text-xs font-bold text-conecta-green hover:underline">Solicitar projeto SDAI →</a>
+            </div>
           </div>
 
           <!-- 5. Automação & Comunicação -->
-          <div class="p-6 rounded-2xl bg-[#111916] border border-emerald-500/25 flex flex-col justify-between gap-4">
-            <div class="space-y-3">
-              <div class="h-11 w-11 rounded-xl bg-emerald-500/15 border border-conecta-green/40 flex items-center justify-center text-conecta-lime font-extrabold">AUTO</div>
-              <h3 class="text-lg font-bold text-white">Automação & Comunicação</h3>
-              <p class="text-xs text-slate-300 leading-relaxed">Automação de rotinas e acionamentos, interfonia IP para portarias e condomínios, telefonia/PABX, sonorização corporativa e integração inteligente de dispositivos.</p>
-              <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
-                <span class="px-2 py-0.5 rounded bg-white/5">Interfonia IP</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">PABX</span>
-                <span class="px-2 py-0.5 rounded bg-white/5">Sonorização</span>
+          <div class="rounded-2xl overflow-hidden bg-[#111916] border border-emerald-500/25 flex flex-col justify-between shadow-lg">
+            <div>
+              <div class="relative h-44 w-full overflow-hidden bg-black">
+                <img
+                  src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
+                  alt="Automação e Comunicação Integrada"
+                  class="w-full h-full object-cover opacity-90 hover:scale-105 transition duration-500"
+                  loading="lazy"
+                />
+                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#0A0F0D]/85 backdrop-blur-sm border border-conecta-green/50 text-conecta-lime text-[11px] font-extrabold uppercase">Automação & PABX</span>
+              </div>
+              <div class="p-6 space-y-3">
+                <h3 class="text-lg font-bold text-white">Automação & Comunicação</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">Automação de rotinas e acionamentos, interfonia IP para portarias e condomínios, telefonia/PABX, sonorização corporativa e integração inteligente de dispositivos.</p>
+                <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-slate-300">
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Interfonia IP</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">PABX</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-white/5">Sonorização</span>
+                </div>
               </div>
             </div>
-            <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20Automa%C3%A7%C3%A3o%20e%20Comunica%C3%A7%C3%A3o." target="_blank" class="text-xs font-bold text-conecta-lime hover:underline">Solicitar projeto de Automação →</a>
+            <div class="px-6 pb-5">
+              <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Tenho%20interesse%20em%20Automa%C3%A7%C3%A3o%20e%20Comunica%C3%A7%C3%A3o." target="_blank" class="text-xs font-bold text-conecta-green hover:underline">Solicitar projeto de Automação →</a>
+            </div>
           </div>
 
           <!-- 6. Climatização Corporativa, Comercial e Residencial -->
-          <div id="climatizacao" class="p-6 rounded-2xl bg-gradient-to-br from-[#12261d] to-[#111916] border-2 border-conecta-green/60 flex flex-col justify-between gap-4 shadow-lg shadow-conecta-green/10">
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <div class="h-11 px-3 rounded-xl bg-conecta-green text-white flex items-center justify-center text-xs font-extrabold">CLIMA</div>
-                <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-conecta-lime/20 text-conecta-lime border border-conecta-lime/40">Corporativo & Residencial</span>
+          <div id="climatizacao" class="rounded-2xl overflow-hidden bg-gradient-to-br from-[#12261d] to-[#111916] border-2 border-conecta-green/60 flex flex-col justify-between shadow-lg shadow-conecta-green/10">
+            <div>
+              <div class="relative h-44 w-full overflow-hidden bg-black">
+                <img
+                  src="https://images.unsplash.com/photo-1631545806609-35d4ae440431?auto=format&fit=crop&w=900&q=80"
+                  alt="Climatização Corporativa e Residencial"
+                  class="w-full h-full object-cover opacity-95 hover:scale-105 transition duration-500"
+                  loading="lazy"
+                />
+                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-conecta-green text-white text-[11px] font-extrabold uppercase shadow">Corporativo & Residencial</span>
               </div>
-              <h3 class="text-lg font-bold text-white">Climatização Corporativa, Comercial e Residencial</h3>
-              <p class="text-xs text-slate-200 leading-relaxed">
-                Conforto térmico, eficiência energética e confiabilidade para <strong>empresas, escritórios, comércios e também residências</strong>. Executamos <strong>instalação, higienização técnica, manutenção preventiva e corretiva</strong> de equipamentos de ar-condicionado.
-              </p>
-              <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-emerald-100">
-                <span class="px-2 py-0.5 rounded bg-emerald-500/20">Residencial</span>
-                <span class="px-2 py-0.5 rounded bg-emerald-500/20">Comercial & B2B</span>
-                <span class="px-2 py-0.5 rounded bg-emerald-500/20">Higienização & Preventiva</span>
+              <div class="p-6 space-y-3">
+                <h3 class="text-lg font-bold text-white">Climatização Corporativa, Comercial e Residencial</h3>
+                <p class="text-xs text-slate-200 leading-relaxed">
+                  Conforto térmico, eficiência energética e confiabilidade para <strong>empresas, escritórios, comércios e também residências</strong>. Executamos <strong>instalação, higienização técnica, manutenção preventiva e corretiva</strong> de equipamentos de ar-condicionado.
+                </p>
+                <div class="flex flex-wrap gap-1.5 pt-1 text-[11px] text-emerald-100">
+                  <span class="portal-tag px-2 py-0.5 rounded bg-emerald-500/20">Residencial</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-emerald-500/20">Comercial & B2B</span>
+                  <span class="portal-tag px-2 py-0.5 rounded bg-emerald-500/20">Higienização & Preventiva</span>
+                </div>
               </div>
             </div>
-            <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Gostaria%20de%20um%20or%C3%A7amento%20de%20Climatiza%C3%A7%C3%A3o%20(Corporativa%20ou%20Residencial)." target="_blank" class="text-xs font-extrabold text-conecta-lime hover:underline">Solicitar atendimento de Climatização →</a>
+            <div class="px-6 pb-5">
+              <a href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Gostaria%20de%20um%20or%C3%A7amento%20de%20Climatiza%C3%A7%C3%A3o%20(Corporativa%20ou%20Residencial)." target="_blank" class="text-xs font-extrabold text-conecta-green hover:underline">Solicitar atendimento de Climatização →</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1042,7 +1184,7 @@
           <p class="text-slate-400">Controle de acesso, CFTV, comunicação, infraestrutura e climatização.</p>
         </div>
         <div class="p-4 rounded-2xl bg-[#111916] border border-conecta-green/40 space-y-1.5 sm:col-span-2">
-          <h3 class="font-bold text-conecta-lime text-sm">Residências & Empreendimentos</h3>
+          <h3 class="font-bold text-conecta-green text-sm">Residências & Empreendimentos</h3>
           <p class="text-slate-300">Climatização residencial completa (instalação, higienização e manutenção preventiva/corretiva), além de segurança eletrônica, câmeras e automação residencial.</p>
         </div>
       </div>
@@ -1096,7 +1238,7 @@
     <section id="contato" class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
       <div class="rounded-3xl bg-gradient-to-br from-[#12261d] via-[#111916] to-[#0d1512] border border-conecta-green/40 p-6 sm:p-10 shadow-2xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <div class="lg:col-span-7 space-y-4">
-          <span class="text-xs font-extrabold uppercase tracking-widest text-conecta-lime">Fale com a CONECTA</span>
+          <span class="text-xs font-extrabold uppercase tracking-widest text-conecta-green">Fale com a CONECTA</span>
           <h2 class="text-2xl sm:text-4xl font-extrabold text-white">Vamos construir uma solução para a sua operação ou residência?</h2>
           <p class="text-sm text-slate-300 leading-relaxed">
             Entre em contato pelos nossos canais oficiais de WhatsApp para agendar um levantamento técnico, solicitar orçamento de segurança eletrônica, redes, automação ou climatização corporativa e residencial.
@@ -1105,14 +1247,14 @@
             <a
               href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20a%20CONECTA%20-%20Atendimento%20Corporativo%20ES."
               target="_blank"
-              class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-conecta-green hover:bg-conecta-emerald text-white font-extrabold text-sm shadow-lg transition"
+              class="portal-wa-btn-sec inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#0A0F0D] hover:bg-black text-emerald-200 border border-conecta-green/40 font-bold text-sm transition"
             >
-              <span>WhatsApp Corporativo ES: (27) 92002-7525</span>
+              <span>WhatsApp ES: (27) 92002-7525</span>
             </a>
             <a
               href="https://wa.me/5522998082991?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20a%20CONECTA%20-%20Base%20Itaperuna%20RJ."
               target="_blank"
-              class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#0A0F0D] hover:bg-black text-emerald-200 border border-conecta-green/40 font-bold text-sm transition"
+              class="portal-wa-btn-sec inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#0A0F0D] hover:bg-black text-emerald-200 border border-conecta-green/40 font-bold text-sm transition"
             >
               <span>WhatsApp Base RJ: (22) 99808-2991</span>
             </a>
@@ -1124,7 +1266,7 @@
           <div class="space-y-2 text-slate-300">
             <p><strong class="text-white">Corporativo Espírito Santo (ES):</strong> (27) 92002-7525 (WhatsApp)</p>
             <p><strong class="text-white">Base Itaperuna / Rio de Janeiro (RJ):</strong> (22) 99808-2991 (WhatsApp)</p>
-            <p><strong class="text-white">Instagram:</strong> <a href="https://instagram.com/conectaseguraca_ita" target="_blank" class="text-conecta-lime hover:underline">@conectaseguraca_ita</a></p>
+            <p><strong class="text-white">Instagram:</strong> <a href="https://instagram.com/conectaseguraca_ita" target="_blank" class="text-conecta-green hover:underline font-semibold">@conectaseguraca_ita</a></p>
             <p><strong class="text-white">Atuação:</strong> Segurança Eletrônica, CFTV, Controle de Acesso, Redes & Fibra, SDAI, Automação e Climatização Corporativa e Residencial.</p>
           </div>
           <p class="text-[11px] text-slate-500 pt-2 border-t border-emerald-500/15">
@@ -1143,7 +1285,7 @@
         <div class="flex items-center gap-4">
           <span>ES: (27) 92002-7525</span>
           <span>RJ: (22) 99808-2991</span>
-          <button type="button" onclick="abrirLoginColaborador()" class="text-conecta-lime font-bold hover:underline">Acesso Colaborador</button>
+          <button type="button" onclick="abrirLoginColaborador()" class="text-conecta-green font-bold hover:underline">Acesso Colaborador</button>
         </div>
       </div>
     </footer>
