@@ -180,6 +180,42 @@
       border-color: #fca5a5 !important;
     }
 
+
+    /* ==================== CONTRASTE DO LOGIN NO MODO ESCURO ==================== */
+    body:not(.theme-light) #login-card {
+      background-color: #1b2e1c !important;
+      border-color: #4ea854 !important;
+    }
+    body:not(.theme-light) #login-card p.text-conecta-emerald {
+      color: #86efac !important;
+    }
+    body:not(.theme-light) #login-label {
+      color: #f1f8f1 !important;
+      font-weight: 700 !important;
+    }
+    body:not(.theme-light) #login-senha {
+      background-color: #0e1a0f !important;
+      border: 2px solid #4ade80 !important;
+      color: #ffffff !important;
+      caret-color: #4ade80 !important;
+    }
+    body.theme-light #login-senha {
+      caret-color: #006837 !important;
+    }
+    #login-senha::placeholder {
+      color: #94a3b8;
+      opacity: 1;
+    }
+    body:not(.theme-light) #login-senha::placeholder {
+      color: #86efac !important;
+      opacity: 0.75;
+    }
+    body:not(.theme-light) #btn-voltar-portal {
+      background-color: #1b2e1c !important;
+      color: #f1f8f1 !important;
+      border-color: #4ea854 !important;
+    }
+
     /* ==================== TEMA ESCURO: VERDE MUSGO ==================== */
     body:not(.theme-light) {
       background-color: #182619 !important;
@@ -298,6 +334,20 @@
     }
 
 
+
+
+    @media (max-width: 1023px) {
+      #public-portal header .portal-nav-card {
+        padding: 0.36rem 0.58rem;
+        font-size: 0.66rem;
+        border-radius: 0.58rem;
+        gap: 0.28rem;
+      }
+      #public-portal header .portal-nav-card svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
 
     /* ==================== CARDS RETANGULARES MODERNOS NO TOPO DO PORTAL ==================== */
     .portal-nav-card {
@@ -938,21 +988,21 @@
           </button>
         </div>
       </div>
-      <div class="lg:hidden border-t border-emerald-500/15 px-4 py-2 overflow-x-auto no-scrollbar flex items-center gap-2">
-        <a href="#quem-somos" class="portal-nav-card"><span>Quem Somos</span></a>
-        <a href="#solucoes" class="portal-nav-card"><span>Portfólio Integrado</span></a>
-        <a href="#climatizacao" class="portal-nav-card"><span>Climatização</span></a>
-        <a href="#mercados" class="portal-nav-card"><span>Mercados</span></a>
-        <a href="#metodo" class="portal-nav-card"><span>Método</span></a>
-        <a href="#contato" class="portal-nav-card"><span>Contato</span></a>
+      <div class="lg:hidden border-t border-emerald-500/15 px-3 py-2 grid grid-cols-3 gap-1.5">
+        <a href="#quem-somos" class="portal-nav-card justify-center text-center"><span>Quem Somos</span></a>
+        <a href="#solucoes" class="portal-nav-card justify-center text-center"><span>Portfólio</span></a>
+        <a href="#climatizacao" class="portal-nav-card justify-center text-center"><span>Climatização</span></a>
+        <a href="#mercados" class="portal-nav-card justify-center text-center"><span>Mercados</span></a>
+        <a href="#metodo" class="portal-nav-card justify-center text-center"><span>Método</span></a>
+        <a href="#contato" class="portal-nav-card justify-center text-center"><span>Contato</span></a>
       </div>
     </header>
 
     <!-- HERO SECTION COM BANNER.PNG -->
     <section id="topo-portal" class="relative overflow-hidden border-b border-emerald-500/15 bg-gradient-to-br from-[#0A0F0D] via-[#0e1c16] to-[#08120e]">
       <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#00A859 1px, transparent 1px); background-size: 28px 28px;"></div>
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-        <div class="lg:col-span-6 space-y-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16 lg:py-20 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-7 sm:gap-10 items-center">
+        <div class="lg:col-span-6 space-y-5 sm:space-y-6 order-2 lg:order-1">
           <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-conecta-green/40 text-conecta-lime text-xs font-bold uppercase tracking-wider">
             <span>Base Itaperuna / RJ</span>
             <span>•</span>
@@ -974,25 +1024,25 @@
             <span class="portal-pill px-3 py-1.5 rounded-lg bg-[#111916] border border-emerald-500/30">Manutenção</span>
           </div>
 
-          <div class="flex flex-wrap items-center gap-3 pt-2">
+          <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
             <a
               href="https://wa.me/5527920027525?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20levantamento%20t%C3%A9cnico%20com%20a%20CONECTA%20(Atendimento%20ES)."
               target="_blank"
-              class="portal-wa-btn-sec inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#111916] hover:bg-[#17241f] text-slate-100 border border-emerald-500/35 font-bold text-sm transition"
+              class="portal-wa-btn-sec inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl bg-[#111916] hover:bg-[#17241f] text-slate-100 border border-emerald-500/35 font-bold text-xs sm:text-sm transition"
             >
               <span>WhatsApp ES: (27) 92002-7525</span>
             </a>
             <a
               href="https://wa.me/5522998082991?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento%20com%20a%20CONECTA%20(Base%20RJ)."
               target="_blank"
-              class="portal-wa-btn-sec inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#111916] hover:bg-[#17241f] text-slate-100 border border-emerald-500/35 font-bold text-sm transition"
+              class="portal-wa-btn-sec inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl bg-[#111916] hover:bg-[#17241f] text-slate-100 border border-emerald-500/35 font-bold text-xs sm:text-sm transition"
             >
               <span>WhatsApp Base RJ: (22) 99808-2991</span>
             </a>
           </div>
         </div>
 
-        <div class="lg:col-span-6 space-y-5">
+        <div class="lg:col-span-6 space-y-4 sm:space-y-5 order-1 lg:order-2">
           <div class="rounded-3xl overflow-hidden border border-conecta-green/40 shadow-2xl bg-[#111916]">
             <img
               src="./banner.png"
@@ -1379,8 +1429,8 @@
   <!-- ==================== TELA DE LOGIN DO COLABORADOR ==================== -->
   <div id="login-screen" class="hidden fixed inset-0 bg-[#dff2fc] z-50 items-center justify-center p-4 safe-top no-print transition-colors">
     <div class="fixed top-4 left-4 safe-top z-50">
-      <button type="button" onclick="voltarParaPortal()" class="text-xs px-3 py-1.5 rounded-lg bg-white text-slate-800 border border-slate-300 hover:bg-slate-50 font-semibold transition flex items-center gap-1.5 shadow-sm">
-        <span>← Voltar ao Portal</span>
+      <button id="btn-voltar-portal" type="button" onclick="voltarParaPortal()" class="text-xs px-3.5 py-2 rounded-xl bg-white text-slate-800 border border-slate-300 hover:bg-slate-50 font-bold transition flex items-center gap-1.5 shadow-md">
+        <span>← Site Institucional</span>
       </button>
     </div>
     <div class="fixed top-4 right-4 safe-top z-50">
@@ -3268,13 +3318,23 @@
     window.abrirLoginColaborador = () => {
       const loginScreen = document.getElementById('login-screen');
       const erroEl = document.getElementById('login-erro');
+      const senhaEl = document.getElementById('login-senha');
       if (erroEl) erroEl.classList.add('hidden');
       document.getElementById('form-login')?.reset();
       if (loginScreen) {
         loginScreen.classList.remove('hidden');
         loginScreen.classList.add('flex');
       }
-      setTimeout(() => document.getElementById('login-senha')?.focus(), 80);
+      const focarSenha = () => {
+        if (!senhaEl) return;
+        senhaEl.focus({ preventScroll: true });
+        try { senhaEl.setSelectionRange(0, senhaEl.value.length); } catch (e) {}
+      };
+      requestAnimationFrame(() => {
+        focarSenha();
+        setTimeout(focarSenha, 90);
+        setTimeout(focarSenha, 220);
+      });
     };
 
     window.voltarParaPortal = () => {
