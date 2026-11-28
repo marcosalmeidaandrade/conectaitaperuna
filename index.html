@@ -1122,6 +1122,46 @@
         </div>
       </div>
 
+      <!-- RELATÓRIO FILTRÁVEL DO PLANO DE CONTAS -->
+      <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-slate-200 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base">Relatório do Plano de Contas</h3>
+            <p class="text-xs text-slate-500">Filtre por grupo (Receitas / Despesas), conta específica e situação (Realizado / Previsto), respeitando o período selecionado.</p>
+          </div>
+          <div id="rel-pc-resumo-badge" class="text-xs px-3 py-1 rounded-full font-extrabold bg-emerald-500/15 text-conecta-green border border-conecta-green/30">
+            0 item(ns) • R$ 0,00
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Grupo (Nível 1)</label>
+            <select id="rel-pc-grupo" onchange="aoAlterarGrupoRelatorioPC()" class="w-full border rounded-lg px-3 py-2 text-xs font-semibold">
+              <option value="todos">Todos os Grupos (Receitas e Despesas)</option>
+              <option value="receita">Receitas</option>
+              <option value="despesa">Despesas</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Conta / Subcategoria (Nível 2)</label>
+            <select id="rel-pc-conta" onchange="renderRelatorioPlanoContas()" class="w-full border rounded-lg px-3 py-2 text-xs font-semibold">
+              <option value="todas">Todas as Contas</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Situação do Fluxo</label>
+            <select id="rel-pc-situacao" onchange="renderRelatorioPlanoContas()" class="w-full border rounded-lg px-3 py-2 text-xs font-semibold">
+              <option value="todos">Todos (Realizado + Previsto)</option>
+              <option value="pago">Realizado (Pago / Recebido)</option>
+              <option value="pendente">Previsto (Pendente / Futuro)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="rel-pc-conteudo" class="overflow-x-auto text-xs"></div>
+      </div>
+
       <div id="lista-financeiro" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"></div>
     </section>
 
@@ -1174,7 +1214,7 @@
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h2 class="text-lg font-bold text-slate-800">Backup e Restauração (JSON)</h2>
-          <p class="text-sm text-slate-500">Exporte uma cópia de segurança de todos os usuários, clientes, fornecedores, produtos, orçamentos, OS e lançamentos financeiros.</p>
+          <p class="text-sm text-slate-500">Exporte uma cópia de segurança de todos os usuários, clientes, fornecedores, produtos, orçamentos, OS, plano de contas e lançamentos financeiros.</p>
           <div class="flex flex-wrap gap-3">
             <button onclick="exportarBackup()" class="bg-conecta-green text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-conecta-emerald">
               Baixar Backup JSON
@@ -1183,6 +1223,64 @@
               Restaurar Backup
               <input type="file" accept=".json" onchange="restaurarBackup(event)" class="hidden" />
             </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLANO DE CONTAS (2 NÍVEIS: RECEITAS E DESPESAS) -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800">Plano de Contas (2 Níveis — Receitas e Despesas)</h2>
+            <p class="text-xs text-slate-500">Nível 1: Agrupamento (<strong>RECEITAS</strong> e <strong>DESPESAS</strong>). Nível 2: Contas de lançamento e baixa para débitos, créditos e previsões futuras.</p>
+          </div>
+          <span class="text-xs px-3 py-1 rounded-full font-bold bg-emerald-500/15 text-conecta-green border border-conecta-green/30">
+            2 Níveis Ativos
+          </span>
+        </div>
+
+        <form id="form-plano-contas" onsubmit="salvarContaPlano(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <input type="hidden" id="pc-id" />
+          <div class="sm:col-span-3">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nível 1 (Grupo) *</label>
+            <select id="pc-grupo" required class="w-full border rounded-lg px-3 py-2 text-sm font-semibold">
+              <option value="receita">1. RECEITAS (Créditos / Entradas)</option>
+              <option value="despesa">2. DESPESAS (Débitos / Saídas)</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Código</label>
+            <input id="pc-codigo" type="text" placeholder="Ex: 1.01" class="w-full border rounded-lg px-3 py-2 text-sm" />
+          </div>
+          <div class="sm:col-span-4">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nível 2 (Nome da Conta) *</label>
+            <input id="pc-nome" type="text" required placeholder="Ex: Serviços de Climatização ou Material CFTV" class="w-full border rounded-lg px-3 py-2 text-sm" />
+          </div>
+          <div class="sm:col-span-3 flex items-end gap-2">
+            <button type="submit" class="flex-1 bg-conecta-green hover:bg-conecta-emerald text-white font-semibold py-2 px-3 rounded-lg text-xs">
+              Salvar Conta
+            </button>
+            <button type="button" onclick="limparFormPlanoContas()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-2.5 rounded-lg text-xs">
+              Limpar
+            </button>
+          </div>
+        </form>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="border border-emerald-500/30 rounded-xl p-4 bg-slate-50/60 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="font-extrabold text-sm uppercase text-conecta-green">Nível 1 • RECEITAS</h3>
+              <span id="pc-qtd-receitas" class="text-xs font-bold text-slate-500">0 contas</span>
+            </div>
+            <div id="pc-lista-receitas" class="space-y-2"></div>
+          </div>
+
+          <div class="border border-rose-500/30 rounded-xl p-4 bg-slate-50/60 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="font-extrabold text-sm uppercase text-rose-500">Nível 1 • DESPESAS</h3>
+              <span id="pc-qtd-despesas" class="text-xs font-bold text-slate-500">0 contas</span>
+            </div>
+            <div id="pc-lista-despesas" class="space-y-2"></div>
           </div>
         </div>
       </div>
@@ -1825,10 +1923,14 @@
           <label class="block font-medium mb-1">Descrição *</label>
           <input id="fin-desc" required class="w-full border rounded-lg px-3 py-2" />
         </div>
+        <div>
+          <label class="block font-medium mb-1">Plano de Contas (Tipo de Receita / Despesa) *</label>
+          <select id="fin-conta" required class="w-full border rounded-lg px-3 py-2"></select>
+        </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block font-medium mb-1">Tipo</label>
-            <select id="fin-tipo" onchange="alternarFornecedorFinanceiro()" class="w-full border rounded-lg px-3 py-2">
+            <select id="fin-tipo" onchange="alternarFornecedorFinanceiro(); popularSelectPlanoContas('fin-conta', document.getElementById('fin-tipo').value);" class="w-full border rounded-lg px-3 py-2">
               <option value="receita">Receita (A Receber)</option>
               <option value="despesa">Despesa (A Pagar)</option>
             </select>
@@ -1877,6 +1979,10 @@
       <form id="form-baixa-financeiro" onsubmit="confirmarBaixaFinanceiro(event)" class="space-y-4 text-sm">
         <input type="hidden" id="baixa-fin-id" />
         <div id="baixa-fin-resumo" class="bg-emerald-50 border border-emerald-200 text-conecta-emerald p-3 rounded-xl text-xs space-y-1"></div>
+        <div>
+          <label id="baixa-fin-conta-label" class="block font-semibold text-slate-700 mb-1">Tipo no Plano de Contas (Receita / Despesa) *</label>
+          <select id="baixa-fin-conta" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold"></select>
+        </div>
         <div>
           <label id="baixa-fin-data-label" class="block font-semibold text-slate-700 mb-1">Data da Baixa *</label>
           <input id="baixa-fin-data" type="date" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold" />
@@ -1989,6 +2095,7 @@
       os: [],
       orcamentos: [],
       financeiro: [],
+      planoContas: [],
       config: { nome: "CONECTA - Segurança e Climatização", cnpj: "", tel: "", cidade: "Itaperuna - RJ", pix: "" },
       fotosOSAntes: [],
       fotosOSDepois: [],
@@ -2458,6 +2565,7 @@
       document.getElementById('cfg-tel').value = state.config.tel || '';
       document.getElementById('cfg-cidade').value = state.config.cidade || '';
       document.getElementById('cfg-pix').value = state.config.pix || '';
+      await carregarPlanoContas();
     }
 
     function popularSelectTecnicos(selectId, valorSelecionado = '') {
@@ -3119,9 +3227,12 @@
           continue;
         }
 
+        const contaContrato = (state.planoContas || []).find(c => c.grupo === 'receita' && (c.id === 'pc_rec_cont' || /contrato|manuten/i.test(c.nome || ''))) || { id: 'pc_rec_cont', nome: 'Contratos de Manutenção Recorrente' };
         await salvarDocumento('financeiro', docId, {
           descricao: `${nomePlano} (${i + 1}/${totalParcelas}) - ${clienteNome}`,
           tipo: 'receita',
+          planoContaId: contaContrato.id,
+          planoContaNome: contaContrato.nome,
           valor: Number(valorMensal),
           vencimento,
           dataPrevistaPagamento: vencimento,
@@ -4392,19 +4503,28 @@
     };
 
     window.abrirModalFinanceiro = async (tipoPadrao = null) => {
+      if (!state.planoContas.length) await carregarPlanoContas();
       if (!state.fornecedores.length) state.fornecedores = await carregarColecao('fornecedores');
       document.getElementById('fin-fornecedor').innerHTML = '<option value="">Nenhum fornecedor vinculado</option>' + state.fornecedores.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
       document.getElementById('form-financeiro').reset();
       const hoje = new Date().toISOString().split('T')[0];
       document.getElementById('fin-vencimento').value = hoje;
       document.getElementById('fin-data-prevista').value = hoje;
-      if (tipoPadrao) document.getElementById('fin-tipo').value = tipoPadrao;
+      const tipoSel = tipoPadrao || document.getElementById('fin-tipo').value || 'receita';
+      document.getElementById('fin-tipo').value = tipoSel;
+      popularSelectPlanoContas('fin-conta', tipoSel);
       alternarFornecedorFinanceiro(); abrirModal('modal-financeiro');
     };
 
     window.salvarFinanceiro = async (e) => {
       e.preventDefault();
       const tipo = document.getElementById('fin-tipo').value;
+      const planoContaId = document.getElementById('fin-conta').value;
+      if (!planoContaId) {
+        showToast('Informe o tipo de receita/despesa no Plano de Contas.', 'warning');
+        return;
+      }
+      const planoContaNome = obterNomeContaPlano(planoContaId, tipo);
       const fornId = tipo === 'despesa' ? document.getElementById('fin-fornecedor').value : '';
       const forn = state.fornecedores.find(f => f.id === fornId);
       const status = document.getElementById('fin-status').value;
@@ -4412,7 +4532,9 @@
       const dataPrevistaPagamento = document.getElementById('fin-data-prevista').value || vencimento;
       try {
         await salvarDocumento('financeiro', `fin_${Date.now()}`, {
-          descricao: document.getElementById('fin-desc').value.trim(), tipo, fornecedorId: fornId || null,
+          descricao: document.getElementById('fin-desc').value.trim(), tipo,
+          planoContaId, planoContaNome,
+          fornecedorId: fornId || null,
           fornecedorNome: forn ? forn.nome : '', valor: Number(document.getElementById('fin-valor').value || 0),
           vencimento, dataPrevistaPagamento, status,
           dataPagamento: status === 'pago' ? new Date().toISOString().split('T')[0] : null,
@@ -4469,11 +4591,16 @@
     window.setFiltroFinTipo = (val) => { document.getElementById('filtro-fin-tipo').value = val; renderFinanceiro(); };
     window.setFiltroFinStatus = (val) => { document.getElementById('filtro-fin-status').value = val; renderFinanceiro(); };
 
-    window.darBaixaFinanceiro = (id) => {
+    window.darBaixaFinanceiro = async (id) => {
       const f = state.financeiro.find(x => x.id === id);
       if (!f) return;
+      if (!state.planoContas.length) await carregarPlanoContas();
       document.getElementById('baixa-fin-id').value = id;
       const tipoLabel = f.tipo === 'receita' ? 'Recebimento (A Receber)' : 'Pagamento (A Pagar)';
+      document.getElementById('baixa-fin-conta-label').textContent = f.tipo === 'receita'
+        ? 'Tipo de Receita no Plano de Contas *'
+        : 'Tipo de Despesa no Plano de Contas *';
+      popularSelectPlanoContas('baixa-fin-conta', f.tipo, f.planoContaId || '');
       document.getElementById('baixa-fin-data-label').textContent = 'Data de Pagamento *';
       document.getElementById('baixa-fin-resumo').innerHTML = `
         <p class="font-bold text-slate-800">${f.descricao}</p>
@@ -4487,11 +4614,20 @@
     window.confirmarBaixaFinanceiro = async (e) => {
       e.preventDefault();
       const id = document.getElementById('baixa-fin-id').value;
+      const f = state.financeiro.find(x => x.id === id);
+      const planoContaId = document.getElementById('baixa-fin-conta').value;
       const dataBaixa = document.getElementById('baixa-fin-data').value;
-      if (!id || !dataBaixa) { showToast("Informe a data de pagamento.", 'warning'); return; }
+      if (!id || !planoContaId) {
+        showToast("Informe o tipo de receita/despesa no Plano de Contas para concluir a baixa.", 'warning');
+        return;
+      }
+      if (!dataBaixa) { showToast("Informe a data de pagamento.", 'warning'); return; }
+      const planoContaNome = obterNomeContaPlano(planoContaId, f?.tipo || '');
       try {
         await salvarDocumento('financeiro', id, {
           status: 'pago',
+          planoContaId,
+          planoContaNome,
           dataPagamento: dataBaixa,
           dataBaixa: dataBaixa,
           baixadoPor: state.usuarioAtual?.nome || '',
@@ -4760,7 +4896,7 @@
                 <span class="font-semibold text-slate-800">${f.descricao}</span>
                 ${f.fornecedorNome ? `<span class="ml-2 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${f.fornecedorNome}</span>` : ''}
                 <p class="text-xs text-slate-400 mt-0.5">
-                  Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong>${dataPrevTexto} • Status: <strong class="${ehPago ? 'text-conecta-green' : 'text-amber-500'}">${(f.status || 'pendente').toUpperCase()}</strong>
+                  Conta: <strong class="text-slate-600">${obterNomeContaPlano(f.planoContaId, f.tipo)}</strong> • Vencimento: <strong>${formatarDataBR(f.vencimento)}</strong>${dataPrevTexto} • Status: <strong class="${ehPago ? 'text-conecta-green' : 'text-amber-500'}">${(f.status || 'pendente').toUpperCase()}</strong>
                   ${ehPago && f.dataPagamento ? ` • Pago em: <strong class="text-slate-600">${formatarDataBR(f.dataPagamento)}</strong>` : ''}
                   ${f.baixadoPor ? ` (${f.baixadoPor})` : (f.criadoPor ? ` • Lançado por: ${f.criadoPor}` : '')}
                 </p>
@@ -4777,7 +4913,265 @@
             </div>`;
           }).join('')
         : '<p class="p-4 text-sm text-slate-500">Nenhum lançamento encontrado para o filtro selecionado.</p>';
+      renderRelatorioPlanoContas(porData);
     };
+
+    // =========================================================================
+    // 14B. PLANO DE CONTAS (2 NÍVEIS) E RELATÓRIO FILTRÁVEL
+    // =========================================================================
+    const PLANO_CONTAS_PADRAO = [
+      { id: 'pc_rec_serv', grupo: 'receita', codigo: '1.01', nome: 'Serviços de Segurança e Climatização', ativo: true },
+      { id: 'pc_rec_cont', grupo: 'receita', codigo: '1.02', nome: 'Contratos de Manutenção Recorrente', ativo: true },
+      { id: 'pc_rec_prod', grupo: 'receita', codigo: '1.03', nome: 'Venda de Equipamentos e Kits', ativo: true },
+      { id: 'pc_desp_forn', grupo: 'despesa', codigo: '2.01', nome: 'Fornecedores e Materiais Técnicos', ativo: true },
+      { id: 'pc_desp_oper', grupo: 'despesa', codigo: '2.02', nome: 'Despesas Operacionais e Frota', ativo: true },
+      { id: 'pc_desp_fixa', grupo: 'despesa', codigo: '2.03', nome: 'Despesas Fixas, Impostos e Equipe', ativo: true }
+    ];
+
+    async function carregarPlanoContas() {
+      try {
+        if (navigator.onLine) {
+          const snap = await getDoc(doc(db, 'configuracoes', 'plano_contas'));
+          if (snap.exists() && Array.isArray(snap.data().contas) && snap.data().contas.length) {
+            state.planoContas = snap.data().contas;
+          } else {
+            state.planoContas = [...PLANO_CONTAS_PADRAO];
+            await setDoc(doc(db, 'configuracoes', 'plano_contas'), { contas: state.planoContas }, { merge: true });
+          }
+        } else if (!state.planoContas.length) {
+          state.planoContas = [...PLANO_CONTAS_PADRAO];
+        }
+      } catch (e) {
+        if (!state.planoContas.length) state.planoContas = [...PLANO_CONTAS_PADRAO];
+      }
+      renderPlanoContasConfig();
+      popularFiltroRelatorioPlanoContas();
+    }
+
+    async function persistirPlanoContas() {
+      if (!garantirOnlineParaEscrita()) throw new Error('OFFLINE_BLOCKED');
+      await setDoc(doc(db, 'configuracoes', 'plano_contas'), {
+        contas: state.planoContas,
+        atualizadoPor: state.usuarioAtual?.nome || '',
+        atualizadoEm: new Date().toISOString()
+      });
+      renderPlanoContasConfig();
+      popularFiltroRelatorioPlanoContas();
+      if (document.getElementById('tab-financeiro')?.classList.contains('active')) {
+        renderFinanceiro();
+      }
+    }
+
+    window.limparFormPlanoContas = () => {
+      document.getElementById('form-plano-contas').reset();
+      document.getElementById('pc-id').value = '';
+    };
+
+    window.editarContaPlano = (id) => {
+      const c = state.planoContas.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('pc-id').value = c.id;
+      document.getElementById('pc-grupo').value = c.grupo;
+      document.getElementById('pc-codigo').value = c.codigo || '';
+      document.getElementById('pc-nome').value = c.nome || '';
+      document.getElementById('pc-nome').focus();
+    };
+
+    window.salvarContaPlano = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('pc-id').value || `pc_${Date.now()}`;
+      const grupo = document.getElementById('pc-grupo').value;
+      const codigo = document.getElementById('pc-codigo').value.trim();
+      const nome = document.getElementById('pc-nome').value.trim();
+      if (!nome) { showToast('Informe o nome da conta do Plano de Contas.', 'warning'); return; }
+
+      const idx = state.planoContas.findIndex(x => x.id === id);
+      const itemObj = { id, grupo, codigo, nome, ativo: idx >= 0 ? (state.planoContas[idx].ativo !== false) : true };
+      if (idx >= 0) state.planoContas[idx] = itemObj;
+      else state.planoContas.push(itemObj);
+
+      try {
+        await persistirPlanoContas();
+        limparFormPlanoContas();
+        showToast('Conta do Plano de Contas salva!', 'success');
+      } catch (err) {
+        if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar conta.', 'error');
+      }
+    };
+
+    window.excluirContaPlano = async (id) => {
+      const c = state.planoContas.find(x => x.id === id);
+      if (!c) return;
+      const ok = await confirmarAcao({
+        titulo: 'Remover Conta do Plano de Contas',
+        mensagem: `Deseja remover a conta "${c.codigo ? c.codigo + ' - ' : ''}${c.nome}" (${c.grupo === 'receita' ? 'Receitas' : 'Despesas'})?`,
+        textoConfirmar: 'Remover',
+        perigoso: true
+      });
+      if (!ok) return;
+      state.planoContas = state.planoContas.filter(x => x.id !== id);
+      try {
+        await persistirPlanoContas();
+        showToast('Conta removida do Plano de Contas.', 'success');
+      } catch (err) {
+        if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao remover conta.', 'error');
+      }
+    };
+
+    function renderPlanoContasConfig() {
+      const listaRec = document.getElementById('pc-lista-receitas');
+      const listaDesp = document.getElementById('pc-lista-despesas');
+      const qtdRec = document.getElementById('pc-qtd-receitas');
+      const qtdDesp = document.getElementById('pc-qtd-despesas');
+      if (!listaRec || !listaDesp) return;
+
+      const receitas = state.planoContas.filter(c => c.grupo === 'receita');
+      const despesas = state.planoContas.filter(c => c.grupo === 'despesa');
+      if (qtdRec) qtdRec.textContent = `${receitas.length} conta(s)`;
+      if (qtdDesp) qtdDesp.textContent = `${despesas.length} conta(s)`;
+
+      const renderLinha = (c) => `
+        <div class="flex items-center justify-between gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs">
+          <div>
+            <span class="font-bold text-slate-800">${c.codigo ? c.codigo + ' • ' : ''}${c.nome}</span>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="editarContaPlano('${c.id}')" class="px-2 py-1 rounded bg-slate-100 font-semibold text-slate-700">Editar</button>
+            <button type="button" onclick="excluirContaPlano('${c.id}')" class="px-2 py-1 rounded bg-red-500/15 text-red-500 font-semibold">🗑</button>
+          </div>
+        </div>`;
+
+      listaRec.innerHTML = receitas.length ? receitas.map(renderLinha).join('') : '<p class="text-xs text-slate-400">Nenhuma conta de receita cadastrada.</p>';
+      listaDesp.innerHTML = despesas.length ? despesas.map(renderLinha).join('') : '<p class="text-xs text-slate-400">Nenhuma conta de despesa cadastrada.</p>';
+    }
+
+    function popularSelectPlanoContas(selectId, grupoFiltro = '', valorSelecionado = '') {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      const base = state.planoContas.length ? state.planoContas : PLANO_CONTAS_PADRAO;
+      const filtradas = grupoFiltro ? base.filter(c => c.grupo === grupoFiltro) : base;
+      const options = filtradas.map(c => {
+        const rotuloGrupo = c.grupo === 'receita' ? 'Receita' : 'Despesa';
+        const txt = `${c.codigo ? c.codigo + ' - ' : ''}${c.nome} (${rotuloGrupo})`;
+        return `<option value="${c.id}">${txt}</option>`;
+      });
+      sel.innerHTML = '<option value="">Selecione o tipo de receita/despesa...</option>' + options.join('');
+      if (valorSelecionado && Array.from(sel.options).some(o => o.value === valorSelecionado)) {
+        sel.value = valorSelecionado;
+      } else if (filtradas.length === 1) {
+        sel.value = filtradas[0].id;
+      }
+    }
+
+    function obterNomeContaPlano(contaId, tipoFallback = '') {
+      if (!contaId) return tipoFallback === 'despesa' ? 'Despesa (Sem conta)' : 'Receita (Sem conta)';
+      const base = state.planoContas.length ? state.planoContas : PLANO_CONTAS_PADRAO;
+      const encontrada = base.find(c => c.id === contaId);
+      if (!encontrada) return contaId;
+      return `${encontrada.codigo ? encontrada.codigo + ' - ' : ''}${encontrada.nome}`;
+    }
+
+    window.aoAlterarGrupoRelatorioPC = () => {
+      popularFiltroRelatorioPlanoContas();
+      renderRelatorioPlanoContas();
+    };
+
+    function popularFiltroRelatorioPlanoContas() {
+      const selGrupo = document.getElementById('rel-pc-grupo');
+      const selConta = document.getElementById('rel-pc-conta');
+      if (!selGrupo || !selConta) return;
+      const grupoAtual = selGrupo.value;
+      const valorAnterior = selConta.value;
+      const base = state.planoContas.length ? state.planoContas : PLANO_CONTAS_PADRAO;
+      const contasVisiveis = grupoAtual === 'todos' ? base : base.filter(c => c.grupo === grupoAtual);
+      selConta.innerHTML = '<option value="todas">Todas as Contas</option>' +
+        contasVisiveis.map(c => `<option value="${c.id}">${c.codigo ? c.codigo + ' - ' : ''}${c.nome} (${c.grupo === 'receita' ? 'Receita' : 'Despesa'})</option>`).join('');
+      if (valorAnterior && Array.from(selConta.options).some(o => o.value === valorAnterior)) {
+        selConta.value = valorAnterior;
+      } else {
+        selConta.value = 'todas';
+      }
+    }
+
+    function renderRelatorioPlanoContas(basePeriodo = null) {
+      const box = document.getElementById('rel-pc-conteudo');
+      const badge = document.getElementById('rel-pc-resumo-badge');
+      if (!box || !badge) return;
+
+      const dIni = document.getElementById('filtro-fin-inicio')?.value || '';
+      const dFim = document.getElementById('filtro-fin-fim')?.value || '';
+      const origem = basePeriodo || state.financeiro.filter(f => {
+        if (dIni && (!f.vencimento || f.vencimento < dIni)) return false;
+        if (dFim && (!f.vencimento || f.vencimento > dFim)) return false;
+        return true;
+      });
+
+      const fGrupo = document.getElementById('rel-pc-grupo')?.value || 'todos';
+      const fConta = document.getElementById('rel-pc-conta')?.value || 'todas';
+      const fSit = document.getElementById('rel-pc-situacao')?.value || 'todos';
+
+      const itensFiltrados = origem.filter(f => {
+        if (fGrupo !== 'todos' && f.tipo !== fGrupo) return false;
+        if (fConta !== 'todas' && f.planoContaId !== fConta) return false;
+        if (fSit === 'pago' && f.status !== 'pago') return false;
+        if (fSit === 'pendente' && f.status === 'pago') return false;
+        return true;
+      });
+
+      const agrupado = {};
+      itensFiltrados.forEach(item => {
+        const chave = `${item.tipo || 'receita'}::${item.planoContaId || 'sem_conta'}`;
+        if (!agrupado[chave]) {
+          agrupado[chave] = {
+            grupo: item.tipo || 'receita',
+            contaNome: obterNomeContaPlano(item.planoContaId, item.tipo),
+            qtd: 0,
+            realizado: 0,
+            previsto: 0,
+            total: 0
+          };
+        }
+        const v = Number(item.valor || 0);
+        agrupado[chave].qtd += 1;
+        if (item.status === 'pago') agrupado[chave].realizado += v;
+        else agrupado[chave].previsto += v;
+        agrupado[chave].total += v;
+      });
+
+      const linhas = Object.values(agrupado).sort((a, b) => a.contaNome.localeCompare(b.contaNome));
+      const somaGeral = linhas.reduce((acc, l) => acc + l.total, 0);
+      badge.textContent = `${itensFiltrados.length} lançamento(s) • ${formatBRL(somaGeral)}`;
+
+      if (!linhas.length) {
+        box.innerHTML = '<p class="text-slate-400 py-2">Nenhum lançamento encontrado para os filtros do Plano de Contas neste período.</p>';
+        return;
+      }
+
+      box.innerHTML = `
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b bg-slate-50 text-slate-600 uppercase text-[10px]">
+              <th class="py-2 px-3">Grupo</th>
+              <th class="py-2 px-3">Conta (Nível 2)</th>
+              <th class="py-2 px-3 text-center">Qtd</th>
+              <th class="py-2 px-3 text-right">Realizado</th>
+              <th class="py-2 px-3 text-right">Previsto</th>
+              <th class="py-2 px-3 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${linhas.map(l => `
+              <tr class="border-b hover:bg-slate-50">
+                <td class="py-2 px-3 font-bold uppercase ${l.grupo === 'receita' ? 'text-conecta-green' : 'text-rose-500'}">${l.grupo === 'receita' ? 'Receitas' : 'Despesas'}</td>
+                <td class="py-2 px-3 font-semibold text-slate-800">${l.contaNome}</td>
+                <td class="py-2 px-3 text-center">${l.qtd}</td>
+                <td class="py-2 px-3 text-right font-semibold text-conecta-green">${formatBRL(l.realizado)}</td>
+                <td class="py-2 px-3 text-right font-semibold text-amber-500">${formatBRL(l.previsto)}</td>
+                <td class="py-2 px-3 text-right font-extrabold text-slate-800">${formatBRL(l.total)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
 
     // =========================================================================
     // 15. CONFIGURAÇÕES E BACKUP JSON
