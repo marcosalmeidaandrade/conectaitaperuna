@@ -3648,43 +3648,184 @@
       } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao gerar OS.', 'error'); }
     };
 
-    function montarHtmlPDFOrcamento(o) {
-      const linhas = (o.itens || []).map(i => `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 8px 4px;">${i.descricao}</td><td style="padding: 8px 4px; text-align: center;">${i.qtd}</td><td style="padding: 8px 4px; text-align: right;">${formatBRL(i.valorUnit)}</td><td style="padding: 8px 4px; text-align: right; font-weight: 600;">${formatBRL(i.qtd * i.valorUnit)}</td></tr>`).join('');
-      const fotosHtml = (o.fotos && o.fotos.length) ? `
-        <div style="margin-top: 20px;">
-          <p style="font-weight: 700; font-size: 13px; margin-bottom: 10px; color: #006837;">FOTOS ANEXAS DO ORÇAMENTO</p>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; align-items: start;">
-            ${o.fotos.map(f => `<div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; background: #f8fafc; page-break-inside: avoid; text-align: center;"><img src="${f}" crossorigin="anonymous" style="max-width: 100%; max-height: 260px; width: auto; height: auto; object-fit: contain; margin: 0 auto; display: block; border-radius: 4px;" /></div>`).join('')}
-          </div>
+    async function imagemParaDataURL(src) {
+      if (!src) return '';
+      if (src.startsWith('data:')) return src;
+      try {
+        const res = await fetch(src, { mode: 'cors', cache: 'force-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const blob = await res.blob();
+        return await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result || '');
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } catch (err) {
+        return await new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = img.naturalWidth || img.width || 120;
+              canvas.height = img.naturalHeight || img.height || 120;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0);
+              resolve(canvas.toDataURL('image/png'));
+            } catch (e) {
+              resolve('');
+            }
+          };
+          img.onerror = () => resolve('');
+          img.src = src;
+        });
+      }
+    }
+
+    function montarHtmlPDFOrcamento(o, logoDataUrl = '', fotosDataUrls = []) {
+      const cli = state.clientes.find(c => c.id === o.clienteId) || {};
+      const cliDoc = cli.documento ? (cli.tipo === 'PJ' ? formatarCNPJ(cli.documento) : formatarCPF(cli.documento)) : '';
+      const cliTel = o.clienteTelefone ? formatarTelefone(o.clienteTelefone) : (cli.telefone ? formatarTelefone(cli.telefone) : '');
+      const cliEnd = o.clienteEndereco || cli.endereco || '';
+      const catLabel = o.categoria === 'climatizacao' ? 'Climatização (Ar-condicionado)' : 'Segurança Eletrônica (CFTV / Alarme)';
+      const statusLabel = (STATUS_ORDEM.find(s => s.chave === o.status)?.label || 'Rascunho').toUpperCase();
+      const itens = (o.itens && o.itens.length) ? o.itens : [];
+      const subtotalCalc = itens.reduce((acc, i) => acc + (Number(i.qtd || 0) * Number(i.valorUnit || 0)), 0);
+
+      const linhas = itens.length
+        ? itens.map((i, idx) => `
+            <tr style="border-bottom: 1px solid #cbd5e1; background: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+              <td style="padding: 8px 6px; color: #0f172a; word-break: break-word;">${i.descricao || '-'}</td>
+              <td style="padding: 8px 6px; text-align: center; color: #0f172a; font-weight: 600;">${Number(i.qtd || 0)}</td>
+              <td style="padding: 8px 6px; text-align: right; color: #334155;">${formatBRL(i.valorUnit)}</td>
+              <td style="padding: 8px 6px; text-align: right; color: #0f172a; font-weight: 700;">${formatBRL(Number(i.qtd || 0) * Number(i.valorUnit || 0))}</td>
+            </tr>`).join('')
+        : `<tr><td colspan="4" style="padding: 12px 6px; text-align: center; color: #64748b;">Nenhum item detalhado neste orçamento.</td></tr>`;
+
+      const fotosValidas = (fotosDataUrls || []).filter(Boolean);
+      const fotosHtml = fotosValidas.length ? `
+        <div style="margin-top: 18px; page-break-inside: avoid;">
+          <p style="font-weight: 800; font-size: 12px; margin: 0 0 8px 0; color: #006837; text-transform: uppercase; letter-spacing: 0.03em;">Fotos Anexas do Orçamento (${fotosValidas.length})</p>
+          <table style="width: 100%; border-collapse: separate; border-spacing: 8px;">
+            <tr>
+              ${fotosValidas.map((f, idx) => `
+                ${idx > 0 && idx % 2 === 0 ? '</tr><tr>' : ''}
+                <td style="width: 50%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; background: #f8fafc; text-align: center; vertical-align: middle;">
+                  <img src="${f}" style="max-width: 100%; max-height: 210px; width: auto; height: auto; margin: 0 auto; display: block; border-radius: 4px;" />
+                </td>
+              `).join('')}
+            </tr>
+          </table>
         </div>` : '';
+
+      const logoHtml = logoDataUrl
+        ? `<img src="${logoDataUrl}" style="height: 56px; width: 56px; object-fit: contain; background: #0A0F0D; padding: 5px; border-radius: 8px; display: block;" />`
+        : `<div style="height: 56px; width: 56px; background: #006837; color: #ffffff; font-weight: 800; font-size: 24px; line-height: 56px; text-align: center; border-radius: 8px;">C</div>`;
+
       return `
-        <div style="font-family: Inter, Arial, sans-serif; color: #0f172a; padding: 10px; background: #ffffff;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A859; padding-bottom: 12px; margin-bottom: 16px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <img src="./somentelogo.png" crossorigin="anonymous" style="height: 54px; width: 54px; object-fit: contain; background: #000; padding: 4px; border-radius: 8px;" />
-              <div><h1 style="font-size: 18px; font-weight: 800; color: #006837; margin: 0;">${state.config.nome}</h1><p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">${state.config.cnpj || ''} ${state.config.tel ? '• ' + state.config.tel : ''} • ${state.config.cidade || ''}</p></div>
-            </div>
-            <div style="text-align: right;"><p style="font-weight: 800; font-size: 16px; margin: 0;">${o.numero}</p><p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">Validade: ${formatarDataBR(o.validade)}</p></div>
+        <div style="width: 710px; max-width: 710px; font-family: Arial, Helvetica, sans-serif; color: #0f172a; background: #ffffff; padding: 14px; box-sizing: border-box;">
+          <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #00A859; margin-bottom: 14px;">
+            <tr>
+              <td style="padding-bottom: 12px; vertical-align: middle; width: 66px;">
+                ${logoHtml}
+              </td>
+              <td style="padding-bottom: 12px; padding-left: 10px; vertical-align: middle;">
+                <div style="font-size: 17px; font-weight: 800; color: #006837; line-height: 1.2;">${state.config.nome || 'CONECTA - Segurança e Climatização'}</div>
+                <div style="font-size: 11px; color: #475569; margin-top: 3px;">
+                  ${[state.config.cnpj ? 'CNPJ: ' + state.config.cnpj : '', state.config.tel, state.config.cidade].filter(Boolean).join(' • ')}
+                </div>
+                ${state.config.pix ? `<div style="font-size: 10px; color: #006837; margin-top: 2px; font-weight: 700;">PIX: ${state.config.pix}</div>` : ''}
+              </td>
+              <td style="padding-bottom: 12px; text-align: right; vertical-align: middle;">
+                <div style="font-weight: 800; font-size: 16px; color: #0f172a;">${o.numero}</div>
+                <div style="font-size: 11px; color: #475569; margin-top: 2px;">Emissão: <strong>${formatarDataBR(o.criadoEm || new Date().toISOString())}</strong></div>
+                <div style="font-size: 11px; color: #006837; margin-top: 2px;">Validade: <strong>${formatarDataBR(o.validade)}</strong></div>
+              </td>
+            </tr>
+          </table>
+
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.5;">
+            <div style="font-size: 13px; color: #0f172a;"><strong>Cliente:</strong> ${o.clienteNome}</div>
+            ${(cliDoc || cliTel) ? `<div style="color: #334155; margin-top: 2px;">${[cliDoc ? (cli.tipo === 'PJ' ? 'CNPJ: ' + cliDoc : 'CPF: ' + cliDoc) : '', cliTel ? 'Telefone: ' + cliTel : ''].filter(Boolean).join(' &nbsp;|&nbsp; ')}</div>` : ''}
+            ${cliEnd ? `<div style="color: #334155; margin-top: 2px;"><strong>Endereço:</strong> ${cliEnd}</div>` : ''}
+            <div style="color: #334155; margin-top: 2px;"><strong>Área / Serviço:</strong> ${catLabel} &nbsp;|&nbsp; <strong>Status:</strong> ${statusLabel}</div>
           </div>
-          <div style="margin-bottom: 14px; font-size: 13px;"><strong>Cliente:</strong> ${o.clienteNome}</div>
-          <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 16px;">
-            <thead><tr style="border-bottom: 2px solid #0f172a; text-align: left; background: #f8fafc;"><th style="padding: 8px 4px;">Descrição</th><th style="padding: 8px 4px; text-align: center;">Qtd</th><th style="padding: 8px 4px; text-align: right;">Unitário</th><th style="padding: 8px 4px; text-align: right;">Subtotal</th></tr></thead>
+
+          <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 14px;">
+            <thead>
+              <tr style="background: #006837; color: #ffffff; text-align: left;">
+                <th style="padding: 8px 6px; width: 54%;">Descrição do Item / Serviço</th>
+                <th style="padding: 8px 6px; text-align: center; width: 10%;">Qtd</th>
+                <th style="padding: 8px 6px; text-align: right; width: 18%;">Valor Unit.</th>
+                <th style="padding: 8px 6px; text-align: right; width: 18%;">Subtotal</th>
+              </tr>
+            </thead>
             <tbody>${linhas}</tbody>
           </table>
-          ${o.desconto > 0 ? `<p style="text-align: right; font-size: 12px; color: #64748b; margin: 0 0 4px 0;">Desconto: - ${formatBRL(o.desconto)}</p>` : ''}
-          <p style="text-align: right; font-size: 18px; font-weight: 800; color: #006837; margin: 0;">Total da Proposta: ${formatBRL(o.valorTotal)}</p>
-          ${o.obs ? `<div style="margin-top: 16px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #f8fafc;"><strong>Observações / Condições:</strong><br/>${o.obs}</div>` : ''}
+
+          <table style="width: 100%; border-collapse: collapse; margin-top: 6px;">
+            <tr>
+              <td style="vertical-align: top; width: 58%; padding-right: 12px;">
+                ${o.obs ? `
+                  <div style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11.5px; background: #f8fafc; color: #1e293b; line-height: 1.45;">
+                    <strong style="color: #006837; display: block; margin-bottom: 3px;">Observações e Condições de Pagamento:</strong>
+                    ${String(o.obs).replace(/\n/g, '<br/>')}
+                  </div>` : ''}
+              </td>
+              <td style="vertical-align: top; width: 42%;">
+                <div style="background: #f0fdf4; border: 1.5px solid #00A859; border-radius: 6px; padding: 10px 12px; text-align: right;">
+                  <div style="font-size: 11.5px; color: #475569; margin-bottom: 3px;">Subtotal: <strong>${formatBRL(subtotalCalc)}</strong></div>
+                  ${Number(o.desconto || 0) > 0 ? `<div style="font-size: 11.5px; color: #dc2626; margin-bottom: 4px;">Desconto: <strong>- ${formatBRL(o.desconto)}</strong></div>` : ''}
+                  <div style="border-top: 1px solid #bbf7d0; padding-top: 6px; margin-top: 4px; font-size: 16px; font-weight: 800; color: #006837;">
+                    Total: ${formatBRL(o.valorTotal)}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
           ${fotosHtml}
+
+          <div style="margin-top: 26px; padding-top: 10px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 10px; color: #64748b;">
+            ${state.config.nome || 'CONECTA - Segurança e Climatização'} ${state.config.cidade ? '• ' + state.config.cidade : ''} • Documento gerado em ${formatarDataHoraBR(new Date())}
+          </div>
         </div>`;
     }
 
     async function gerarPDFOrcamentoBlob(o) {
-      const container = document.createElement('div');
-      container.innerHTML = montarHtmlPDFOrcamento(o);
-      return await html2pdf().set({
-        margin: 10, filename: `${o.numero}.pdf`, image: { type: 'jpeg', quality: 0.92 },
-        html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      }).from(container).outputPdf('blob');
+      const logoSrc = document.getElementById('header-logo')?.src || './somentelogo.png';
+      const [logoDataUrl, fotosDataUrls] = await Promise.all([
+        imagemParaDataURL(logoSrc),
+        Promise.all((o.fotos || []).map(f => imagemParaDataURL(f)))
+      ]);
+
+      const host = document.createElement('div');
+      host.style.cssText = 'position: fixed; left: 0; top: 0; width: 710px; background: #ffffff; z-index: -1; opacity: 0.01; pointer-events: none;';
+      host.innerHTML = montarHtmlPDFOrcamento(o, logoDataUrl, fotosDataUrls);
+      document.body.appendChild(host);
+
+      try {
+        await new Promise(r => requestAnimationFrame(() => setTimeout(r, 120)));
+        return await html2pdf().set({
+          margin: [8, 8, 8, 8],
+          filename: `${o.numero}.pdf`,
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 750,
+            logging: false
+          },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        }).from(host).outputPdf('blob');
+      } finally {
+        host.remove();
+      }
     }
 
     window.baixarPDFOrcamento = async (id) => {
