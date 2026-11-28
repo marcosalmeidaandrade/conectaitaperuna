@@ -1915,30 +1915,32 @@
   <div id="modal-financeiro" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4 no-print">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="font-bold text-lg text-slate-800">Lançamento Financeiro</h3>
+        <h3 id="modal-fin-titulo" class="font-bold text-lg text-slate-800">Lançamento Financeiro</h3>
         <button onclick="fecharModal('modal-financeiro')" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
       </div>
       <form id="form-financeiro" onsubmit="salvarFinanceiro(event)" class="space-y-3 text-sm">
+        <input type="hidden" id="fin-id" />
         <div>
           <label class="block font-medium mb-1">Descrição *</label>
           <input id="fin-desc" required class="w-full border rounded-lg px-3 py-2" />
         </div>
-        <div>
-          <label class="block font-medium mb-1">Plano de Contas (Tipo de Receita / Despesa) *</label>
-          <select id="fin-conta" required class="w-full border rounded-lg px-3 py-2"></select>
-        </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-medium mb-1">Tipo</label>
-            <select id="fin-tipo" onchange="alternarFornecedorFinanceiro(); popularSelectPlanoContas('fin-conta', document.getElementById('fin-tipo').value);" class="w-full border rounded-lg px-3 py-2">
-              <option value="receita">Receita (A Receber)</option>
-              <option value="despesa">Despesa (A Pagar)</option>
+            <label class="block font-medium mb-1">Grupo (Nível 1) *</label>
+            <select id="fin-tipo" required onchange="alternarFornecedorFinanceiro(); popularSelectPlanoContas('fin-conta', document.getElementById('fin-tipo').value);" class="w-full border rounded-lg px-3 py-2 font-semibold">
+              <option value="">Selecione o grupo...</option>
+              <option value="receita">Receita (Crédito / A Receber)</option>
+              <option value="despesa">Despesa (Débito / A Pagar)</option>
             </select>
           </div>
           <div>
             <label class="block font-medium mb-1">Valor (R$) *</label>
             <input id="fin-valor" type="number" step="0.01" required class="w-full border rounded-lg px-3 py-2" />
           </div>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Subgrupo / Conta (Nível 2 - Plano de Contas) *</label>
+          <select id="fin-conta" required class="w-full border rounded-lg px-3 py-2 font-semibold"></select>
         </div>
         <div id="fin-fornecedor-box" class="hidden">
           <label class="block font-medium mb-1">Fornecedor (Opcional)</label>
@@ -1980,7 +1982,15 @@
         <input type="hidden" id="baixa-fin-id" />
         <div id="baixa-fin-resumo" class="bg-emerald-50 border border-emerald-200 text-conecta-emerald p-3 rounded-xl text-xs space-y-1"></div>
         <div>
-          <label id="baixa-fin-conta-label" class="block font-semibold text-slate-700 mb-1">Tipo no Plano de Contas (Receita / Despesa) *</label>
+          <label class="block font-semibold text-slate-700 mb-1">Grupo (Nível 1 - Receita / Despesa) *</label>
+          <select id="baixa-fin-grupo" required onchange="aoAlterarGrupoBaixaFinanceiro()" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold">
+            <option value="">Selecione o grupo...</option>
+            <option value="receita">Receita (Crédito / Entrada)</option>
+            <option value="despesa">Despesa (Débito / Saída)</option>
+          </select>
+        </div>
+        <div>
+          <label id="baixa-fin-conta-label" class="block font-semibold text-slate-700 mb-1">Subgrupo / Conta (Nível 2 - Plano de Contas) *</label>
           <select id="baixa-fin-conta" required class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold"></select>
         </div>
         <div>
@@ -4502,47 +4512,89 @@
       if (tipo === 'despesa') box.classList.remove('hidden'); else box.classList.add('hidden');
     };
 
-    window.abrirModalFinanceiro = async (tipoPadrao = null) => {
+    window.abrirModalFinanceiro = async (tipoPadrao = null, idEdicao = null) => {
       if (!state.planoContas.length) await carregarPlanoContas();
       if (!state.fornecedores.length) state.fornecedores = await carregarColecao('fornecedores');
       document.getElementById('fin-fornecedor').innerHTML = '<option value="">Nenhum fornecedor vinculado</option>' + state.fornecedores.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
       document.getElementById('form-financeiro').reset();
+      document.getElementById('fin-id').value = idEdicao || '';
       const hoje = new Date().toISOString().split('T')[0];
-      document.getElementById('fin-vencimento').value = hoje;
-      document.getElementById('fin-data-prevista').value = hoje;
-      const tipoSel = tipoPadrao || document.getElementById('fin-tipo').value || 'receita';
-      document.getElementById('fin-tipo').value = tipoSel;
-      popularSelectPlanoContas('fin-conta', tipoSel);
-      alternarFornecedorFinanceiro(); abrirModal('modal-financeiro');
+
+      if (idEdicao) {
+        const f = state.financeiro.find(x => x.id === idEdicao);
+        if (!f) return;
+        document.getElementById('modal-fin-titulo').textContent = 'Editar Lançamento Financeiro';
+        document.getElementById('fin-desc').value = f.descricao || '';
+        const grupoVal = (f.tipo === 'receita' || f.tipo === 'despesa') ? f.tipo : '';
+        document.getElementById('fin-tipo').value = grupoVal;
+        popularSelectPlanoContas('fin-conta', grupoVal, f.planoContaId || '');
+        document.getElementById('fin-valor').value = Number(f.valor || 0);
+        document.getElementById('fin-fornecedor').value = f.fornecedorId || '';
+        document.getElementById('fin-vencimento').value = f.vencimento || hoje;
+        document.getElementById('fin-data-prevista').value = f.dataPrevistaPagamento || f.vencimento || hoje;
+        document.getElementById('fin-status').value = f.status || 'pendente';
+      } else {
+        document.getElementById('modal-fin-titulo').textContent = 'Novo Lançamento Financeiro';
+        document.getElementById('fin-vencimento').value = hoje;
+        document.getElementById('fin-data-prevista').value = hoje;
+        const tipoSel = tipoPadrao || '';
+        document.getElementById('fin-tipo').value = tipoSel;
+        popularSelectPlanoContas('fin-conta', tipoSel, '');
+      }
+      alternarFornecedorFinanceiro();
+      abrirModal('modal-financeiro');
     };
+
+    window.editarFinanceiro = (id) => abrirModalFinanceiro(null, id);
 
     window.salvarFinanceiro = async (e) => {
       e.preventDefault();
+      const idExistente = document.getElementById('fin-id').value;
+      const antigo = idExistente ? state.financeiro.find(x => x.id === idExistente) : null;
       const tipo = document.getElementById('fin-tipo').value;
       const planoContaId = document.getElementById('fin-conta').value;
-      if (!planoContaId) {
-        showToast('Informe o tipo de receita/despesa no Plano de Contas.', 'warning');
+
+      if (!tipo || (tipo !== 'receita' && tipo !== 'despesa')) {
+        showToast('Informe o Grupo (Receita ou Despesa) do Plano de Contas antes de salvar.', 'warning');
         return;
       }
+      const baseContas = state.planoContas.length ? state.planoContas : PLANO_CONTAS_PADRAO;
+      const contaValida = baseContas.find(c => c.id === planoContaId && c.grupo === tipo);
+      if (!planoContaId || !contaValida) {
+        showToast('Informe o Subgrupo / Conta (Nível 2) correspondente ao grupo selecionado antes de salvar.', 'warning');
+        return;
+      }
+
       const planoContaNome = obterNomeContaPlano(planoContaId, tipo);
       const fornId = tipo === 'despesa' ? document.getElementById('fin-fornecedor').value : '';
       const forn = state.fornecedores.find(f => f.id === fornId);
       const status = document.getElementById('fin-status').value;
       const vencimento = document.getElementById('fin-vencimento').value;
       const dataPrevistaPagamento = document.getElementById('fin-data-prevista').value || vencimento;
+      const docId = idExistente || `fin_${Date.now()}`;
+      const hoje = new Date().toISOString().split('T')[0];
+
       try {
-        await salvarDocumento('financeiro', `fin_${Date.now()}`, {
-          descricao: document.getElementById('fin-desc').value.trim(), tipo,
-          planoContaId, planoContaNome,
+        await salvarDocumento('financeiro', docId, {
+          descricao: document.getElementById('fin-desc').value.trim(),
+          tipo,
+          planoContaId,
+          planoContaNome,
           fornecedorId: fornId || null,
-          fornecedorNome: forn ? forn.nome : '', valor: Number(document.getElementById('fin-valor').value || 0),
-          vencimento, dataPrevistaPagamento, status,
-          dataPagamento: status === 'pago' ? new Date().toISOString().split('T')[0] : null,
-          criadoPor: state.usuarioAtual?.nome || '',
-          baixadoPor: status === 'pago' ? (state.usuarioAtual?.nome || '') : ''
+          fornecedorNome: forn ? forn.nome : '',
+          valor: Number(document.getElementById('fin-valor').value || 0),
+          vencimento,
+          dataPrevistaPagamento,
+          status,
+          dataPagamento: status === 'pago' ? (antigo?.dataPagamento || hoje) : null,
+          dataBaixa: status === 'pago' ? (antigo?.dataBaixa || antigo?.dataPagamento || hoje) : null,
+          criadoPor: antigo?.criadoPor || (state.usuarioAtual?.nome || ''),
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          atualizadoEm: new Date().toISOString(),
+          baixadoPor: status === 'pago' ? (antigo?.baixadoPor || state.usuarioAtual?.nome || '') : ''
         });
         fecharModal('modal-financeiro');
-        showToast('Lançamento financeiro salvo!', 'success');
+        showToast(idExistente ? 'Lançamento financeiro atualizado!' : 'Lançamento financeiro salvo!', 'success');
       } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao salvar lançamento.', 'error'); }
     };
 
@@ -4591,17 +4643,34 @@
     window.setFiltroFinTipo = (val) => { document.getElementById('filtro-fin-tipo').value = val; renderFinanceiro(); };
     window.setFiltroFinStatus = (val) => { document.getElementById('filtro-fin-status').value = val; renderFinanceiro(); };
 
+    window.aoAlterarGrupoBaixaFinanceiro = () => {
+      const grp = document.getElementById('baixa-fin-grupo').value;
+      const lbl = document.getElementById('baixa-fin-conta-label');
+      if (lbl) {
+        lbl.textContent = grp === 'receita'
+          ? 'Subgrupo / Conta de Receita (Nível 2) *'
+          : grp === 'despesa'
+            ? 'Subgrupo / Conta de Despesa (Nível 2) *'
+            : 'Subgrupo / Conta (Nível 2 - Plano de Contas) *';
+      }
+      popularSelectPlanoContas('baixa-fin-conta', grp, '');
+    };
+
     window.darBaixaFinanceiro = async (id) => {
       const f = state.financeiro.find(x => x.id === id);
       if (!f) return;
       if (!state.planoContas.length) await carregarPlanoContas();
       document.getElementById('baixa-fin-id').value = id;
-      const tipoLabel = f.tipo === 'receita' ? 'Recebimento (A Receber)' : 'Pagamento (A Pagar)';
-      document.getElementById('baixa-fin-conta-label').textContent = f.tipo === 'receita'
-        ? 'Tipo de Receita no Plano de Contas *'
-        : 'Tipo de Despesa no Plano de Contas *';
-      popularSelectPlanoContas('baixa-fin-conta', f.tipo, f.planoContaId || '');
-      document.getElementById('baixa-fin-data-label').textContent = 'Data de Pagamento *';
+      const grupoAtual = (f.tipo === 'receita' || f.tipo === 'despesa') ? f.tipo : '';
+      document.getElementById('baixa-fin-grupo').value = grupoAtual;
+      const tipoLabel = grupoAtual === 'receita' ? 'Recebimento (A Receber)' : grupoAtual === 'despesa' ? 'Pagamento (A Pagar)' : 'Grupo não definido';
+      document.getElementById('baixa-fin-conta-label').textContent = grupoAtual === 'receita'
+        ? 'Subgrupo / Conta de Receita (Nível 2) *'
+        : grupoAtual === 'despesa'
+          ? 'Subgrupo / Conta de Despesa (Nível 2) *'
+          : 'Subgrupo / Conta (Nível 2 - Plano de Contas) *';
+      popularSelectPlanoContas('baixa-fin-conta', grupoAtual, f.planoContaId || '');
+      document.getElementById('baixa-fin-data-label').textContent = 'Data da Baixa *';
       document.getElementById('baixa-fin-resumo').innerHTML = `
         <p class="font-bold text-slate-800">${f.descricao}</p>
         <p>${tipoLabel} • Valor: <strong>${formatBRL(f.valor)}</strong></p>
@@ -4614,18 +4683,26 @@
     window.confirmarBaixaFinanceiro = async (e) => {
       e.preventDefault();
       const id = document.getElementById('baixa-fin-id').value;
-      const f = state.financeiro.find(x => x.id === id);
+      const grupoSel = document.getElementById('baixa-fin-grupo').value;
       const planoContaId = document.getElementById('baixa-fin-conta').value;
       const dataBaixa = document.getElementById('baixa-fin-data').value;
-      if (!id || !planoContaId) {
-        showToast("Informe o tipo de receita/despesa no Plano de Contas para concluir a baixa.", 'warning');
+
+      if (!id || !grupoSel || (grupoSel !== 'receita' && grupoSel !== 'despesa')) {
+        showToast("Informe a qual Grupo (Receita ou Despesa) pertence o lançamento para concluir a baixa.", 'warning');
+        return;
+      }
+      const baseContas = state.planoContas.length ? state.planoContas : PLANO_CONTAS_PADRAO;
+      const contaValida = baseContas.find(c => c.id === planoContaId && c.grupo === grupoSel);
+      if (!planoContaId || !contaValida) {
+        showToast("Informe o Subgrupo / Conta do Plano de Contas antes de concluir a baixa.", 'warning');
         return;
       }
       if (!dataBaixa) { showToast("Informe a data de pagamento.", 'warning'); return; }
-      const planoContaNome = obterNomeContaPlano(planoContaId, f?.tipo || '');
+      const planoContaNome = obterNomeContaPlano(planoContaId, grupoSel);
       try {
         await salvarDocumento('financeiro', id, {
           status: 'pago',
+          tipo: grupoSel,
           planoContaId,
           planoContaNome,
           dataPagamento: dataBaixa,
@@ -4903,8 +4980,10 @@
                 ${justTexto}
               </div>
               <div class="flex flex-wrap items-center gap-2">
+                ${(!f.planoContaId || !f.tipo) ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 font-bold">⚠ Informar Conta</span>` : ''}
                 <span class="font-bold mr-1 ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-red-500'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
                 ${!ehPago && f.tipo === 'receita' ? `<button onclick="cobrarFinanceiroWhatsApp('${f.id}')" class="text-xs bg-emerald-50 text-conecta-emerald px-2.5 py-1.5 rounded-xl font-semibold">WhatsApp</button>` : ''}
+                <button onclick="editarFinanceiro('${f.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-xl font-semibold">Editar</button>
                 ${!ehPago
                   ? `<button onclick="darBaixaFinanceiro('${f.id}')" class="text-xs bg-conecta-green hover:bg-conecta-emerald text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">Baixar</button>`
                   : `<button onclick="abrirExcluirBaixaFinanceiro('${f.id}')" class="text-xs bg-amber-500/15 hover:bg-amber-500/25 text-amber-500 px-2.5 py-1.5 rounded-xl font-semibold">Excluir Baixa</button><button onclick="gerarReciboPDF('${f.id}')" class="text-xs bg-slate-100 font-semibold px-2.5 py-1.5 rounded-xl">Recibo PDF</button>`}
@@ -5056,10 +5135,14 @@
         return `<option value="${c.id}">${txt}</option>`;
       });
       sel.innerHTML = '<option value="">Selecione o tipo de receita/despesa...</option>' + options.join('');
+      if (!grupoFiltro) {
+        sel.innerHTML = '<option value="">Selecione primeiro o Grupo (Receita ou Despesa)...</option>';
+        return;
+      }
       if (valorSelecionado && Array.from(sel.options).some(o => o.value === valorSelecionado)) {
         sel.value = valorSelecionado;
-      } else if (filtradas.length === 1) {
-        sel.value = filtradas[0].id;
+      } else {
+        sel.value = '';
       }
     }
 
