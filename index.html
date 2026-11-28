@@ -2786,14 +2786,21 @@
     // 6. AUTENTICAÇÃO
     // =========================================================================
     async function garantirAdminPadrao() {
-      state.usuarios = await carregarColecao('usuarios');
-      if (state.usuarios.length === 0) {
+      try {
+        state.usuarios = await carregarColecao('usuarios');
+      } catch (err) {
+        if (err.message === 'OFFLINE_BLOCKED') throw err;
+        state.usuarios = [];
+      }
+      if (!Array.isArray(state.usuarios) || state.usuarios.length === 0) {
         const adminPadrao = {
           nome: "ADMIN", nomeCompleto: "Administrador do Sistema", cpf: "", telefone: "",
           cep: "", endereco: "", contatoEmergencia: "", telefoneEmergencia: "", senha: "123456",
           isAdmin: true, ativo: true, criadoEm: new Date().toISOString()
         };
-        await salvarDocumento('usuarios', 'usu_admin_inicial', adminPadrao);
+        try {
+          await salvarDocumento('usuarios', 'usu_admin_inicial', adminPadrao);
+        } catch (e) {}
         state.usuarios = [{ id: 'usu_admin_inicial', ...adminPadrao }];
       }
     }
@@ -2801,34 +2808,56 @@
     async function aplicarSessao(usuario) {
       state.usuarioAtual = usuario;
       state.perfil = usuario.isAdmin ? 'admin' : 'tecnico';
-      sessionStorage.setItem('conecta_user_id', usuario.id);
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('usuario-logado').textContent = `Bem-vindo, ${usuario.nome}! (${usuario.isAdmin ? 'Admin' : 'Técnico'})`;
-      document.querySelectorAll('[data-admin-only="true"]').forEach(el => el.style.display = usuario.isAdmin ? '' : 'none');
-      await carregarConfigEmpresa();
+      try { sessionStorage.setItem('conecta_user_id', usuario.id); } catch (e) {}
+      const loginScreen = document.getElementById('login-screen');
+      if (loginScreen) loginScreen.classList.add('hidden');
+      const usuLogado = document.getElementById('usuario-logado');
+      if (usuLogado) usuLogado.textContent = `Bem-vindo, ${usuario.nome}! (${usuario.isAdmin ? 'Admin' : 'Técnico'})`;
+      document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
+        el.style.display = usuario.isAdmin ? '' : 'none';
+      });
+      try { await carregarConfigEmpresa(); } catch (e) {}
       reiniciarTimerInatividade();
       switchTab('painel');
     }
 
     window.fazerLogin = async (e) => {
-      e.preventDefault();
-      const senha = document.getElementById('login-senha').value.trim();
+      if (e && e.preventDefault) e.preventDefault();
+      const inputSenha = document.getElementById('login-senha');
+      const senha = String(inputSenha ? inputSenha.value : '').replace(/\D/g, '').trim();
       const erroEl = document.getElementById('login-erro');
       const btn = document.getElementById('btn-entrar');
-      erroEl.classList.add('hidden'); btn.disabled = true; btn.textContent = "Verificando...";
+      if (erroEl) erroEl.classList.add('hidden');
+      if (btn) { btn.disabled = true; btn.textContent = "Verificando..."; }
       try {
+        if (!senha) {
+          if (erroEl) { erroEl.textContent = "Digite sua senha numérica de acesso."; erroEl.classList.remove('hidden'); }
+          return;
+        }
         await garantirAdminPadrao();
-        const encontrado = state.usuarios.find(u => String(u.senha) === senha);
-        if (!encontrado) { erroEl.textContent = "Senha inválida. Verifique e tente novamente."; erroEl.classList.remove('hidden'); return; }
-        if (encontrado.ativo === false) { erroEl.textContent = "Usuário desativado. Contate o administrador."; erroEl.classList.remove('hidden'); return; }
+        const encontrado = state.usuarios.find(u => String(u.senha || '').trim() === senha);
+        if (!encontrado) {
+          if (erroEl) { erroEl.textContent = "Senha inválida. Verifique e tente novamente."; erroEl.classList.remove('hidden'); }
+          return;
+        }
+        if (encontrado.ativo === false) {
+          if (erroEl) { erroEl.textContent = "Usuário desativado. Contate o administrador."; erroEl.classList.remove('hidden'); }
+          return;
+        }
         await aplicarSessao(encontrado);
         showToast(`Bem-vindo, ${encontrado.nome}!`, 'success');
       } catch (err) {
-        console.error(err);
-        erroEl.textContent = "Não é possível conectar. Verifique sua conexão com a internet.";
-        erroEl.classList.remove('hidden');
-        showToast("Não é possível conectar. Sem acesso à internet.", "error");
-      } finally { btn.disabled = false; btn.textContent = "Entrar no Sistema"; }
+        console.error("Erro no login:", err);
+        if (erroEl) {
+          erroEl.textContent = err.message === 'OFFLINE_BLOCKED'
+            ? "Sem conexão com a internet para autenticar."
+            : "Não foi possível validar o acesso agora. Tente novamente.";
+          erroEl.classList.remove('hidden');
+        }
+        showToast("Falha ao acessar o sistema.", "error");
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = "Entrar no Sistema"; }
+      }
     };
 
     window.fazerLogout = async () => {
@@ -2838,13 +2867,16 @@
 
     async function verificarSessaoInicial() {
       try {
+        if (!navigator.onLine) return;
         await garantirAdminPadrao();
         const savedId = sessionStorage.getItem('conecta_user_id');
         if (savedId) {
           const user = state.usuarios.find(u => u.id === savedId && u.ativo !== false);
           if (user) await aplicarSessao(user);
         }
-      } catch (e) { console.error("Erro ao verificar sessão:", e); }
+      } catch (e) {
+        console.error("Erro ao verificar sessão:", e);
+      }
     }
 
     // =========================================================================
@@ -3003,8 +3035,10 @@
 
     window.switchTab = (tabName) => {
       fecharMenuMais();
+      const alvoSec = document.getElementById(`tab-${tabName}`);
+      if (!alvoSec) return;
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.getElementById(`tab-${tabName}`).classList.add('active');
+      alvoSec.classList.add('active');
       document.querySelectorAll('.dock-btn').forEach(btn => {
         const active = btn.dataset.tab === tabName;
         btn.classList.toggle('dock-btn-active', active);
