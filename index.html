@@ -900,6 +900,29 @@
         </button>
       </div>
 
+      <div data-admin-only="true" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <button type="button" onclick="abrirDetalhePainelCard('comissoes_pendentes')" class="painel-kpi-card bg-white p-3 rounded-xl shadow-sm border-l-4 border-amber-500 text-left transition hover:brightness-[0.99]">
+          <p class="text-[10px] text-slate-500 uppercase font-semibold">Comissões a Pagar</p>
+          <p id="kpi-painel-comissoes" class="text-sm sm:text-lg font-extrabold text-amber-500 mt-0.5">R$ 0,00</p>
+          <p class="text-[10px] text-slate-500">Toque p/ expandir</p>
+        </button>
+        <button type="button" onclick="abrirDetalhePainelCard('preventivas')" class="painel-kpi-card bg-white p-3 rounded-xl shadow-sm border-l-4 border-conecta-green text-left transition hover:brightness-[0.99]">
+          <p class="text-[10px] text-slate-500 uppercase font-semibold">Preventivas (30d)</p>
+          <p id="kpi-painel-preventivas" class="text-sm sm:text-lg font-extrabold text-conecta-green mt-0.5">0</p>
+          <p class="text-[10px] text-slate-500">Toque p/ expandir</p>
+        </button>
+        <button type="button" onclick="abrirDetalhePainelCard('estoque_baixo')" class="painel-kpi-card bg-white p-3 rounded-xl shadow-sm border-l-4 border-rose-500 text-left transition hover:brightness-[0.99]">
+          <p class="text-[10px] text-slate-500 uppercase font-semibold">Estoque Baixo</p>
+          <p id="kpi-painel-estoque" class="text-sm sm:text-lg font-extrabold text-rose-500 mt-0.5">0</p>
+          <p class="text-[10px] text-slate-500">Toque p/ expandir</p>
+        </button>
+        <button type="button" onclick="abrirDetalhePainelCard('cobranca_pendente')" class="painel-kpi-card bg-white p-3 rounded-xl shadow-sm border-l-4 border-blue-500 text-left transition hover:brightness-[0.99]">
+          <p class="text-[10px] text-slate-500 uppercase font-semibold">Cobranças OS</p>
+          <p id="kpi-painel-cobrancas" class="text-sm sm:text-lg font-extrabold text-blue-500 mt-0.5">0</p>
+          <p class="text-[10px] text-slate-500">Toque p/ expandir</p>
+        </button>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-slate-200">
           <div class="flex items-center justify-between mb-4">
@@ -1033,6 +1056,12 @@
         <input type="hidden" id="filtro-os-categoria" value="todos" />
         <div id="os-cards-status" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
         <div id="os-cards-categoria" class="grid grid-cols-3 gap-2.5"></div>
+        <div class="bg-white p-3 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <label class="font-bold text-slate-700">Filtrar por Técnico:</label>
+          <select id="filtro-os-tecnico" onchange="renderOS()" class="border rounded-lg px-3 py-1.5 text-xs font-semibold">
+            <option value="todos">Todos os Técnicos</option>
+          </select>
+        </div>
       </div>
 
       <div id="lista-os" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -1169,8 +1198,11 @@
             <h3 class="font-bold text-slate-800 text-base">Relatório do Plano de Contas</h3>
             <p class="text-xs text-slate-500">Filtre por grupo (Receitas / Despesas), conta específica e situação (Realizado / Previsto), respeitando o período selecionado.</p>
           </div>
-          <div id="rel-pc-resumo-badge" class="text-xs px-3 py-1 rounded-full font-extrabold bg-emerald-500/15 text-conecta-green border border-conecta-green/30">
-            0 item(ns) • R$ 0,00
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="exportarRelatorioPlanoContasCSV()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-full font-bold">Exportar CSV</button>
+            <div id="rel-pc-resumo-badge" class="text-xs px-3 py-1 rounded-full font-extrabold bg-emerald-500/15 text-conecta-green border border-conecta-green/30">
+              0 item(ns) • R$ 0,00
+            </div>
           </div>
         </div>
 
@@ -1202,6 +1234,9 @@
         <div id="rel-pc-conteudo" class="overflow-x-auto text-xs"></div>
       </div>
 
+      <div class="bg-white p-3 rounded-xl border border-slate-200">
+        <input id="busca-financeiro" oninput="renderFinanceiro()" type="text" placeholder="Buscar lançamento por descrição, fornecedor ou conta..." class="w-full border rounded-lg px-3.5 py-2 text-xs" />
+      </div>
       <div id="lista-financeiro" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"></div>
     </section>
 
@@ -1227,9 +1262,14 @@
           <h2 class="text-xl font-bold text-slate-800">Comissionamento e Origem das Comissões</h2>
           <p class="text-xs text-slate-500">Acompanhe os valores provisionados e realizados por usuário, área e origem da OS/lançamento.</p>
         </div>
-        <button type="button" onclick="carregarComissoesSobDemanda()" class="bg-conecta-dark text-conecta-lime border border-conecta-green/40 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-black transition">
-          Atualizar Comissões
-        </button>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="exportarExtratoComissoesPDF()" class="bg-conecta-green hover:bg-conecta-emerald text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition">
+            Exportar PDF
+          </button>
+          <button type="button" onclick="carregarComissoesSobDemanda()" class="bg-conecta-dark text-conecta-lime border border-conecta-green/40 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-black transition">
+            Atualizar Comissões
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1665,9 +1705,14 @@
           </p>
         </div>
 
-        <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
-          <label class="font-semibold text-slate-700 block">Base Instalada (Ar-condicionado / CFTV / Cloud)</label>
-          <textarea id="cli-equipamentos" rows="2" placeholder="Ex: 2x Split 12.000 BTUs LG (Sala/Quarto); DVR 8 Canais Intelbras (Cloud ID: 998877)" class="w-full border bg-white rounded-lg px-3 py-2"></textarea>
+        <div class="border rounded-xl p-3 bg-slate-50 space-y-2.5">
+          <label class="font-semibold text-slate-700 block">Base Instalada Estruturada (Ar-condicionado / CFTV / Cloud)</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <input id="cli-eq-modelo" type="text" placeholder="Equipamento / Marca (Ex: Split 12k LG)" class="border bg-white rounded-lg px-2.5 py-1.5" />
+            <input id="cli-eq-local" type="text" placeholder="Local / Ambiente (Ex: Recepção)" class="border bg-white rounded-lg px-2.5 py-1.5" />
+            <input id="cli-eq-serial" type="text" placeholder="Série / ID Cloud / Canais" class="border bg-white rounded-lg px-2.5 py-1.5" />
+          </div>
+          <textarea id="cli-equipamentos" rows="2" placeholder="Resumo da base instalada ou observações adicionais..." class="w-full border bg-white rounded-lg px-3 py-2"></textarea>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs text-slate-600">Última Manutenção / Higienização</label>
@@ -1985,11 +2030,14 @@
         </div>
 
         <div class="border rounded-xl p-3 bg-slate-50 space-y-2">
-          <label class="font-semibold text-slate-700 block">Checklist de Execução</label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="flex items-center justify-between">
+            <label class="font-semibold text-slate-700">Checklist Técnico por Área</label>
+            <button type="button" onclick="aplicarChecklistAreaOS()" class="text-[11px] text-conecta-green font-bold hover:underline">Aplicar padrão da área</button>
+          </div>
+          <div id="os-checklist-dinamico" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Teste de funcionamento / tensão" /> Teste de funcionamento / tensão</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Teste de vácuo / dreno (Climatização)" /> Teste de vácuo / dreno (Climatização)</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Acesso remoto / app configurado (CFTV)" /> Acesso remoto / app configurado (CFTV)</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Teste de vácuo, pressão e dreno (Climatização)" /> Teste de vácuo, pressão e dreno (Climatização)</label>
+            <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Acesso remoto, câmeras e HD testados (CFTV)" /> Acesso remoto, câmeras e HD testados (CFTV)</label>
             <label class="flex items-center gap-2"><input type="checkbox" class="os-chk" value="Limpeza do local e acabamento final" /> Limpeza do local e acabamento final</label>
           </div>
         </div>
@@ -3079,6 +3127,23 @@
       const saldo = state.financeiro.filter(f => f.status === 'pago').reduce((acc, f) => acc + (f.tipo === 'receita' ? Number(f.valor) : -Number(f.valor)), 0);
       document.getElementById('kpi-saldo').textContent = formatBRL(saldo);
 
+      const comPend = state.financeiro.filter(f => (f.origemTipo === 'comissao_os' || /^com_/i.test(f.id || '')) && f.status !== 'pago').reduce((a, b) => a + Number(b.valor || 0), 0);
+      const elKpiCom = document.getElementById('kpi-painel-comissoes');
+      if (elKpiCom) elKpiCom.textContent = formatBRL(comPend);
+
+      const limite30 = new Date(); limite30.setDate(limite30.getDate() + 30);
+      const prevCount = state.clientes.filter(c => c.proximaPreventiva && c.proximaPreventiva <= limite30.toISOString().split('T')[0]).length;
+      const elKpiPrev = document.getElementById('kpi-painel-preventivas');
+      if (elKpiPrev) elKpiPrev.textContent = String(prevCount);
+
+      const estBaixoCount = state.produtos.filter(p => p.tipo === 'produto' && Number(p.estoqueAtual) <= Number(p.estoqueMinimo)).length;
+      const elKpiEst = document.getElementById('kpi-painel-estoque');
+      if (elKpiEst) elKpiEst.textContent = String(estBaixoCount);
+
+      const cobCount = state.os.filter(o => Number(o.valorTotal || 0) > 0 && !o.cobrancaEnviada && !o.lancadoFinanceiro).length;
+      const elKpiCob = document.getElementById('kpi-painel-cobrancas');
+      if (elKpiCob) elKpiCob.textContent = String(cobCount);
+
       const nomeLogado = state.usuarioAtual ? state.usuarioAtual.nome : '';
       const ehTecnico = state.perfil !== 'admin';
       document.getElementById('painel-os-titulo').textContent = ehTecnico ? `Minhas Ordens de Serviço (${nomeLogado})` : 'Ordens de Serviço Direcionadas / Abertas';
@@ -3221,6 +3286,66 @@
                 <span class="font-extrabold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-rose-500'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
               </div>`).join('') || '<p class="text-xs text-slate-400">Nenhum lançamento realizado ainda.</p>'}
           </div>`;
+      }
+
+      } else if (tipoCard === 'comissoes_pendentes') {
+        const listaCom = state.financeiro.filter(f => (f.origemTipo === 'comissao_os' || /^com_/i.test(f.id || '')) && f.status !== 'pago');
+        const somaCom = listaCom.reduce((a, b) => a + Number(b.valor || 0), 0);
+        tituloEl.textContent = `Comissões a Pagar (${listaCom.length})`;
+        subEl.textContent = `Total provisionado pendente: ${formatBRL(somaCom)}`;
+        bodyEl.innerHTML = listaCom.length
+          ? listaCom.map(c => `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                <div>
+                  <strong class="text-slate-800">${c.comissionadoNome || 'Comissionado'}</strong> • ${c.descricao}
+                  <p class="text-slate-500 mt-0.5">Data base: <strong>${formatarDataBR(c.vencimento)}</strong></p>
+                </div>
+                <span class="font-extrabold text-amber-500 text-sm">${formatBRL(c.valor || 0)}</span>
+              </div>`).join('')
+          : '<p class="text-xs text-slate-400">Nenhuma comissão pendente.</p>';
+      } else if (tipoCard === 'preventivas') {
+        const lim = new Date(); lim.setDate(lim.getDate() + 30);
+        const listaPrev = state.clientes.filter(c => c.proximaPreventiva && c.proximaPreventiva <= lim.toISOString().split('T')[0]);
+        tituloEl.textContent = `Preventivas Próximas (${listaPrev.length})`;
+        subEl.textContent = 'Clientes com manutenção preventiva/higienização nos próximos 30 dias';
+        bodyEl.innerHTML = listaPrev.length
+          ? listaPrev.map(c => `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                <div>
+                  <strong class="text-slate-800">${c.nome}</strong>
+                  <p class="text-amber-500 font-semibold mt-0.5">Data: ${formatarDataBR(c.proximaPreventiva)}</p>
+                </div>
+                <button type="button" onclick="fecharModal('modal-detalhe-painel'); abrirModalCliente('${c.id}');" class="px-2.5 py-1 rounded-lg bg-conecta-green text-white font-semibold">Cliente</button>
+              </div>`).join('')
+          : '<p class="text-xs text-slate-400">Nenhuma preventiva próxima.</p>';
+      } else if (tipoCard === 'estoque_baixo') {
+        const listaEst = state.produtos.filter(p => p.tipo === 'produto' && Number(p.estoqueAtual) <= Number(p.estoqueMinimo));
+        tituloEl.textContent = `Estoque Baixo (${listaEst.length})`;
+        subEl.textContent = 'Itens abaixo ou no limite mínimo de estoque';
+        bodyEl.innerHTML = listaEst.length
+          ? listaEst.map(p => `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                <div>
+                  <strong class="text-slate-800">${p.nome}</strong>
+                  <p class="text-rose-500 font-semibold mt-0.5">Atual: ${p.estoqueAtual} un. • Mínimo: ${p.estoqueMinimo} un.</p>
+                </div>
+                <button type="button" onclick="fecharModal('modal-detalhe-painel'); abrirModalProduto('${p.id}');" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold">Ajustar</button>
+              </div>`).join('')
+          : '<p class="text-xs text-slate-400">Estoque sem alertas.</p>';
+      } else if (tipoCard === 'cobranca_pendente') {
+        const listaCob = state.os.filter(o => Number(o.valorTotal || 0) > 0 && !o.cobrancaEnviada && !o.lancadoFinanceiro);
+        tituloEl.textContent = `OSs Pendentes de Cobrança (${listaCob.length})`;
+        subEl.textContent = 'Ordens concluídas/abertas com valor aguardando cobrança ou lançamento';
+        bodyEl.innerHTML = listaCob.length
+          ? listaCob.map(o => `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                <div>
+                  <strong class="text-conecta-emerald">${o.numero}</strong> • <strong class="text-slate-800">${o.clienteNome}</strong>
+                  <p class="text-slate-500 mt-0.5">Data: ${formatarDataBR(o.dataAgendamento)}</p>
+                </div>
+                <span class="font-extrabold text-conecta-green text-sm">${formatBRL(o.valorTotal || 0)}</span>
+              </div>`).join('')
+          : '<p class="text-xs text-slate-400">Nenhuma cobrança pendente.</p>';
       }
 
       abrirModal('modal-detalhe-painel');
@@ -3601,7 +3726,17 @@
           telefone,
           cep: document.getElementById('cli-cep').value.replace(/\D/g, '').slice(0, 8),
           endereco: document.getElementById('cli-endereco').value.trim(),
-          equipamentos: document.getElementById('cli-equipamentos').value.trim(),
+          equipamentoModelo: document.getElementById('cli-eq-modelo')?.value?.trim() || '',
+          equipamentoLocal: document.getElementById('cli-eq-local')?.value?.trim() || '',
+          equipamentoSerial: document.getElementById('cli-eq-serial')?.value?.trim() || '',
+          equipamentos: (() => {
+            const mod = document.getElementById('cli-eq-modelo')?.value?.trim() || '';
+            const loc = document.getElementById('cli-eq-local')?.value?.trim() || '';
+            const ser = document.getElementById('cli-eq-serial')?.value?.trim() || '';
+            const txt = document.getElementById('cli-equipamentos').value.trim();
+            const estr = [mod, loc ? 'Local: ' + loc : '', ser ? 'ID/Série: ' + ser : ''].filter(Boolean).join(' • ');
+            return [estr, txt].filter(Boolean).join(' | ');
+          })(),
           ultimaPreventiva: document.getElementById('cli-ultima-prev').value,
           proximaPreventiva: document.getElementById('cli-proxima-prev').value,
           monitoramentoAtivo,
@@ -4373,12 +4508,39 @@
               ${!o.osGeradaId && o.status !== 'recusado' ? `<button onclick="aprovarEGerarOS('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-dark text-conecta-lime border border-conecta-green/40 font-semibold">Aprovar e Gerar OS</button>` : ''}
               <button onclick="enviarOrcamentoWhatsApp('${o.id}')" class="px-2.5 py-1.5 rounded bg-emerald-50 text-conecta-emerald font-semibold">WhatsApp</button>
               <button onclick="baixarPDFOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-slate-100 font-semibold">PDF</button>
+              <button onclick="duplicarOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-slate-100 text-slate-700 font-semibold" title="Duplicar orçamento">Duplicar</button>
               <button onclick="abrirModalOrcamento('${o.id}')" class="px-2.5 py-1.5 rounded bg-conecta-green text-white font-semibold">Editar</button>
               <button onclick="excluirRegistro('orcamentos', '${o.id}', '${o.numero}')" class="px-2 py-1.5 rounded bg-red-500/15 text-red-500 font-semibold" title="Excluir orçamento">🗑</button>
             </div>
           </div>
         </div>`;
       }).join('') || '<p class="text-sm text-slate-500">Nenhum orçamento encontrado.</p>';
+    };
+
+    window.duplicarOrcamento = async (id) => {
+      const o = state.orcamentos.find(x => x.id === id);
+      if (!o) return;
+      try {
+        const novoId = `orc_${Date.now()}`;
+        const numero = await proximoNumero('ultimoOrcamento', 'ORC');
+        const agoraISO = new Date().toISOString();
+        await salvarDocumento('orcamentos', novoId, {
+          ...o,
+          id: novoId,
+          numero,
+          status: 'rascunho',
+          osGeradaId: null,
+          osGeradaNumero: null,
+          historicoStatus: { rascunho: formatarDataHoraBR(new Date()) },
+          criadoPor: state.usuarioAtual?.nome || '',
+          atualizadoPor: state.usuarioAtual?.nome || '',
+          criadoEm: agoraISO,
+          atualizadoEm: agoraISO
+        });
+        showToast(`Orçamento duplicado como ${numero}!`, 'success');
+      } catch (err) {
+        if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao duplicar orçamento.', 'error');
+      }
     };
 
     // =========================================================================
@@ -4717,6 +4879,8 @@
         return;
       }
 
+      window._ultimasComissoesFiltradas = filtradas;
+
       box.innerHTML = filtradas.map(c => {
         const ehPago = c.status === 'pago';
         const origemDetalhe = obterOrigemComissaoDetalhada(c);
@@ -4741,6 +4905,90 @@
             </div>
           </div>`;
       }).join('');
+    };
+
+    window.exportarExtratoComissoesPDF = async () => {
+      const lista = window._ultimasComissoesFiltradas || [];
+      if (!lista.length) {
+        showToast('Nenhuma comissão disponível para exportar em PDF.', 'warning');
+        return;
+      }
+
+      const fUsu = document.getElementById('filtro-com-usuario')?.value || 'todos';
+      const fArea = document.getElementById('filtro-com-area')?.value || 'todas';
+      const fStatus = document.getElementById('filtro-com-status')?.value || 'todos';
+
+      const totalPrev = lista.filter(c => c.status !== 'pago').reduce((a, b) => a + Number(b.valor || 0), 0);
+      const totalPago = lista.filter(c => c.status === 'pago').reduce((a, b) => a + Number(b.valor || 0), 0);
+      const totalGeral = totalPrev + totalPago;
+
+      setLoading(true, 'Gerando extrato de comissões em PDF...');
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <div style="font-family: Inter, Arial, sans-serif; color: #0f172a; background: #ffffff; padding: 14px; border: 2px solid #00A859; border-radius: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00A859; padding-bottom: 10px; margin-bottom: 14px;">
+            <div>
+              <h1 style="font-size: 17px; font-weight: 800; color: #006837; margin: 0;">${state.config.nome || 'CONECTA - Segurança e Climatização'}</h1>
+              <p style="font-size: 11px; color: #475569; margin: 2px 0 0 0;">Extrato de Comissões • Comissionado: <strong>${fUsu === 'todos' ? 'Todos' : fUsu}</strong> • Área: <strong>${fArea === 'todas' ? 'Todas' : formatarAreaComissaoLabel(fArea)}</strong> • Situação: <strong>${fStatus === 'todos' ? 'Todas' : (fStatus === 'pago' ? 'Pagas' : 'Provisionadas')}</strong></p>
+            </div>
+            <div style="text-align: right; font-size: 11px; color: #475569;">
+              Emitido em <strong>${formatarDataHoraBR(new Date())}</strong>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; font-size: 12px;">
+            <div style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fffbeb;">
+              <div style="font-size: 10px; font-weight: 700; color: #92400e;">PROVISIONADAS</div>
+              <div style="font-size: 14px; font-weight: 800; color: #d97706;">${formatBRL(totalPrev)}</div>
+            </div>
+            <div style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f0fdf4;">
+              <div style="font-size: 10px; font-weight: 700; color: #065f46;">PAGAS</div>
+              <div style="font-size: 14px; font-weight: 800; color: #00A859;">${formatBRL(totalPago)}</div>
+            </div>
+            <div style="padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc;">
+              <div style="font-size: 10px; font-weight: 700; color: #334155;">TOTAL GERAL</div>
+              <div style="font-size: 14px; font-weight: 800; color: #0f172a;">${formatBRL(totalGeral)}</div>
+            </div>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+            <thead>
+              <tr style="background: #006837; color: #ffffff; text-align: left;">
+                <th style="padding: 7px 6px;">Comissionado</th>
+                <th style="padding: 7px 6px;">Origem / Área / Taxa</th>
+                <th style="padding: 7px 6px;">Data Base</th>
+                <th style="padding: 7px 6px;">Situação</th>
+                <th style="padding: 7px 6px; text-align: right;">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lista.map(c => `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 7px 6px; font-weight: 700;">${c.comissionadoNome || '-'}</td>
+                  <td style="padding: 7px 6px;">${obterOrigemComissaoDetalhada(c) || c.descricao || '-'}</td>
+                  <td style="padding: 7px 6px;">${formatarDataBR(c.vencimento)}</td>
+                  <td style="padding: 7px 6px; font-weight: 700;">${c.status === 'pago' ? 'PAGA' : 'PROVISIONADA'}</td>
+                  <td style="padding: 7px 6px; text-align: right; font-weight: 800;">${formatBRL(c.valor)}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+
+      try {
+        const nomeArqUsu = fUsu === 'todos' ? 'todos' : fUsu.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+        await html2pdf().set({
+          margin: 10,
+          filename: `extrato_comissoes_${nomeArqUsu}_${new Date().toISOString().split('T')[0]}.pdf`,
+          image: { type: 'jpeg', quality: 0.92 },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(container).save();
+        showToast('Extrato de comissões em PDF gerado!', 'success');
+      } catch (err) {
+        showToast('Erro ao gerar PDF do extrato de comissões.', 'error');
+      } finally {
+        setLoading(false);
+      }
     };
 
     window.salvarOS = async (e) => {
@@ -5413,8 +5661,17 @@
         ].join('');
       }
 
+      const qFin = (document.getElementById('busca-financeiro')?.value || '').trim().toLowerCase();
       const lista = porData
-        .filter(f => (fTipo === 'todos' || f.tipo === fTipo) && (fStatus === 'todos' || f.status === fStatus))
+        .filter(f => {
+          if (fTipo !== 'todos' && f.tipo !== fTipo) return false;
+          if (fStatus !== 'todos' && f.status !== fStatus) return false;
+          if (qFin) {
+            const alvoTxt = `${f.descricao || ''} ${f.fornecedorNome || ''} ${obterNomeContaPlano(f.planoContaId, f.tipo)}`.toLowerCase();
+            if (!alvoTxt.includes(qFin)) return false;
+          }
+          return true;
+        })
         .sort((a, b) => (a.vencimento || '').localeCompare(b.vencimento || ''));
 
       document.getElementById('lista-financeiro').innerHTML = lista.length
@@ -5686,6 +5943,7 @@
         return;
       }
 
+      window._ultimoRelatorioPC = linhas;
       box.innerHTML = `
         <table class="w-full text-left border-collapse">
           <thead>
@@ -5715,6 +5973,28 @@
     // =========================================================================
     // 15. CONFIGURAÇÕES E BACKUP JSON
     // =========================================================================
+    window.exportarRelatorioPlanoContasCSV = () => {
+      const linhas = window._ultimoRelatorioPC || [];
+      if (!linhas.length) { showToast('Nenhum dado no relatório para exportar.', 'warning'); return; }
+      const header = ['Grupo', 'Conta', 'Quantidade', 'Realizado', 'Previsto', 'Total'];
+      const rows = linhas.map(l => [
+        l.grupo === 'receita' ? 'Receitas' : 'Despesas',
+        `"${String(l.contaNome || '').replace(/"/g, '""')}"`,
+        l.qtd,
+        Number(l.realizado || 0).toFixed(2).replace('.', ','),
+        Number(l.previsto || 0).toFixed(2).replace('.', ','),
+        Number(l.total || 0).toFixed(2).replace('.', ',')
+      ].join(';'));
+      const csvContent = '﻿' + [header.join(';'), ...rows].join('
+');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `plano_contas_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      showToast('Relatório do Plano de Contas exportado em CSV!', 'success');
+    };
+
     window.salvarConfig = async () => {
       state.config = {
         nome: document.getElementById('cfg-nome').value, cnpj: document.getElementById('cfg-cnpj').value,
