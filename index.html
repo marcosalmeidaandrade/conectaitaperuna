@@ -862,27 +862,46 @@
 
     <!-- ==================== ABA: PAINEL ==================== -->
     <section id="tab-painel" class="tab-content active space-y-6">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-conecta-green">
-          <p class="text-xs text-slate-500 uppercase font-semibold">Clientes Ativos</p>
-          <p id="kpi-clientes" class="text-2xl font-bold text-slate-800 mt-1">0</p>
-        </div>
-        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500">
-          <p class="text-xs text-slate-500 uppercase font-semibold">OS Abertas / Agendadas</p>
-          <p id="kpi-os-abertas" class="text-2xl font-bold text-slate-800 mt-1">0</p>
-        </div>
-        <div data-admin-only="true" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
-          <p class="text-xs text-slate-500 uppercase font-semibold">Orçamentos Pendentes</p>
-          <p id="kpi-orcamentos" class="text-2xl font-bold text-slate-800 mt-1">0</p>
-        </div>
-        <div data-admin-only="true" class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-conecta-emerald">
-          <p class="text-xs text-slate-500 uppercase font-semibold">Saldo Realizado</p>
-          <p id="kpi-saldo" class="text-2xl font-bold text-conecta-emerald mt-1">R$ 0,00</p>
-        </div>
+      <div id="painel-kpi-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <button type="button" onclick="abrirDetalhePainelCard('clientes')" class="painel-kpi-card bg-white p-3 sm:p-4 rounded-xl shadow-sm border-l-4 border-conecta-green text-left transition hover:brightness-[0.99] active:scale-[0.98]">
+          <div class="flex items-center justify-between gap-1">
+            <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-semibold leading-tight">Clientes Ativos</p>
+            <span class="sm:hidden text-[10px] font-bold text-conecta-green">+</span>
+          </div>
+          <p id="kpi-clientes" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 leading-tight">0</p>
+          <p class="sm:hidden text-[10px] text-slate-500 mt-0.5">Toque p/ detalhes</p>
+        </button>
+
+        <button type="button" onclick="abrirDetalhePainelCard('os_abertas')" class="painel-kpi-card bg-white p-3 sm:p-4 rounded-xl shadow-sm border-l-4 border-amber-500 text-left transition hover:brightness-[0.99] active:scale-[0.98]">
+          <div class="flex items-center justify-between gap-1">
+            <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-semibold leading-tight">OS Abertas / Agendadas</p>
+            <span class="sm:hidden text-[10px] font-bold text-amber-500">+</span>
+          </div>
+          <p id="kpi-os-abertas" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 leading-tight">0</p>
+          <p class="sm:hidden text-[10px] text-slate-500 mt-0.5">Toque p/ detalhes</p>
+        </button>
+
+        <button type="button" onclick="abrirDetalhePainelCard('orcamentos')" data-admin-only="true" class="painel-kpi-card bg-white p-3 sm:p-4 rounded-xl shadow-sm border-l-4 border-blue-500 text-left transition hover:brightness-[0.99] active:scale-[0.98]">
+          <div class="flex items-center justify-between gap-1">
+            <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-semibold leading-tight">Orçamentos Pendentes</p>
+            <span class="sm:hidden text-[10px] font-bold text-blue-500">+</span>
+          </div>
+          <p id="kpi-orcamentos" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 leading-tight">0</p>
+          <p class="sm:hidden text-[10px] text-slate-500 mt-0.5">Toque p/ detalhes</p>
+        </button>
+
+        <button type="button" onclick="abrirDetalhePainelCard('saldo')" data-admin-only="true" class="painel-kpi-card bg-white p-3 sm:p-4 rounded-xl shadow-sm border-l-4 border-conecta-emerald text-left transition hover:brightness-[0.99] active:scale-[0.98]">
+          <div class="flex items-center justify-between gap-1">
+            <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-semibold leading-tight">Saldo Realizado</p>
+            <span class="sm:hidden text-[10px] font-bold text-conecta-emerald">+</span>
+          </div>
+          <p id="kpi-saldo" class="text-base sm:text-2xl font-bold text-conecta-emerald mt-1 leading-tight break-all">R$ 0,00</p>
+          <p class="sm:hidden text-[10px] text-slate-500 mt-0.5">Toque p/ detalhes</p>
+        </button>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+        <div class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-slate-200">
           <div class="flex items-center justify-between mb-4">
             <h2 id="painel-os-titulo" class="font-bold text-slate-800 text-base">Ordens de Serviço Direcionadas / Abertas</h2>
             <button onclick="switchTab('os')" class="text-xs font-semibold text-conecta-green hover:underline">Ver todas →</button>
@@ -890,7 +909,7 @@
           <div id="painel-os-lista" class="space-y-2.5 text-sm text-slate-500"></div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
+        <div class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-slate-200 space-y-3 sm:space-y-4">
           <h2 class="font-bold text-slate-800 text-base">Alertas de Manutenção Preventiva (Climatização/CFTV)</h2>
           <div id="painel-preventivas" class="space-y-2 text-sm text-slate-500"></div>
           <div data-admin-only="true" class="pt-3 border-t">
@@ -901,7 +920,7 @@
       </div>
 
       <!-- OSs PENDENTES DE ENVIO DE COBRANÇA AO CLIENTE (ADMINISTRADORES) -->
-      <div data-admin-only="true" class="bg-white rounded-xl shadow-sm p-5 border border-conecta-green/50 space-y-3">
+      <div data-admin-only="true" class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-conecta-green/50 space-y-2.5 sm:space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="font-bold text-slate-800 text-base">OSs Pendentes de Envio de Cobrança ao Cliente</h2>
@@ -915,7 +934,7 @@
       </div>
 
       <!-- OSs FINALIZADAS PENDENTES DE ENVIO DO PROTOCOLO AO CLIENTE -->
-      <div class="bg-white rounded-xl shadow-sm p-5 border border-amber-400/50 space-y-3">
+      <div class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-amber-400/50 space-y-2.5 sm:space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="font-bold text-slate-800 text-base">OSs Finalizadas — Pendentes de Envio de Protocolo ao Cliente</h2>
@@ -930,7 +949,7 @@
 
       <!-- GRÁFICOS VISUAIS (CHART.JS) -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div data-admin-only="true" class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 lg:col-span-2">
+        <div data-admin-only="true" class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-slate-200 lg:col-span-2">
           <div class="flex items-center justify-between mb-3">
             <div>
               <h2 class="font-bold text-slate-800 text-base">Receitas x Despesas (Últimos 6 Meses)</h2>
@@ -941,7 +960,7 @@
             <canvas id="chart-fin-6m"></canvas>
           </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+        <div class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-slate-200">
           <div class="mb-3">
             <h2 class="font-bold text-slate-800 text-base">OS por Área</h2>
             <p class="text-xs text-slate-500">Segurança/CFTV vs. Climatização</p>
@@ -953,7 +972,7 @@
       </div>
 
       <!-- ESTATÍSTICAS DE TEMPO E DESEMPENHO POR TÉCNICO -->
-      <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
+      <div class="painel-sec-card bg-white rounded-xl shadow-sm p-3.5 sm:p-5 border border-slate-200 space-y-3 sm:space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="font-bold text-slate-800 text-base">Estatísticas de Tempo e Produtividade por Técnico</h2>
@@ -2158,6 +2177,24 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL EXPANDIDO DE CARD DO PAINEL ==================== -->
+  <div id="modal-detalhe-painel" class="fixed inset-0 bg-black/65 hidden items-center justify-center z-[75] p-3 sm:p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 sm:p-6 max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
+      <div class="flex items-start justify-between gap-3 border-b pb-3">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-conecta-green">Visão Expandida do Painel</span>
+          <h3 id="det-painel-titulo" class="font-bold text-lg text-slate-800 mt-0.5">Detalhes</h3>
+          <p id="det-painel-sub" class="text-xs text-slate-500"></p>
+        </div>
+        <button type="button" onclick="fecharModal('modal-detalhe-painel')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+      </div>
+      <div id="det-painel-conteudo" class="space-y-3 text-sm"></div>
+      <div class="flex justify-end gap-2 pt-2 border-t">
+        <button type="button" onclick="fecharModal('modal-detalhe-painel')" class="px-4 py-2 rounded-xl bg-conecta-green text-white text-xs font-semibold">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== MODAL HISTÓRICO COMPLETO DO CLIENTE ==================== -->
   <div id="modal-historico-cliente" class="fixed inset-0 bg-black/65 hidden items-center justify-center z-50 p-4 no-print">
     <div class="bg-white rounded-2xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
@@ -3092,6 +3129,102 @@
       renderGraficosPainel();
       renderEstatisticasTecnicos();
     }
+
+    window.abrirDetalhePainelCard = (tipoCard) => {
+      const tituloEl = document.getElementById('det-painel-titulo');
+      const subEl = document.getElementById('det-painel-sub');
+      const bodyEl = document.getElementById('det-painel-conteudo');
+      if (!tituloEl || !subEl || !bodyEl) return;
+
+      if (tipoCard === 'clientes') {
+        const comContrato = state.clientes.filter(c => c.monitoramentoAtivo);
+        tituloEl.textContent = `Clientes Ativos (${state.clientes.length})`;
+        subEl.textContent = `${comContrato.length} com plano/contrato mensal ativo • Base instalada e contatos`;
+        bodyEl.innerHTML = state.clientes.length
+          ? state.clientes.map(c => `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
+                <div class="flex items-center justify-between gap-2">
+                  <strong class="text-slate-800 text-sm">${c.nome}</strong>
+                  <span class="px-2 py-0.5 rounded bg-slate-100 font-bold">${c.tipo || 'PF'}</span>
+                </div>
+                ${c.telefone ? `<p class="text-slate-600">WhatsApp: <strong>${formatarTelefone(c.telefone)}</strong></p>` : ''}
+                ${c.endereco ? `<p class="text-slate-500">Endereço: ${c.endereco}</p>` : ''}
+                ${c.equipamentos ? `<p class="text-conecta-emerald font-medium">Equipamentos: ${c.equipamentos}</p>` : ''}
+                ${c.monitoramentoAtivo ? `<p class="text-conecta-green font-bold">Contrato: ${formatBRL(c.monitoramentoValor)}/mês • Dia ${c.monitoramentoDia || 10}</p>` : ''}
+              </div>`).join('')
+          : '<p class="text-xs text-slate-400">Nenhum cliente cadastrado.</p>';
+      } else if (tipoCard === 'os_abertas') {
+        const abertas = state.os.filter(o => o.status !== 'concluida');
+        tituloEl.textContent = `OS Abertas / Agendadas (${abertas.length})`;
+        subEl.textContent = `Acompanhe datas de agendamento, técnicos e valores das ordens em aberto`;
+        bodyEl.innerHTML = abertas.length
+          ? abertas.map(o => `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div>
+                  <strong class="text-conecta-emerald">${o.numero}</strong> • <strong class="text-slate-800">${o.clienteNome}</strong>
+                  <p class="text-slate-500 mt-0.5">Agendada: <strong>${formatarDataBR(o.dataAgendamento)}</strong> • Técnico: <strong>${o.tecnico || 'Não atribuído'}</strong> • Status: <strong>${(o.status || '').replace('_', ' ').toUpperCase()}</strong></p>
+                  ${o.relato ? `<p class="text-slate-600 mt-1">${o.relato}</p>` : ''}
+                </div>
+                <div class="text-right">
+                  <p class="font-extrabold text-sm text-slate-800">${formatBRL(o.valorTotal || 0)}</p>
+                  <button type="button" onclick="fecharModal('modal-detalhe-painel'); editarOS('${o.id}');" class="mt-1 px-2.5 py-1 rounded-lg bg-conecta-green text-white font-semibold">Abrir OS</button>
+                </div>
+              </div>`).join('')
+          : '<p class="text-xs text-slate-400">Nenhuma OS aberta ou agendada.</p>';
+      } else if (tipoCard === 'orcamentos') {
+        const pendentes = state.orcamentos.filter(o => o.status === 'enviado' || o.status === 'rascunho');
+        const somaPend = pendentes.reduce((acc, o) => acc + Number(o.valorTotal || 0), 0);
+        tituloEl.textContent = `Orçamentos Pendentes (${pendentes.length})`;
+        subEl.textContent = `Total em aberto: ${formatBRL(somaPend)} • Rascunhos e enviados ao cliente`;
+        bodyEl.innerHTML = pendentes.length
+          ? pendentes.map(o => `
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div>
+                  <strong class="text-conecta-emerald">${o.numero}</strong> • <strong class="text-slate-800">${o.clienteNome}</strong>
+                  <p class="text-slate-500 mt-0.5">Validade: <strong>${formatarDataBR(o.validade)}</strong> • Status: <strong>${(o.status || 'rascunho').toUpperCase()}</strong></p>
+                </div>
+                <div class="text-right">
+                  <p class="font-extrabold text-sm text-slate-800">${formatBRL(o.valorTotal || 0)}</p>
+                  <button type="button" onclick="fecharModal('modal-detalhe-painel'); switchTab('orcamentos');" class="mt-1 px-2.5 py-1 rounded-lg bg-blue-600 text-white font-semibold">Ver Orçamentos</button>
+                </div>
+              </div>`).join('')
+          : '<p class="text-xs text-slate-400">Nenhum orçamento pendente no momento.</p>';
+      } else if (tipoCard === 'saldo') {
+        const pagos = state.financeiro.filter(f => f.status === 'pago');
+        const entradas = pagos.filter(f => f.tipo === 'receita').reduce((a, b) => a + Number(b.valor || 0), 0);
+        const saidas = pagos.filter(f => f.tipo === 'despesa').reduce((a, b) => a + Number(b.valor || 0), 0);
+        const saldo = entradas - saidas;
+        tituloEl.textContent = `Saldo Realizado (${formatBRL(saldo)})`;
+        subEl.textContent = `Entradas realizadas: ${formatBRL(entradas)} • Saídas realizadas: ${formatBRL(saidas)}`;
+        bodyEl.innerHTML = `
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <p class="font-extrabold text-conecta-green text-sm">${formatBRL(entradas)}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500">Receitas Pagas</p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <p class="font-extrabold text-rose-500 text-sm">${formatBRL(saidas)}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500">Despesas Pagas</p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <p class="font-extrabold text-slate-800 text-sm">${formatBRL(saldo)}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500">Saldo Líquido</p>
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            ${pagos.slice(0, 12).map(f => `
+              <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+                <div>
+                  <strong class="text-slate-800">${f.descricao}</strong>
+                  <p class="text-slate-500">Pago em: <strong>${formatarDataBR(f.dataPagamento || f.dataBaixa || f.vencimento)}</strong> • ${obterNomeContaPlano(f.planoContaId, f.tipo)}</p>
+                </div>
+                <span class="font-extrabold ${f.tipo === 'receita' ? 'text-conecta-green' : 'text-rose-500'}">${f.tipo === 'receita' ? '+' : '-'} ${formatBRL(f.valor)}</span>
+              </div>`).join('') || '<p class="text-xs text-slate-400">Nenhum lançamento realizado ainda.</p>'}
+          </div>`;
+      }
+
+      abrirModal('modal-detalhe-painel');
+    };
 
     function renderOSProtocoloPendente() {
       const box = document.getElementById('painel-os-protocolo-pendente');
