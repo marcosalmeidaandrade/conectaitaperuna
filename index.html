@@ -6,7 +6,7 @@
   <title>CONECTA - Segurança e Climatização</title>
 
   <!-- Configurações de App para Smartphone (PWA - iOS e Android) -->
-  <meta id="meta-theme-color" name="theme-color" content="#0A0F0D" />
+  <meta id="meta-theme-color" name="theme-color" content="#e6f4fc" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CONECTA" />
@@ -40,46 +40,46 @@
   <style>
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #090e0c;
-      color: #e2e8f0;
+      background-color: #e6f4fc;
+      color: #0f2942;
       overscroll-behavior-y: none;
       -webkit-tap-highlight-color: transparent;
       padding-bottom: env(safe-area-inset-bottom);
       transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* ==================== MODO ESCURO COMPLETO (PADRÃO) ==================== */
+    /* ==================== TEMA AZUL CLARO COMPLETO (PADRÃO) ==================== */
     body:not(.theme-light) main .bg-white,
     body:not(.theme-light) [id^="modal-"] > div.bg-white {
-      background-color: #111a16 !important;
-      border-color: #1f3029 !important;
-      color: #e2e8f0;
+      background-color: #f4fafe !important;
+      border-color: #bae0f7 !important;
+      color: #0f2942;
     }
     body:not(.theme-light) main .bg-slate-50,
     body:not(.theme-light) [id^="modal-"] .bg-slate-50 {
-      background-color: #16231e !important;
-      border-color: #243830 !important;
+      background-color: #e9f5fc !important;
+      border-color: #c2e3f8 !important;
     }
     body:not(.theme-light) main .bg-slate-100,
     body:not(.theme-light) [id^="modal-"] .bg-slate-100 {
-      background-color: #1c2c26 !important;
-      color: #e2e8f0 !important;
+      background-color: #dceefa !important;
+      color: #0f2942 !important;
     }
     body:not(.theme-light) main .text-slate-800,
     body:not(.theme-light) [id^="modal-"] .text-slate-800 {
-      color: #f1f5f9 !important;
+      color: #0c233b !important;
     }
     body:not(.theme-light) main .text-slate-700,
     body:not(.theme-light) [id^="modal-"] .text-slate-700 {
-      color: #cbd5e1 !important;
+      color: #163a5c !important;
     }
     body:not(.theme-light) main .text-slate-600,
     body:not(.theme-light) [id^="modal-"] .text-slate-600 {
-      color: #94a3b8 !important;
+      color: #2b547a !important;
     }
     body:not(.theme-light) main .text-slate-500,
     body:not(.theme-light) [id^="modal-"] .text-slate-500 {
-      color: #94a3b8 !important;
+      color: #466d91 !important;
     }
     body:not(.theme-light) main .border-slate-200,
     body:not(.theme-light) main .border-slate-300,
@@ -88,7 +88,7 @@
     body:not(.theme-light) [id^="modal-"] .border,
     body:not(.theme-light) [id^="modal-"] .border-b,
     body:not(.theme-light) [id^="modal-"] .border-t {
-      border-color: #243830 !important;
+      border-color: #bae0f7 !important;
     }
     body:not(.theme-light) main input:not([type="checkbox"]):not([type="file"]),
     body:not(.theme-light) main select,
@@ -96,10 +96,10 @@
     body:not(.theme-light) [id^="modal-"] input:not([type="checkbox"]):not([type="file"]),
     body:not(.theme-light) [id^="modal-"] select,
     body:not(.theme-light) [id^="modal-"] textarea {
-      background-color: #0b120f !important;
-      border-color: #2b4238 !important;
-      color: #f1f5f9 !important;
-      color-scheme: dark;
+      background-color: #ffffff !important;
+      border-color: #93c9ec !important;
+      color: #0c233b !important;
+      color-scheme: light;
     }
     body:not(.theme-light) .kpi-filter-card {
       background: #111a16;
@@ -202,11 +202,11 @@
       pointer-events: none;
     }
     #desktop-dock {
-      background: rgba(12, 20, 17, 0.80);
+      background: rgba(235, 247, 255, 0.88);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(0, 168, 89, 0.30);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(2, 132, 199, 0.32);
+      box-shadow: 0 10px 26px rgba(14, 116, 144, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
     }
     .dock-btn {
       display: inline-flex;
@@ -236,23 +236,23 @@
       box-shadow: 0 4px 14px rgba(0, 168, 89, 0.35);
     }
     .dock-btn-inactive {
-      color: #cbd5e1;
-      font-weight: 500;
+      color: #1e466b;
+      font-weight: 600;
       background-color: transparent;
     }
     .dock-btn-inactive:hover {
-      background-color: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
+      background-color: rgba(14, 165, 233, 0.14);
+      color: #0369a1;
     }
 
     /* ==================== OPÇÃO 4 (MOBILE): BARRA INFERIOR + MENU MAIS ==================== */
     #mobile-bottom-nav {
-      background: rgba(10, 15, 13, 0.92);
+      background: rgba(235, 247, 255, 0.94);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
-      border-top: 1px solid rgba(0, 168, 89, 0.28);
+      border-top: 1px solid rgba(2, 132, 199, 0.28);
       padding-bottom: env(safe-area-inset-bottom);
-      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.22);
+      box-shadow: 0 -6px 20px rgba(14, 116, 144, 0.12);
     }
     .mob-tab-btn {
       display: flex;
@@ -263,8 +263,8 @@
       flex: 1;
       padding: 8px 4px 7px;
       font-size: 10px;
-      font-weight: 600;
-      color: #94a3b8;
+      font-weight: 700;
+      color: #3b6992;
       position: relative;
       transition: color 0.2s ease, transform 0.15s ease;
     }
@@ -277,7 +277,7 @@
       transform: scale(0.93);
     }
     .mob-tab-btn.mob-active {
-      color: #7AC143;
+      color: #0284c7;
     }
     .mob-tab-btn.mob-active svg {
       transform: translateY(-1px);
@@ -717,15 +717,15 @@
   </div>
 
   <!-- ==================== TELA DE LOGIN ==================== -->
-  <div id="login-screen" class="fixed inset-0 bg-conecta-dark z-50 flex items-center justify-center p-4 safe-top no-print transition-colors">
+  <div id="login-screen" class="fixed inset-0 bg-[#dff2fc] z-50 flex items-center justify-center p-4 safe-top no-print transition-colors">
     <div class="fixed top-4 right-4 safe-top z-50">
-      <button type="button" onclick="alternarTema()" class="btn-tema text-xs px-3 py-1.5 rounded-lg bg-white/10 text-slate-200 border border-white/20 hover:bg-white/20 font-semibold transition flex items-center gap-1.5">
+      <button type="button" onclick="alternarTema()" class="btn-tema text-xs px-3 py-1.5 rounded-lg bg-white text-sky-900 border border-sky-300 hover:bg-sky-50 font-semibold transition flex items-center gap-1.5">
         <span class="tema-icone">☀️</span>
         <span class="tema-texto">Claro</span>
       </button>
     </div>
 
-    <div id="login-card" class="bg-[#111916] border border-conecta-green/40 rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6 transition-colors">
+    <div id="login-card" class="bg-[#f4fafe] border border-sky-300 rounded-2xl max-w-sm w-full p-8 shadow-xl space-y-6 transition-colors">
       <div class="text-center">
         <img
           src="./logo.png"
@@ -737,7 +737,7 @@
 
       <form id="form-login" onsubmit="fazerLogin(event)" class="space-y-4 text-sm">
         <div>
-          <label id="login-label" class="block text-slate-300 font-medium mb-2 text-center">Digite sua senha de acesso</label>
+          <label id="login-label" class="block text-slate-700 font-semibold mb-2 text-center">Digite sua senha de acesso</label>
           <input
             id="login-senha"
             type="password"
@@ -746,7 +746,7 @@
             required
             placeholder="••••••"
             oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)"
-            class="w-full bg-[#0A0F0D] border border-slate-700 text-white text-center text-2xl tracking-[0.5em] font-bold rounded-lg px-3 py-3 focus:outline-none focus:border-conecta-green transition-colors"
+            class="w-full bg-white border border-sky-300 text-slate-900 text-center text-2xl tracking-[0.5em] font-bold rounded-lg px-3 py-3 focus:outline-none focus:border-sky-500 transition-colors"
           />
         </div>
         <p id="login-erro" class="text-xs text-red-400 text-center hidden"></p>
@@ -758,7 +758,7 @@
   </div>
 
   <!-- HEADER SUPERIOR -->
-  <header id="app-header" class="bg-conecta-dark/95 backdrop-blur-md text-white shadow-lg sticky top-0 z-40 border-b border-conecta-emerald/40 safe-top no-print transition-colors">
+  <header id="app-header" class="bg-[#e8f6fd]/95 backdrop-blur-md text-slate-900 shadow-sm sticky top-0 z-40 border-b border-sky-200 safe-top no-print transition-colors">
     <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2.5">
         <img
@@ -773,20 +773,20 @@
         </div>
         <div>
           <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-conecta-green leading-tight">CONECTA</h1>
-          <p id="header-subtitle" class="text-[11px] sm:text-xs text-slate-300 tracking-wider uppercase leading-tight">Segurança e Climatização</p>
+          <p id="header-subtitle" class="text-[11px] sm:text-xs text-sky-800 font-semibold tracking-wider uppercase leading-tight">Segurança e Climatização</p>
         </div>
       </div>
 
       <div class="flex items-center flex-wrap justify-end gap-2">
-        <span id="usuario-logado" class="text-xs text-conecta-lime font-semibold"></span>
-        <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-conecta-green/20 text-conecta-lime border border-conecta-green/40 font-medium hidden sm:inline">
+        <span id="usuario-logado" class="text-xs text-sky-900 font-bold"></span>
+        <span id="db-status" class="text-xs px-2.5 py-1.5 rounded-lg bg-sky-100 text-sky-800 border border-sky-300 font-semibold hidden sm:inline">
           ● Tempo Real
         </span>
-        <button type="button" onclick="alternarTema()" class="btn-tema text-xs px-2.5 py-1.5 rounded-lg bg-white/10 text-slate-200 border border-white/20 hover:bg-white/20 font-semibold transition flex items-center gap-1" title="Alterar tema de cores">
+        <button type="button" onclick="alternarTema()" class="btn-tema text-xs px-2.5 py-1.5 rounded-lg bg-white text-sky-900 border border-sky-300 hover:bg-sky-50 font-semibold transition flex items-center gap-1" title="Alterar tema de cores">
           <span class="tema-icone">☀️</span>
           <span class="tema-texto hidden sm:inline">Claro</span>
         </button>
-        <button id="btn-sair" onclick="fazerLogout()" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 font-semibold transition">
+        <button id="btn-sair" onclick="fazerLogout()" class="text-xs px-3 py-1.5 rounded-lg bg-rose-100 text-rose-700 border border-rose-300 hover:bg-rose-200 font-semibold transition">
           Sair
         </button>
       </div>
@@ -2502,7 +2502,7 @@
       const atual = document.body.classList.contains('theme-light') ? 'light' : 'dark';
       aplicarTema(atual === 'light' ? 'dark' : 'light');
     };
-    aplicarTema(localStorage.getItem('conecta_tema') || 'dark');
+    aplicarTema('light');
 
     function reiniciarTimerInatividade() {
       if (!state.usuarioAtual) return;
