@@ -16,6 +16,8 @@
   <link rel="manifest" href="./manifest.json" />
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>
@@ -3822,7 +3824,7 @@
           logging: false
         });
 
-        const { jsPDF } = window.jspdf || html2pdf.jsPDF || {};
+        const jsPDF = window.jspdf?.jsPDF || html2pdf?.jsPDF || window.jsPDF;
         const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
