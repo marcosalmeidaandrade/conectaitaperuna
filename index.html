@@ -6,7 +6,7 @@
   <title>CONECTA - Segurança e Climatização</title>
 
   <!-- Configurações de App para Smartphone (PWA - iOS e Android) -->
-  <meta id="meta-theme-color" name="theme-color" content="#e6f4fc" />
+  <meta id="meta-theme-color" name="theme-color" content="#e9f7ee" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CONECTA" />
@@ -48,38 +48,172 @@
       transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* ==================== TEMA AZUL CLARO COMPLETO (PADRÃO) ==================== */
+    /* ==================== TEMA CLARO: VERDE CLARO COM TEXTO PRETO ==================== */
+    body.theme-light {
+      background-color: #e9f7ee !important;
+      color: #050806 !important;
+    }
+    body.theme-light main .bg-white,
+    body.theme-light [id^="modal-"] > div.bg-white {
+      background-color: #f6fcf8 !important;
+      border-color: #b7dfc5 !important;
+      color: #050806 !important;
+    }
+    body.theme-light main .bg-slate-50,
+    body.theme-light [id^="modal-"] .bg-slate-50 {
+      background-color: #e2f4e9 !important;
+      border-color: #a9d8ba !important;
+      color: #050806 !important;
+    }
+    body.theme-light main .bg-slate-100,
+    body.theme-light [id^="modal-"] .bg-slate-100 {
+      background-color: #d3eee0 !important;
+      color: #050806 !important;
+    }
+    body.theme-light main .text-slate-800,
+    body.theme-light main .text-slate-700,
+    body.theme-light main .text-slate-600,
+    body.theme-light main .text-slate-500,
+    body.theme-light [id^="modal-"] .text-slate-800,
+    body.theme-light [id^="modal-"] .text-slate-700,
+    body.theme-light [id^="modal-"] .text-slate-600,
+    body.theme-light [id^="modal-"] .text-slate-500 {
+      color: #050806 !important;
+    }
+    body.theme-light main .border-slate-200,
+    body.theme-light main .border-slate-300,
+    body.theme-light main .border-b,
+    body.theme-light main .border-t,
+    body.theme-light [id^="modal-"] .border,
+    body.theme-light [id^="modal-"] .border-b,
+    body.theme-light [id^="modal-"] .border-t {
+      border-color: #a9d8ba !important;
+    }
+    body.theme-light main input:not([type="checkbox"]):not([type="file"]),
+    body.theme-light main select,
+    body.theme-light main textarea,
+    body.theme-light [id^="modal-"] input:not([type="checkbox"]):not([type="file"]),
+    body.theme-light [id^="modal-"] select,
+    body.theme-light [id^="modal-"] textarea {
+      background-color: #ffffff !important;
+      border-color: #8bc9a2 !important;
+      color: #050806 !important;
+      color-scheme: light;
+    }
+    body.theme-light #login-screen {
+      background-color: #dff3e6 !important;
+    }
+    body.theme-light #login-card {
+      background-color: #f6fcf8 !important;
+      border-color: #8bc9a2 !important;
+      color: #050806 !important;
+    }
+    body.theme-light #login-label {
+      color: #050806 !important;
+    }
+    body.theme-light #login-senha {
+      background-color: #ffffff !important;
+      border-color: #8bc9a2 !important;
+      color: #050806 !important;
+    }
+    body.theme-light #app-header {
+      background-color: #dcf2e4 !important;
+      color: #050806 !important;
+      border-bottom-color: #a9d8ba !important;
+    }
+    body.theme-light #header-subtitle {
+      color: #050806 !important;
+    }
+    body.theme-light #desktop-dock {
+      background: rgba(232, 248, 238, 0.92) !important;
+      border-color: rgba(22, 101, 52, 0.35) !important;
+      box-shadow: 0 10px 26px rgba(20, 83, 45, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+    body.theme-light .dock-btn-inactive {
+      color: #050806 !important;
+    }
+    body.theme-light .dock-btn-inactive:hover {
+      background-color: rgba(34, 197, 94, 0.18) !important;
+      color: #050806 !important;
+    }
+    body.theme-light .dock-btn-active {
+      background: linear-gradient(135deg, #15803d 0%, #166534 100%) !important;
+      color: #ffffff !important;
+      border-color: #14532d !important;
+    }
+    body.theme-light #mobile-bottom-nav {
+      background: rgba(232, 248, 238, 0.95) !important;
+      border-top-color: #a9d8ba !important;
+    }
+    body.theme-light .mob-tab-btn {
+      color: #050806 !important;
+    }
+    body.theme-light .mob-tab-btn.mob-active {
+      color: #15803d !important;
+    }
+    body.theme-light #mobile-more-sheet {
+      background: #f6fcf8 !important;
+      border-top-color: #a9d8ba !important;
+    }
+    body.theme-light #mobile-more-title {
+      color: #050806 !important;
+    }
+    body.theme-light .more-item-btn {
+      color: #050806 !important;
+      background: #e2f4e9 !important;
+      border-color: #a9d8ba !important;
+    }
+    body.theme-light #usuario-logado,
+    body.theme-light #db-status {
+      color: #050806 !important;
+      background-color: #cbead6 !important;
+      border-color: #8bc9a2 !important;
+    }
+    body.theme-light .btn-tema {
+      background-color: #ffffff !important;
+      color: #050806 !important;
+      border-color: #8bc9a2 !important;
+    }
+    body.theme-light #btn-sair {
+      background-color: #fee2e2 !important;
+      color: #050806 !important;
+      border-color: #fca5a5 !important;
+    }
+
+    /* ==================== TEMA ESCURO: VERDE MUSGO ==================== */
+    body:not(.theme-light) {
+      background-color: #182619 !important;
+      color: #e6f0e6 !important;
+    }
     body:not(.theme-light) main .bg-white,
     body:not(.theme-light) [id^="modal-"] > div.bg-white {
-      background-color: #f4fafe !important;
-      border-color: #bae0f7 !important;
-      color: #0f2942;
+      background-color: #203221 !important;
+      border-color: #365237 !important;
+      color: #e6f0e6 !important;
     }
     body:not(.theme-light) main .bg-slate-50,
     body:not(.theme-light) [id^="modal-"] .bg-slate-50 {
-      background-color: #e9f5fc !important;
-      border-color: #c2e3f8 !important;
+      background-color: #263b27 !important;
+      border-color: #3d5c3e !important;
     }
     body:not(.theme-light) main .bg-slate-100,
     body:not(.theme-light) [id^="modal-"] .bg-slate-100 {
-      background-color: #dceefa !important;
-      color: #0f2942 !important;
+      background-color: #2d462e !important;
+      color: #e6f0e6 !important;
     }
     body:not(.theme-light) main .text-slate-800,
     body:not(.theme-light) [id^="modal-"] .text-slate-800 {
-      color: #0c233b !important;
+      color: #f1f8f1 !important;
     }
     body:not(.theme-light) main .text-slate-700,
     body:not(.theme-light) [id^="modal-"] .text-slate-700 {
-      color: #163a5c !important;
+      color: #d7e7d7 !important;
     }
     body:not(.theme-light) main .text-slate-600,
-    body:not(.theme-light) [id^="modal-"] .text-slate-600 {
-      color: #2b547a !important;
-    }
     body:not(.theme-light) main .text-slate-500,
+    body:not(.theme-light) [id^="modal-"] .text-slate-600,
     body:not(.theme-light) [id^="modal-"] .text-slate-500 {
-      color: #466d91 !important;
+      color: #b4cbb4 !important;
     }
     body:not(.theme-light) main .border-slate-200,
     body:not(.theme-light) main .border-slate-300,
@@ -88,7 +222,7 @@
     body:not(.theme-light) [id^="modal-"] .border,
     body:not(.theme-light) [id^="modal-"] .border-b,
     body:not(.theme-light) [id^="modal-"] .border-t {
-      border-color: #bae0f7 !important;
+      border-color: #3a573b !important;
     }
     body:not(.theme-light) main input:not([type="checkbox"]):not([type="file"]),
     body:not(.theme-light) main select,
@@ -96,54 +230,71 @@
     body:not(.theme-light) [id^="modal-"] input:not([type="checkbox"]):not([type="file"]),
     body:not(.theme-light) [id^="modal-"] select,
     body:not(.theme-light) [id^="modal-"] textarea {
-      background-color: #ffffff !important;
-      border-color: #93c9ec !important;
-      color: #0c233b !important;
-      color-scheme: light;
+      background-color: #142015 !important;
+      border-color: #446645 !important;
+      color: #f1f8f1 !important;
+      color-scheme: dark;
+    }
+    body:not(.theme-light) #login-screen {
+      background-color: #152216 !important;
+    }
+    body:not(.theme-light) #login-card {
+      background-color: #213422 !important;
+      border-color: #466847 !important;
+    }
+    body:not(.theme-light) #app-header {
+      background-color: #1c2c1d !important;
+      color: #e6f0e6 !important;
+      border-bottom-color: #365237 !important;
+    }
+    body:not(.theme-light) #desktop-dock {
+      background: rgba(28, 44, 29, 0.88) !important;
+      border-color: rgba(107, 142, 78, 0.42) !important;
+    }
+    body:not(.theme-light) .dock-btn-inactive {
+      color: #d7e7d7 !important;
+    }
+    body:not(.theme-light) .dock-btn-inactive:hover {
+      background-color: rgba(107, 142, 78, 0.22) !important;
+      color: #ffffff !important;
+    }
+    body:not(.theme-light) #mobile-bottom-nav {
+      background: rgba(24, 38, 25, 0.94) !important;
+      border-top-color: #3a573b !important;
+    }
+    body:not(.theme-light) #mobile-more-sheet {
+      background: #203221 !important;
+      border-top-color: #3a573b !important;
+    }
+    body:not(.theme-light) .more-item-btn {
+      background: #263b27 !important;
+      border-color: #3d5c3e !important;
+      color: #e6f0e6 !important;
     }
     body:not(.theme-light) .kpi-filter-card {
-      background: #111a16;
-      border-color: #243830;
+      background: #203221 !important;
+      border-color: #3d5c3e !important;
     }
     body:not(.theme-light) .kpi-filter-card .kpi-num {
-      color: #7AC143;
+      color: #9ccc65 !important;
     }
     body:not(.theme-light) .kpi-filter-card .kpi-lbl {
-      color: #94a3b8;
+      color: #c5dcc5 !important;
     }
-    body:not(.theme-light) .bg-emerald-50,
-    body:not(.theme-light) .bg-emerald-50\/60,
-    body:not(.theme-light) .bg-emerald-50\/70 {
-      background-color: rgba(0, 168, 89, 0.14) !important;
-      border-color: rgba(0, 168, 89, 0.35) !important;
+    body:not(.theme-light) .fin-summary-card,
+    body:not(.theme-light) .period-group-box {
+      background: #203221 !important;
+      border-color: #3d5c3e !important;
     }
-    body:not(.theme-light) .bg-amber-50,
-    body:not(.theme-light) .bg-amber-50\/60 {
-      background-color: rgba(245, 158, 11, 0.14) !important;
-      border-color: rgba(245, 158, 11, 0.35) !important;
+    body:not(.theme-light) .fin-card-title {
+      color: #d7e7d7 !important;
     }
-    body:not(.theme-light) .text-amber-800,
-    body:not(.theme-light) .text-amber-900 {
-      color: #fcd34d !important;
+    body:not(.theme-light) .fin-card-sub {
+      color: #b4cbb4 !important;
     }
-    body:not(.theme-light) .bg-red-50,
-    body:not(.theme-light) .bg-red-50\/30 {
-      background-color: rgba(239, 68, 68, 0.14) !important;
-      border-color: rgba(239, 68, 68, 0.35) !important;
-    }
-    body:not(.theme-light) .text-red-700,
-    body:not(.theme-light) .text-red-800 {
-      color: #fca5a5 !important;
-    }
-    body:not(.theme-light) .text-conecta-emerald {
-      color: #4ade80 !important;
-    }
-    body:not(.theme-light) tr.hover\:bg-slate-50:hover,
-    body:not(.theme-light) .hover\:bg-slate-50\/70:hover {
-      background-color: rgba(255, 255, 255, 0.04) !important;
-    }
-    body.theme-light {
-      color: #1e293b;
+    body:not(.theme-light) .cal-day-btn {
+      background: #1a291b !important;
+      border-color: #3a573b !important;
     }
 
     /* Toast Animations */
@@ -159,7 +310,7 @@
     .cal-day-btn {
       min-height: 58px;
       border-radius: 0.75rem;
-      border: 1px solid #243830;
+      border: 1px solid #3a573b;
       padding: 6px;
       display: flex;
       flex-direction: column;
@@ -168,11 +319,8 @@
       transition: all 0.15s ease;
     }
     body.theme-light .cal-day-btn {
-      border-color: #e2e8f0;
-      background: #ffffff;
-    }
-    body:not(.theme-light) .cal-day-btn {
-      background: #0d1512;
+      border-color: #a9d8ba;
+      background: #f6fcf8;
     }
     .cal-day-btn:hover {
       border-color: #00A859;
@@ -201,13 +349,6 @@
       opacity: 0;
       pointer-events: none;
     }
-    #desktop-dock {
-      background: rgba(235, 247, 255, 0.88);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(2, 132, 199, 0.32);
-      box-shadow: 0 10px 26px rgba(14, 116, 144, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
-    }
     .dock-btn {
       display: inline-flex;
       align-items: center;
@@ -235,24 +376,11 @@
       border-color: rgba(122, 193, 67, 0.55);
       box-shadow: 0 4px 14px rgba(0, 168, 89, 0.35);
     }
-    .dock-btn-inactive {
-      color: #1e466b;
-      font-weight: 600;
-      background-color: transparent;
-    }
-    .dock-btn-inactive:hover {
-      background-color: rgba(14, 165, 233, 0.14);
-      color: #0369a1;
-    }
 
     /* ==================== OPÇÃO 4 (MOBILE): BARRA INFERIOR + MENU MAIS ==================== */
     #mobile-bottom-nav {
-      background: rgba(235, 247, 255, 0.94);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-top: 1px solid rgba(2, 132, 199, 0.28);
       padding-bottom: env(safe-area-inset-bottom);
-      box-shadow: 0 -6px 20px rgba(14, 116, 144, 0.12);
+      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.14);
     }
     .mob-tab-btn {
       display: flex;
@@ -264,7 +392,7 @@
       padding: 8px 4px 7px;
       font-size: 10px;
       font-weight: 700;
-      color: #3b6992;
+      color: #b4cbb4;
       position: relative;
       transition: color 0.2s ease, transform 0.15s ease;
     }
@@ -275,9 +403,6 @@
     }
     .mob-tab-btn:active {
       transform: scale(0.93);
-    }
-    .mob-tab-btn.mob-active {
-      color: #0284c7;
     }
     .mob-tab-btn.mob-active svg {
       transform: translateY(-1px);
@@ -296,8 +421,6 @@
 
     /* Bottom Sheet Menu "Mais" */
     #mobile-more-sheet {
-      background: #111916;
-      border-top: 1px solid rgba(0, 168, 89, 0.35);
       padding-bottom: calc(1rem + env(safe-area-inset-bottom));
       transform: translateY(100%);
       transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
@@ -313,123 +436,17 @@
       border-radius: 0.85rem;
       font-size: 0.82rem;
       font-weight: 600;
-      color: #e2e8f0;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
       transition: all 0.18s ease;
       text-align: left;
     }
     .more-item-btn svg {
       width: 18px;
       height: 18px;
-      color: #7AC143;
       flex-shrink: 0;
     }
     .more-item-btn.more-active {
-      background: linear-gradient(135deg, #00A859 0%, #007d42 100%);
-      border-color: rgba(122, 193, 67, 0.6);
-      color: #ffffff;
-    }
-    .more-item-btn.more-active svg {
-      color: #ffffff;
-    }
-
-    /* ==================== TEMA CLARO ==================== */
-    body.theme-light {
-      background-color: #f8faf9;
-    }
-    body.theme-light #login-screen {
-      background-color: #eaf2ee;
-    }
-    body.theme-light #login-card {
-      background-color: #ffffff;
-      border-color: #b7dcc8;
-    }
-    body.theme-light #login-label {
-      color: #334155;
-    }
-    body.theme-light #login-senha {
-      background-color: #f1f5f9;
-      border-color: #cbd5e1;
-      color: #0f172a;
-    }
-    body.theme-light #app-header {
-      background-color: rgba(255, 255, 255, 0.96);
-      color: #0f172a;
-      border-bottom-color: #d1e7dd;
-    }
-    body.theme-light #header-subtitle {
-      color: #475569;
-    }
-    body.theme-light #desktop-dock {
-      background: rgba(255, 255, 255, 0.85);
-      border-color: rgba(0, 168, 89, 0.24);
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    }
-    body.theme-light .dock-btn-inactive {
-      color: #475569;
-    }
-    body.theme-light .dock-btn-inactive:hover {
-      background-color: #e6f6ee;
-      color: #006837;
-    }
-    body.theme-light .dock-btn-active {
-      background: linear-gradient(135deg, #00A859 0%, #007d42 100%);
-      color: #ffffff;
-      border-color: #00A859;
-      box-shadow: 0 4px 12px rgba(0, 168, 89, 0.28);
-    }
-    body.theme-light #mobile-bottom-nav {
-      background: rgba(255, 255, 255, 0.94);
-      border-top-color: #d1e7dd;
-      box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
-    }
-    body.theme-light .mob-tab-btn {
-      color: #64748b;
-    }
-    body.theme-light .mob-tab-btn.mob-active {
-      color: #006837;
-    }
-    body.theme-light #mobile-more-sheet {
-      background: #ffffff;
-      border-top-color: #d1e7dd;
-    }
-    body.theme-light #mobile-more-title {
-      color: #0f172a;
-    }
-    body.theme-light .more-item-btn {
-      color: #1e293b;
-      background: #f4f9f6;
-      border-color: #dce8e2;
-    }
-    body.theme-light .more-item-btn svg {
-      color: #00A859;
-    }
-    body.theme-light .more-item-btn.more-active {
-      background: linear-gradient(135deg, #00A859 0%, #007d42 100%);
-      color: #ffffff;
-      border-color: #00A859;
-    }
-    body.theme-light .more-item-btn.more-active svg {
-      color: #ffffff;
-    }
-    body.theme-light #usuario-logado {
-      color: #006837;
-    }
-    body.theme-light #db-status {
-      background-color: #e6f6ee;
-      color: #006837;
-      border-color: #a7dfc1;
-    }
-    body.theme-light .btn-tema {
-      background-color: #e2ece7;
-      color: #0f172a;
-      border-color: #cbd5e1;
-    }
-    body.theme-light #btn-sair {
-      background-color: #fee2e2;
-      color: #b91c1c;
-      border-color: #fecaca;
+      background: linear-gradient(135deg, #00A859 0%, #007d42 100%) !important;
+      color: #ffffff !important;
     }
 
     /* ==================== BOTÕES-CARD DE FILTRO (ESTILO KPI DA FOTO) ==================== */
