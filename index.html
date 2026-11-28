@@ -3227,8 +3227,7 @@
       const preventivas = state.clientes.filter(c => c.proximaPreventiva && c.proximaPreventiva <= limiteStr);
       document.getElementById('painel-preventivas').innerHTML = preventivas.length
         ? preventivas.map(c => {
-            const msg = encodeURIComponent(`Olá ${c.nome}, aqui é da ${state.config.nome}! Está na época da manutenção preventiva/higienização dos seus equipamentos. Podemos agendar uma visita?`);
-            return `<div class="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded-lg"><div><p class="font-semibold text-slate-800 text-xs">${c.nome}</p><p class="text-xs text-amber-800">Preventiva prevista: ${formatarDataBR(c.proximaPreventiva)}</p></div><a href="https://wa.me/55${c.telefone}?text=${msg}" target="_blank" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">WhatsApp</a></div>`;
+            return `<div class="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded-lg"><div><p class="font-semibold text-slate-800 text-xs">${c.nome}</p><p class="text-xs text-amber-800">Preventiva prevista: ${formatarDataBR(c.proximaPreventiva)}</p></div><button type="button" onclick="enviarLembretePreventivaWhatsApp('${c.id}')" class="text-xs bg-conecta-green text-white px-2.5 py-1 rounded font-semibold">WhatsApp</button></div>`;
           }).join('')
         : '<p class="text-xs text-slate-400">Nenhuma manutenção preventiva vencendo nos próximos 30 dias.</p>';
 
@@ -3472,28 +3471,277 @@
       }
     };
 
+    async function gerarPDFDocumentoComCabecalho({ tituloDocumento = 'DOCUMENTO', subtituloDocumento = '', clienteNome = '', clienteTelefone = '', clienteEndereco = '', secoesHtml = [], totalDestaque = '', nomeArquivo = 'documento.pdf' }) {
+      const logoSrc = document.getElementById('header-logo')?.src || './somentelogo.png';
+      const logoDataUrl = await imagemParaDataURL(logoSrc);
+      const logoHtml = logoDataUrl
+        ? `<img src="${logoDataUrl}" style="height: 54px; width: 54px; object-fit: contain; background: #0A0F0D; padding: 5px; border-radius: 8px; display: block;" />`
+        : `<div style="height: 54px; width: 54px; background: #006837; color: #ffffff; font-weight: 800; font-size: 22px; line-height: 54px; text-align: center; border-radius: 8px;">C</div>`;
+
+      const infoClienteHtml = (clienteNome || clienteTelefone || clienteEndereco) ? `
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.5;">
+          ${clienteNome ? `<div style="font-size: 13px; color: #0f172a;"><strong>Cliente:</strong> ${clienteNome}</div>` : ''}
+          ${clienteTelefone ? `<div style="color: #334155; margin-top: 2px;"><strong>Telefone / WhatsApp:</strong> ${formatarTelefone(clienteTelefone)}</div>` : ''}
+          ${clienteEndereco ? `<div style="color: #334155; margin-top: 2px;"><strong>Endereço:</strong> ${clienteEndereco}</div>` : ''}
+        </div>` : '';
+
+      const totalHtml = totalDestaque ? `
+        <div style="background: #f0fdf4; border: 1.5px solid #00A859; border-radius: 6px; padding: 10px 14px; margin: 12px 0; text-align: right; font-size: 15px; font-weight: 800; color: #006837;">
+          ${totalDestaque}
+        </div>` : '';
+
+      const htmlDoc = `
+        <div style="width: 710px; max-width: 710px; font-family: Arial, Helvetica, sans-serif; color: #0f172a; background: #ffffff; padding: 14px; box-sizing: border-box;">
+          <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #00A859; margin-bottom: 14px;">
+            <tr>
+              <td style="padding-bottom: 12px; vertical-align: middle; width: 66px;">
+                ${logoHtml}
+              </td>
+              <td style="padding-bottom: 12px; padding-left: 10px; vertical-align: middle;">
+                <div style="font-size: 17px; font-weight: 800; color: #006837; line-height: 1.2;">${state.config.nome || 'CONECTA - Segurança e Climatização'}</div>
+                <div style="font-size: 11px; color: #475569; margin-top: 3px;">
+                  ${[state.config.cnpj ? 'CNPJ: ' + state.config.cnpj : '', state.config.tel, state.config.cidade].filter(Boolean).join(' • ')}
+                </div>
+                ${state.config.pix ? `<div style="font-size: 10px; color: #006837; margin-top: 2px; font-weight: 700;">PIX: ${state.config.pix}</div>` : ''}
+              </td>
+              <td style="padding-bottom: 12px; text-align: right; vertical-align: middle;">
+                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">${tituloDocumento}</div>
+                ${subtituloDocumento ? `<div style="font-size: 11px; color: #006837; margin-top: 2px; font-weight: 700;">${subtituloDocumento}</div>` : ''}
+                <div style="font-size: 11px; color: #475569; margin-top: 2px;">Data: <strong>${formatarDataBR(new Date().toISOString())}</strong></div>
+              </td>
+            </tr>
+          </table>
+
+          ${infoClienteHtml}
+          ${(secoesHtml || []).join('')}
+          ${totalHtml}
+
+          <div style="margin-top: 24px; padding-top: 10px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 10px; color: #64748b;">
+            ${state.config.nome || 'CONECTA - Segurança e Climatização'} ${state.config.cidade ? '• ' + state.config.cidade : ''} • Emitido em ${formatarDataHoraBR(new Date())}
+          </div>
+        </div>`;
+
+      const host = document.createElement('div');
+      host.style.cssText = 'position: fixed; left: 0; top: 0; width: 710px; background: #ffffff; z-index: 9998; opacity: 1; pointer-events: none;';
+      host.innerHTML = htmlDoc;
+      document.body.appendChild(host);
+      const alvo = host.firstElementChild || host;
+
+      try {
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 160))));
+        const canvas = await html2canvas(alvo, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          scrollX: 0,
+          scrollY: 0,
+          width: alvo.scrollWidth || 710,
+          height: alvo.scrollHeight || alvo.offsetHeight,
+          windowWidth: 760,
+          logging: false
+        });
+
+        const jsPDF = window.jspdf?.jsPDF || html2pdf?.jsPDF || window.jsPDF;
+        const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 8;
+        const usableWidth = pageWidth - margin * 2;
+        const usableHeight = pageHeight - margin * 2;
+        const pxPerMm = canvas.width / usableWidth;
+        const pageHeightPx = Math.floor(usableHeight * pxPerMm);
+
+        let renderedHeightPx = 0;
+        let pageIndex = 0;
+
+        while (renderedHeightPx < canvas.height) {
+          const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedHeightPx);
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = sliceHeightPx;
+          const ctx = pageCanvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+          ctx.drawImage(canvas, 0, renderedHeightPx, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+
+          if (pageIndex > 0) pdf.addPage();
+          const sliceImgData = pageCanvas.toDataURL('image/jpeg', 0.95);
+          pdf.addImage(sliceImgData, 'JPEG', margin, margin, usableWidth, sliceHeightPx / pxPerMm, undefined, 'FAST');
+
+          renderedHeightPx += sliceHeightPx;
+          pageIndex++;
+        }
+
+        return { blob: pdf.output('blob'), nomeArquivo };
+      } finally {
+        host.remove();
+      }
+    }
+
+    async function compartilharPDFNoWhatsApp({ blob, nomeArquivo, telefone, textoWhatsApp }) {
+      const file = new File([blob], nomeArquivo, { type: 'application/pdf' });
+      const telLimpo = String(telefone || '').replace(/\D/g, '');
+      const numeroE164 = telLimpo ? (telLimpo.startsWith('55') ? telLimpo : '55' + telLimpo) : '';
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: nomeArquivo,
+            text: textoWhatsApp
+          });
+          return true;
+        } catch (shareErr) {
+          if (shareErr && shareErr.name === 'AbortError') throw shareErr;
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nomeArquivo;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 6000);
+
+      const waUrl = numeroE164
+        ? `https://wa.me/${numeroE164}?text=${encodeURIComponent(textoWhatsApp)}`
+        : `https://wa.me/?text=${encodeURIComponent(textoWhatsApp)}`;
+      window.open(waUrl, '_blank');
+      showToast(`PDF "${nomeArquivo}" gerado e baixado para anexar no WhatsApp!`, 'info');
+      return false;
+    }
+
+    window.enviarContatoClienteWhatsApp = async (clienteId) => {
+      const c = state.clientes.find(x => x.id === clienteId);
+      if (!c) return;
+      const texto = `Olá ${c.nome}, aqui é da ${state.config.nome}! Segue em anexo o resumo do seu cadastro e base de serviços.`;
+      setLoading(true, `Gerando documento em PDF para ${c.nome}...`);
+      try {
+        const secoesHtml = [
+          `<div style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; line-height: 1.5; background: #f8fafc;">
+            <div><strong>Tipo:</strong> ${c.tipo || 'PF'} ${c.documento ? '&nbsp;|&nbsp; <strong>Doc:</strong> ' + (c.tipo === 'PJ' ? formatarCNPJ(c.documento) : formatarCPF(c.documento)) : ''}</div>
+            ${c.monitoramentoAtivo ? `<div style="margin-top: 4px; color: #006837;"><strong>Plano / Contrato:</strong> ${c.monitoramentoPlano || 'Manutenção'} • ${formatBRL(c.monitoramentoValor)}/mês (Dia ${c.monitoramentoDia || 10})</div>` : ''}
+            ${c.proximaPreventiva ? `<div style="margin-top: 4px;"><strong>Próxima Preventiva:</strong> ${formatarDataBR(c.proximaPreventiva)}</div>` : ''}
+            ${c.equipamentos ? `<div style="margin-top: 6px;"><strong>Base Instalada / Equipamentos:</strong><br/>${String(c.equipamentos).replace(/\n/g, '<br/>')}</div>` : ''}
+          </div>`
+        ];
+        const safeCli = (c.nome || 'cliente').toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+        const { blob, nomeArquivo } = await gerarPDFDocumentoComCabecalho({
+          tituloDocumento: 'RESUMO DE SERVIÇOS',
+          subtituloDocumento: c.nome,
+          clienteNome: c.nome,
+          clienteTelefone: c.telefone,
+          clienteEndereco: c.endereco,
+          secoesHtml,
+          nomeArquivo: `cliente_${safeCli}.pdf`
+        });
+        setLoading(false);
+        await compartilharPDFNoWhatsApp({
+          blob,
+          nomeArquivo,
+          telefone: c.telefone,
+          textoWhatsApp: texto
+        });
+      } catch (err) {
+        setLoading(false);
+        if (err && err.name !== 'AbortError') showToast('Erro ao gerar PDF: ' + err.message, 'error');
+      }
+    };
+
+    window.enviarLembretePreventivaWhatsApp = async (clienteId) => {
+      const c = state.clientes.find(x => x.id === clienteId);
+      if (!c) return;
+      const msg = `Olá ${c.nome}, aqui é da ${state.config.nome}! Segue em anexo o lembrete de manutenção preventiva/higienização dos seus equipamentos (prevista para ${formatarDataBR(c.proximaPreventiva)}). Podemos agendar uma visita?`;
+      setLoading(true, `Gerando lembrete em PDF para ${c.nome}...`);
+      try {
+        const secoesHtml = [
+          `<div style="padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fffbeb; font-size: 12.5px; line-height: 1.55; margin-bottom: 12px;">
+            <strong style="color: #92400e; display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 11px;">Aviso de Manutenção Preventiva</strong>
+            Informamos que está próximo o período de manutenção preventiva e higienização técnica referente à sua base instalada, visando manter o desempenho, a segurança e a vida útil dos equipamentos.
+          </div>`,
+          `<div style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; line-height: 1.55; background: #f8fafc;">
+            <div><strong>Data Prevista da Preventiva:</strong> ${formatarDataBR(c.proximaPreventiva)}</div>
+            ${c.ultimaPreventiva ? `<div><strong>Última Manutenção:</strong> ${formatarDataBR(c.ultimaPreventiva)}</div>` : ''}
+            ${c.equipamentos ? `<div style="margin-top: 6px;"><strong>Equipamentos / Base Instalada:</strong><br/>${String(c.equipamentos).replace(/\n/g, '<br/>')}</div>` : ''}
+          </div>`
+        ];
+        const safeCli = (c.nome || 'cliente').toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+        const { blob, nomeArquivo } = await gerarPDFDocumentoComCabecalho({
+          tituloDocumento: 'LEMBRETE PREVENTIVA',
+          subtituloDocumento: `Prevista: ${formatarDataBR(c.proximaPreventiva)}`,
+          clienteNome: c.nome,
+          clienteTelefone: c.telefone,
+          clienteEndereco: c.endereco,
+          secoesHtml,
+          nomeArquivo: `preventiva_${safeCli}.pdf`
+        });
+        setLoading(false);
+        await compartilharPDFNoWhatsApp({
+          blob,
+          nomeArquivo,
+          telefone: c.telefone,
+          textoWhatsApp: msg
+        });
+      } catch (err) {
+        setLoading(false);
+        if (err && err.name !== 'AbortError') {
+          showToast('Erro ao gerar PDF da preventiva: ' + err.message, 'error');
+        }
+      }
+    };
+
     window.enviarProtocoloOSWhatsApp = async (osId) => {
       const o = state.os.find(x => x.id === osId);
       if (!o) return;
       const clienteObj = state.clientes.find(c => c.id === o.clienteId);
       const tel = (o.clienteTelefone || clienteObj?.telefone || '').replace(/\D/g, '');
-      const texto = `Olá ${o.clienteNome}, segue o protocolo de conclusão da ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal || 0)}. Garantia até: ${formatarDataBR(o.garantiaAte)}.`;
-      if (tel) {
-        window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(texto)}`, '_blank');
-      } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
-      }
-      if (navigator.onLine) {
-        try {
-          await salvarDocumento('ordens_servico', o.id, {
-            protocoloEnviado: true,
-            protocoloEnviadoEm: new Date().toISOString(),
-            protocoloEnviadoPor: state.usuarioAtual?.nome || ''
-          });
-          if (document.getElementById('tab-painel')?.classList.contains('active')) {
-            carregarPainelSobDemanda();
-          }
-        } catch (err) {}
+      const end = o.clienteEndereco || clienteObj?.endereco || '';
+      const texto = `Olá ${o.clienteNome}, segue em anexo o protocolo de conclusão da ${o.numero} da ${state.config.nome} no valor de ${formatBRL(o.valorTotal || 0)}. Garantia até: ${formatarDataBR(o.garantiaAte)}.`;
+      setLoading(true, `Gerando protocolo ${o.numero}.pdf para WhatsApp...`);
+      try {
+        const secoesHtml = [
+          `<div style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; line-height: 1.5; margin-bottom: 10px; background: #f8fafc;">
+            <div><strong>Ordem de Serviço:</strong> ${o.numero} &nbsp;|&nbsp; <strong>Data:</strong> ${formatarDataBR(o.dataAgendamento)} &nbsp;|&nbsp; <strong>Garantia até:</strong> ${formatarDataBR(o.garantiaAte)}</div>
+            <div style="margin-top: 2px;"><strong>Técnico Responsável:</strong> ${o.tecnico || '-'} &nbsp;|&nbsp; <strong>Área:</strong> ${o.categoria === 'climatizacao' ? 'Climatização' : 'Segurança / CFTV'}</div>
+          </div>`,
+          `<div style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; white-space: pre-line; margin-bottom: 10px;"><strong>Serviço / Relato:</strong><br/>${o.relato || '-'}</div>`,
+          `<div style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; white-space: pre-line; margin-bottom: 10px;"><strong>Laudo Técnico / Conclusão:</strong><br/>${o.laudo || 'Serviço concluído conforme especificações técnicas.'}</div>`
+        ];
+        const { blob, nomeArquivo } = await gerarPDFDocumentoComCabecalho({
+          tituloDocumento: `PROTOCOLO ${o.numero}`,
+          subtituloDocumento: `Garantia até ${formatarDataBR(o.garantiaAte)}`,
+          clienteNome: o.clienteNome,
+          clienteTelefone: tel,
+          clienteEndereco: end,
+          secoesHtml,
+          totalDestaque: Number(o.valorTotal || 0) > 0 ? `Valor Total: ${formatBRL(o.valorTotal)}` : '',
+          nomeArquivo: `protocolo_${o.numero}.pdf`
+        });
+        setLoading(false);
+        await compartilharPDFNoWhatsApp({
+          blob,
+          nomeArquivo,
+          telefone: tel,
+          textoWhatsApp: texto
+        });
+        if (navigator.onLine) {
+          try {
+            await salvarDocumento('ordens_servico', o.id, {
+              protocoloEnviado: true,
+              protocoloEnviadoEm: new Date().toISOString(),
+              protocoloEnviadoPor: state.usuarioAtual?.nome || ''
+            });
+            if (document.getElementById('tab-painel')?.classList.contains('active')) {
+              carregarPainelSobDemanda();
+            }
+          } catch (err) {}
+        }
+      } catch (err) {
+        setLoading(false);
+        if (err && err.name !== 'AbortError') showToast('Erro ao gerar PDF do protocolo: ' + err.message, 'error');
       }
     };
 
@@ -3555,24 +3803,50 @@
       if (!o) return;
       const clienteObj = state.clientes.find(c => c.id === o.clienteId);
       const tel = (o.clienteTelefone || clienteObj?.telefone || '').replace(/\D/g, '');
+      const end = o.clienteEndereco || clienteObj?.endereco || '';
       const pixInfo = state.config.pix ? `\nChave PIX: ${state.config.pix}` : '';
-      const texto = `Olá ${o.clienteNome}, aqui é da ${state.config.nome}.\n\nSegue a cobrança referente à ${o.numero} no valor de ${formatBRL(o.valorTotal || 0)}.${pixInfo}`;
-      if (tel) {
-        window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(texto)}`, '_blank');
-      } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
-      }
-      if (navigator.onLine) {
-        try {
-          await salvarDocumento('ordens_servico', o.id, {
-            cobrancaEnviada: true,
-            cobrancaEnviadaEm: new Date().toISOString(),
-            cobrancaEnviadaPor: state.usuarioAtual?.nome || ''
-          });
-          if (document.getElementById('tab-painel')?.classList.contains('active')) {
-            carregarPainelSobDemanda();
-          }
-        } catch (err) {}
+      const texto = `Olá ${o.clienteNome}, aqui é da ${state.config.nome}.\n\nSegue em anexo a cobrança referente à ${o.numero} no valor de ${formatBRL(o.valorTotal || 0)}.${pixInfo}`;
+      setLoading(true, `Gerando cobrança ${o.numero}.pdf para WhatsApp...`);
+      try {
+        const secoesHtml = [
+          `<div style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; line-height: 1.5; margin-bottom: 10px; background: #f8fafc;">
+            <div><strong>Referência:</strong> Ordem de Serviço ${o.numero} &nbsp;|&nbsp; <strong>Data:</strong> ${formatarDataBR(o.dataAgendamento)}</div>
+            ${state.config.pix ? `<div style="margin-top: 4px; color: #006837;"><strong>Chave PIX para Pagamento:</strong> ${state.config.pix}</div>` : ''}
+          </div>`,
+          `<div style="padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; white-space: pre-line; margin-bottom: 10px;"><strong>Detalhes do Serviço:</strong><br/>${o.relato || o.laudo || 'Serviço técnico executado'}</div>`
+        ];
+        const { blob, nomeArquivo } = await gerarPDFDocumentoComCabecalho({
+          tituloDocumento: `COBRANÇA ${o.numero}`,
+          subtituloDocumento: `Vencimento / Data: ${formatarDataBR(o.dataAgendamento)}`,
+          clienteNome: o.clienteNome,
+          clienteTelefone: tel,
+          clienteEndereco: end,
+          secoesHtml,
+          totalDestaque: `Valor da Cobrança: ${formatBRL(o.valorTotal || 0)}`,
+          nomeArquivo: `cobranca_${o.numero}.pdf`
+        });
+        setLoading(false);
+        await compartilharPDFNoWhatsApp({
+          blob,
+          nomeArquivo,
+          telefone: tel,
+          textoWhatsApp: texto
+        });
+        if (navigator.onLine) {
+          try {
+            await salvarDocumento('ordens_servico', o.id, {
+              cobrancaEnviada: true,
+              cobrancaEnviadaEm: new Date().toISOString(),
+              cobrancaEnviadaPor: state.usuarioAtual?.nome || ''
+            });
+            if (document.getElementById('tab-painel')?.classList.contains('active')) {
+              carregarPainelSobDemanda();
+            }
+          } catch (err) {}
+        }
+      } catch (err) {
+        setLoading(false);
+        if (err && err.name !== 'AbortError') showToast('Erro ao gerar PDF da cobrança: ' + err.message, 'error');
       }
     };
 
@@ -3899,7 +4173,7 @@
           </div>
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t text-xs">
             <div class="flex items-center gap-2.5">
-              <a href="https://wa.me/55${c.telefone}" target="_blank" class="text-conecta-green font-semibold hover:underline">WhatsApp</a>
+              <button type="button" onclick="enviarContatoClienteWhatsApp('${c.id}')" class="text-conecta-green font-semibold hover:underline">WhatsApp</button>
               <button onclick="abrirHistoricoCliente('${c.id}')" class="text-blue-500 font-semibold hover:underline">Histórico</button>
             </div>
             ${state.perfil === 'admin' ? `
@@ -5498,13 +5772,42 @@
       } catch (err) { if (err.message !== 'OFFLINE_BLOCKED') showToast('Erro ao remover baixa.', 'error'); }
     };
 
-    window.cobrarFinanceiroWhatsApp = (id) => {
+    window.cobrarFinanceiroWhatsApp = async (id) => {
       const f = state.financeiro.find(x => x.id === id);
       if (!f) return;
       const tel = (f.clienteTelefone || '').replace(/\D/g, '');
       const pixInfo = state.config.pix ? `\n\nChave PIX: ${state.config.pix}` : '';
-      const msg = `Olá! Aqui é da ${state.config.nome}.\n\nLembrete de vencimento:\n• Referente: ${f.descricao}\n• Vencimento: ${formatarDataBR(f.vencimento)}\n• Valor: ${formatBRL(f.valor)}${pixInfo}\n\nQualquer dúvida, estamos à disposição!`;
-      window.open(`https://wa.me/${tel ? '55' + tel : ''}?text=${encodeURIComponent(msg)}`, '_blank');
+      const msg = `Olá! Aqui é da ${state.config.nome}.\n\nSegue em anexo o lembrete de vencimento:\n• Referente: ${f.descricao}\n• Vencimento: ${formatarDataBR(f.vencimento)}\n• Valor: ${formatBRL(f.valor)}${pixInfo}\n\nQualquer dúvida, estamos à disposição!`;
+      setLoading(true, 'Gerando lembrete financeiro em PDF...');
+      try {
+        const secoesHtml = [
+          `<div style="padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12.5px; line-height: 1.55; background: #f8fafc;">
+            <div><strong>Referente a:</strong> ${f.descricao}</div>
+            <div style="margin-top: 4px;"><strong>Data de Vencimento:</strong> ${formatarDataBR(f.vencimento)}</div>
+            ${f.dataPrevistaPagamento ? `<div style="margin-top: 4px;"><strong>Data Prevista de Pagamento:</strong> ${formatarDataBR(f.dataPrevistaPagamento)}</div>` : ''}
+            <div style="margin-top: 4px;"><strong>Situação:</strong> ${(f.status || 'pendente').toUpperCase()}</div>
+            ${state.config.pix ? `<div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; color: #006837;"><strong>Chave PIX:</strong> ${state.config.pix}</div>` : ''}
+          </div>`
+        ];
+        const { blob, nomeArquivo } = await gerarPDFDocumentoComCabecalho({
+          tituloDocumento: 'LEMBRETE DE VENCIMENTO',
+          subtituloDocumento: `Vencimento: ${formatarDataBR(f.vencimento)}`,
+          clienteTelefone: tel,
+          secoesHtml,
+          totalDestaque: `Valor: ${formatBRL(f.valor)}`,
+          nomeArquivo: `lembrete_${String(id).slice(-6)}.pdf`
+        });
+        setLoading(false);
+        await compartilharPDFNoWhatsApp({
+          blob,
+          nomeArquivo,
+          telefone: tel,
+          textoWhatsApp: msg
+        });
+      } catch (err) {
+        setLoading(false);
+        if (err && err.name !== 'AbortError') showToast('Erro ao gerar PDF do lembrete: ' + err.message, 'error');
+      }
     };
 
     window.gerarReciboPDF = async (id) => {
